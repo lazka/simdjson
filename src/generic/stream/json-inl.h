@@ -62,6 +62,14 @@ really_inline bool json::advance_if(uint8_t structural, uint8_t structural2, uin
   return found;
 }
 
+really_inline stream::object json::resume_object() noexcept {
+  return stream::object::resume(this);
+}
+
+really_inline stream::object json::begin_object(bool is_object) noexcept {
+  return stream::object::begin(value, is_object);
+}
+
 } // namespace stream
 } // namespace SIMDJSON_IMPLEMENTATION
 } // namespace {

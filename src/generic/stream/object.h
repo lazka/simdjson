@@ -17,20 +17,23 @@ public:
   // iterator interface
   //
   really_inline simdjson_result<stream::field&> operator*() noexcept;
-  really_inline bool operator!=(object &other) noexcept;
+  really_inline bool operator==(const object &other) noexcept;
+  really_inline bool operator!=(const object &other) noexcept;
   really_inline object &operator++() noexcept;
 
   really_inline object begin() noexcept;
   really_inline object end() noexcept;
 
 protected:
-  really_inline object(stream::json *_json, uint32_t _depth, bool _finished, error_code _error=SUCCESS) noexcept;
+  really_inline object(const uint8_t *key_string, stream::json *_json, uint32_t _depth, bool _finished, error_code _error=SUCCESS) noexcept;
   really_inline object(stream::value &parent, error_code _error) noexcept;
 
+  really_inline void resume() noexcept;
   really_inline void advance() noexcept;
   really_inline static simdjson_result<object> try_begin(stream::value &parent) noexcept;
   really_inline static object begin(stream::value &parent, error_code error=SUCCESS) noexcept;
   really_inline static object begin(stream::value &parent, bool is_object, error_code error=SUCCESS) noexcept;
+  really_inline static object resume(stream::json *json) noexcept;
 
   stream::field field;
   bool finished;
@@ -39,7 +42,8 @@ protected:
   error_code error;
 
   friend class value;
-  friend struct simdjson_result<stream::object>;
+  friend class json;
+  friend class simdjson_result<stream::object>;
 };
 
 } // namespace stream

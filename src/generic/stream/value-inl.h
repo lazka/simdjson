@@ -20,7 +20,7 @@ really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::raw_json_string> 
   bool error = str[0] != '"';
   if (error) { logger::log_error("not a string", json); }
   ++json;
-  return { raw_json_string(&str[1]), error ? INCORRECT_TYPE : SUCCESS };
+  return { raw_json_string{&str[1]}, error ? INCORRECT_TYPE : SUCCESS };
 }
 really_inline simdjson_result<std::string_view> value::get_string() && noexcept {
   logger::log_event("string", json);

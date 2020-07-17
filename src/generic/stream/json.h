@@ -69,6 +69,8 @@ protected:
   really_inline bool advance_if(uint8_t structural) noexcept;
   really_inline bool advance_if(uint8_t structural, uint8_t structural2) noexcept;
   really_inline bool advance_if(uint8_t structural, uint8_t structural2, uint8_t structural3) noexcept;
+  really_inline stream::object resume_object() noexcept;
+  really_inline stream::object begin_object(bool is_object) noexcept;
 
   friend struct simdjson_result<stream::json>;
   friend struct stage2::structural_parser;

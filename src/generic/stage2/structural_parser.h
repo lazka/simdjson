@@ -64,12 +64,14 @@ struct structural_parser : stream::json {
       parser{_parser} {
   }
 
-  WARN_UNUSED really_inline bool start_scope(ret_address_t continue_state) {
+  really_inline void start_scope(ret_address_t continue_state) {
     parser.containing_scope[depth].tape_index = next_tape_index();
     parser.containing_scope[depth].count = 0;
     tape.skip(); // We don't actually *write* the start element until the end.
     parser.ret_address[depth] = continue_state;
-    depth++;
+  }
+
+  WARN_UNUSED really_inline bool check_max_depth() {
     bool exceeded_max_depth = depth >= parser.max_depth();
     if (exceeded_max_depth) { log_error("Exceeded max depth!"); }
     return exceeded_max_depth;
@@ -77,22 +79,26 @@ struct structural_parser : stream::json {
 
   WARN_UNUSED really_inline bool start_document(ret_address_t continue_state) {
     log_start_value("document");
-    return start_scope(continue_state);
+    start_scope(continue_state);
+    depth++;
+    return check_max_depth();
   }
 
-  WARN_UNUSED really_inline bool start_object(ret_address_t continue_state) {
+  WARN_UNUSED really_inline stream::object start_object(ret_address_t continue_state) {
     log_start_value("object");
-    return start_scope(continue_state);
+    start_scope(continue_state);
+    return begin_object(true);
   }
 
   WARN_UNUSED really_inline bool start_array(ret_address_t continue_state) {
     log_start_value("array");
-    return start_scope(continue_state);
+    start_scope(continue_state);
+    depth++;
+    return check_max_depth();
   }
 
   // this function is responsible for annotating the start of the scope
   really_inline void end_scope(internal::tape_type start, internal::tape_type end) noexcept {
-    depth--;
     // write our doc->tape location to the header scope
     // The root scope gets written *at* the previous location.
     tape.append(parser.containing_scope[depth].tape_index, end);
@@ -115,10 +121,12 @@ struct structural_parser : stream::json {
   }
   really_inline void end_array() {
     log_end_value("array");
+    depth--;
     end_scope(internal::tape_type::START_ARRAY, internal::tape_type::END_ARRAY);
   }
   really_inline void end_document() {
     log_end_value("document");
+    depth--;
     end_scope(internal::tape_type::ROOT, internal::tape_type::ROOT);
   }
 
@@ -160,6 +168,35 @@ struct structural_parser : stream::json {
     return false;
   }
 
+  WARN_UNUSED really_inline bool parse_string(stream::raw_json_string str, bool key = false) {
+    log_value(key ? "key" : "string");
+    string_buf += sizeof(uint32_t);
+    std::string_view s;
+    if (str.unescape(string_buf).get(s)) {
+      log_error("Invalid escape in string");
+      return false;
+    }
+    // TODO check for overflow in case someone has a crazy string (>=4GB?)
+    // But only add the overflow check when the document itself exceeds 4GB
+    // Currently unneeded because we refuse to parse docs larger or equal to 4GB.
+    uint32_t str_length = static_cast<uint32_t>(s.length());
+    memcpy(string_buf-sizeof(uint32_t), &str_length, sizeof(uint32_t));
+    // NULL termination is still handy if you expect all your strings to
+    // be NULL terminated? It comes at a small cost
+    *(string_buf++) = 0;
+    return false;
+  }
+
+  WARN_UNUSED really_inline bool parse_key(stream::object &o) {
+    // Validate , "key" and :
+    auto field = *o;
+    bool error = field.error() || parse_string(field.first.key(), true);
+    if (error) {
+      log_error("Object field missing \" or : or has invalid string");
+    }
+    return error;
+  }
+
   WARN_UNUSED really_inline bool parse_number(const uint8_t *src) {
     log_value("number");
     bool succeeded = numberparsing::parse_number(src, tape);
@@ -193,6 +230,7 @@ struct structural_parser : stream::json {
     return result;
   }
   WARN_UNUSED really_inline ret_address_t parse_value(const unified_machine_addresses &addresses, ret_address_t continue_state) {
+    increment_count();
     const uint8_t *src = advance();
     switch (*src) {
     case '"':
@@ -219,7 +257,6 @@ struct structural_parser : stream::json {
       FAIL_IF( parse_number(src) );
       return continue_state;
     case '{':
-      FAIL_IF( start_object(continue_state) );
       return addresses.object_begin;
     case '[':
       FAIL_IF( start_array(continue_state) );
@@ -289,7 +326,7 @@ struct structural_parser : stream::json {
 
   WARN_UNUSED really_inline error_code start(ret_address_t finish_state) {
     // If there are no structurals left, return EMPTY
-    if (at_end(parser.n_structural_indexes)) {
+    if (at_end()) {
       return parser.error = EMPTY;
     }
 
@@ -308,11 +345,11 @@ struct structural_parser : stream::json {
     return *(index+n);
   }
 
-  really_inline bool past_end(uint32_t n_structural_indexes) {
-    return index >= &parser.structural_indexes[n_structural_indexes];
+  really_inline bool past_end() {
+    return index >= &parser.structural_indexes[parser.n_structural_indexes];
   }
-  really_inline bool at_end(uint32_t n_structural_indexes) {
-    return index == &parser.structural_indexes[n_structural_indexes];
+  really_inline bool at_end() {
+    return index == &parser.structural_indexes[parser.n_structural_indexes];
   }
   really_inline bool at_beginning() {
     return index == parser.structural_indexes.get();
@@ -361,7 +398,6 @@ WARN_UNUSED static error_code parse_structurals(dom_parser_implementation &dom_p
     const uint8_t *src = parser.advance();
     switch (*src) {
     case '{':
-      FAIL_IF( parser.start_object(addresses.finish) );
       goto object_begin;
     case '[':
       FAIL_IF( parser.start_array(addresses.finish) );
@@ -409,43 +445,26 @@ WARN_UNUSED static error_code parse_structurals(dom_parser_implementation &dom_p
 // Object parser states
 //
 object_begin: {
-  const uint8_t *src = parser.advance();
-  switch (*src) {
-  case '"': {
-    parser.increment_count();
-    FAIL_IF( parser.parse_string(src, true) );
-    goto object_key_state;
-  }
-  case '}':
-    parser.end_object();
-    goto scope_end;
-  default:
-    parser.log_error("Object does not start with a key");
-    goto error;
-  }
-}
+  stream::object o = parser.start_object(addresses.finish);
 
-object_key_state:
-  if (*parser.advance() != ':' ) { parser.log_error("Missing colon after key in object"); goto error; }
-  GOTO( parser.parse_value(addresses, addresses.object_continue) );
+  // Check for empty {}
+  if (o == o.end()) { goto object_end; }
+  if (parser.check_max_depth() || parser.parse_key(o)) { goto error; }
+  goto object_continue;
+}
 
 object_continue: {
-  switch (*parser.advance()) {
-  case ',': {
-    parser.increment_count();
-    const uint8_t *src = parser.advance();
-    if (*src != '"' ) { parser.log_error("Key string missing at beginning of field in object"); goto error; }
-    FAIL_IF( parser.parse_string(src, true) );
-    goto object_key_state;
-  }
-  case '}':
-    parser.end_object();
-    goto scope_end;
-  default:
-    parser.log_error("No comma between object fields");
-    goto error;
-  }
+  // Parse the value
+  GOTO( parser.parse_value(addresses, addresses.object_continue) );
+  
+  stream::object o = parser.resume_object();
+  if (o == o.end()) { goto object_end; }
+  if (parser.parse_key(o)) { goto error; }
+  goto object_continue;
 }
+
+object_end:
+  parser.end_object();
 
 scope_end:
   CONTINUE( parser.parser.ret_address[parser.depth] );

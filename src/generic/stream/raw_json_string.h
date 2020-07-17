@@ -14,10 +14,12 @@ class raw_json_string {
 public:
   really_inline raw_json_string() noexcept;
   really_inline raw_json_string(const uint8_t * _buf) noexcept;
+  really_inline raw_json_string(const raw_json_string &other) noexcept;
+  really_inline raw_json_string &operator=(const raw_json_string &other) noexcept;
   really_inline const char * raw() const noexcept;
   really_inline WARN_UNUSED simdjson_result<std::string_view> unescape(uint8_t *&dst) const noexcept;
 private:
-  const uint8_t * const buf;
+  const uint8_t * buf;
 };
 
 really_inline bool operator==(const raw_json_string &a, std::string_view b) noexcept;

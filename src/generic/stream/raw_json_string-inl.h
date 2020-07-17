@@ -4,6 +4,8 @@ namespace stream {
 
 really_inline raw_json_string::raw_json_string() noexcept : buf{nullptr} {} // for constructing a simdjson_result
 really_inline raw_json_string::raw_json_string(const uint8_t * _buf) noexcept : buf{_buf} {}
+really_inline raw_json_string::raw_json_string(const raw_json_string &other) noexcept : buf{other.buf} {}
+really_inline raw_json_string &raw_json_string::operator=(const raw_json_string &other) noexcept { buf = other.buf; return *this; }
 really_inline const char * raw_json_string::raw() const noexcept { return (const char *)buf; }
 really_inline WARN_UNUSED simdjson_result<std::string_view> raw_json_string::unescape(uint8_t *&dst) const noexcept {
   uint8_t *end = stage2::stringparsing::parse_string(buf, dst);
