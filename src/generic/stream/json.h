@@ -78,6 +78,8 @@ protected:
   friend class object;
   friend class array;
   friend class field;
+  template<bool PREV, typename S>
+  friend void SIMDJSON_IMPLEMENTATION::logger::log_line(S &structurals, const char *title_prefix, const char *title, const char *detail);
   template<typename T>
   friend void logger::log_event(const char *event_prefix, const char *event, T &json, const char *detail, bool prev);
 };

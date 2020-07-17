@@ -148,10 +148,10 @@ struct structural_parser : stream::json {
     string_buf = dst + 1;
   }
 
-  WARN_UNUSED really_inline bool parse_string(bool key = false) {
+  WARN_UNUSED really_inline bool parse_string(const uint8_t *src, bool key = false) {
     log_value(key ? "key" : "string");
     uint8_t *dst = on_start_string();
-    dst = stringparsing::parse_string(current(), dst);
+    dst = stringparsing::parse_string(src, dst);
     if (dst == nullptr) {
       log_error("Invalid escape in string");
       return true;
@@ -165,9 +165,6 @@ struct structural_parser : stream::json {
     bool succeeded = numberparsing::parse_number(src, tape);
     if (!succeeded) { log_error("Invalid number"); }
     return !succeeded;
-  }
-  WARN_UNUSED really_inline bool parse_number() {
-    return parse_number(current());
   }
 
   really_inline bool parse_number_with_space_terminated_copy() {
@@ -190,35 +187,36 @@ struct structural_parser : stream::json {
     }
     memcpy(copy, buf, parser.len);
     memset(copy + parser.len, ' ', SIMDJSON_PADDING);
-    size_t idx = *index;
+    size_t idx = peek_index(-1);
     bool result = parse_number(&copy[idx]); // parse_number does not throw
     free(copy);
     return result;
   }
   WARN_UNUSED really_inline ret_address_t parse_value(const unified_machine_addresses &addresses, ret_address_t continue_state) {
-    switch (advance_char()) {
+    const uint8_t *src = advance();
+    switch (*src) {
     case '"':
-      FAIL_IF( parse_string() );
+      FAIL_IF( parse_string(src) );
       return continue_state;
     case 't':
       log_value("true");
-      FAIL_IF( !atomparsing::is_valid_true_atom(current()) );
+      FAIL_IF( !atomparsing::is_valid_true_atom(src) );
       tape.append(0, internal::tape_type::TRUE_VALUE);
       return continue_state;
     case 'f':
       log_value("false");
-      FAIL_IF( !atomparsing::is_valid_false_atom(current()) );
+      FAIL_IF( !atomparsing::is_valid_false_atom(src) );
       tape.append(0, internal::tape_type::FALSE_VALUE);
       return continue_state;
     case 'n':
       log_value("null");
-      FAIL_IF( !atomparsing::is_valid_null_atom(current()) );
+      FAIL_IF( !atomparsing::is_valid_null_atom(src) );
       tape.append(0, internal::tape_type::NULL_VALUE);
       return continue_state;
     case '-':
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
-      FAIL_IF( parse_number() );
+      FAIL_IF( parse_number(src) );
       return continue_state;
     case '{':
       FAIL_IF( start_object(continue_state) );
@@ -234,7 +232,7 @@ struct structural_parser : stream::json {
 
   WARN_UNUSED really_inline error_code finish() {
     end_document();
-    parser.next_structural_index = uint32_t(index + 1 - &parser.structural_indexes[0]);
+    parser.next_structural_index = uint32_t(index - &parser.structural_indexes[0]);
 
     if (depth != 0) {
       log_error("Unclosed objects or arrays!");
@@ -258,7 +256,7 @@ struct structural_parser : stream::json {
     if (depth >= parser.max_depth()) {
       return parser.error = DEPTH_ERROR;
     }
-    switch (current_char()) {
+    switch (*peek(-1)) {
     case '"':
       return parser.error = STRING_ERROR;
     case '0':
@@ -303,24 +301,8 @@ struct structural_parser : stream::json {
     return SUCCESS;
   }
 
-  // Get the buffer position of the current structural character
-  really_inline const uint8_t* current() {
-    return peek(0);
-  }
-  // Get the current structural character
-  really_inline char current_char() {
-    return *peek(0);
-  }
-  // Get the next structural character without advancing
-  really_inline char peek_next_char() {
-    return *peek(1);
-  }
-  really_inline char advance_char() {
-    advance();
-    return current_char();
-  }
   really_inline size_t remaining_len() {
-    return parser.len - *index;
+    return parser.len - peek_index(-1);
   }
   really_inline uint32_t peek_index(int n) {
     return *(index+n);
@@ -375,59 +357,63 @@ WARN_UNUSED static error_code parse_structurals(dom_parser_implementation &dom_p
   //
   // Read first value
   //
-  switch (parser.current_char()) {
-  case '{':
-    FAIL_IF( parser.start_object(addresses.finish) );
-    goto object_begin;
-  case '[':
-    FAIL_IF( parser.start_array(addresses.finish) );
-    // Make sure the outer array is closed before continuing; otherwise, there are ways we could get
-    // into memory corruption. See https://github.com/simdjson/simdjson/issues/906
-    if (!STREAMING) {
-      if (parser.buf[dom_parser.structural_indexes[dom_parser.n_structural_indexes - 1]] != ']') {
-        goto error;
+  {
+    const uint8_t *src = parser.advance();
+    switch (*src) {
+    case '{':
+      FAIL_IF( parser.start_object(addresses.finish) );
+      goto object_begin;
+    case '[':
+      FAIL_IF( parser.start_array(addresses.finish) );
+      // Make sure the outer array is closed before continuing; otherwise, there are ways we could get
+      // into memory corruption. See https://github.com/simdjson/simdjson/issues/906
+      if (!STREAMING) {
+        if (parser.buf[dom_parser.structural_indexes[dom_parser.n_structural_indexes - 1]] != ']') {
+          goto error;
+        }
       }
+      goto array_begin;
+    case '"':
+      FAIL_IF( parser.parse_string(src) );
+      goto finish;
+    case 't':
+      parser.log_value("true");
+      FAIL_IF( !atomparsing::is_valid_true_atom(src, parser.remaining_len()) );
+      parser.tape.append(0, internal::tape_type::TRUE_VALUE);
+      goto finish;
+    case 'f':
+      parser.log_value("false");
+      FAIL_IF( !atomparsing::is_valid_false_atom(src, parser.remaining_len()) );
+      parser.tape.append(0, internal::tape_type::FALSE_VALUE);
+      goto finish;
+    case 'n':
+      parser.log_value("null");
+      FAIL_IF( !atomparsing::is_valid_null_atom(src, parser.remaining_len()) );
+      parser.tape.append(0, internal::tape_type::NULL_VALUE);
+      goto finish;
+    case '-':
+    case '0': case '1': case '2': case '3': case '4':
+    case '5': case '6': case '7': case '8': case '9':
+      // Next line used to be an interesting functional programming exercise with
+      // a lambda that gets passed to another function via a closure. This would confuse the
+      // clangcl compiler under Visual Studio 2019 (recent release).
+      FAIL_IF(parser.parse_number_with_space_terminated_copy());
+      goto finish;
+    default:
+      parser.log_error("Document starts with a non-value character");
+      goto error;
     }
-    goto array_begin;
-  case '"':
-    FAIL_IF( parser.parse_string() );
-    goto finish;
-  case 't':
-    parser.log_value("true");
-    FAIL_IF( !atomparsing::is_valid_true_atom(parser.current(), parser.remaining_len()) );
-    parser.tape.append(0, internal::tape_type::TRUE_VALUE);
-    goto finish;
-  case 'f':
-    parser.log_value("false");
-    FAIL_IF( !atomparsing::is_valid_false_atom(parser.current(), parser.remaining_len()) );
-    parser.tape.append(0, internal::tape_type::FALSE_VALUE);
-    goto finish;
-  case 'n':
-    parser.log_value("null");
-    FAIL_IF( !atomparsing::is_valid_null_atom(parser.current(), parser.remaining_len()) );
-    parser.tape.append(0, internal::tape_type::NULL_VALUE);
-    goto finish;
-  case '-':
-  case '0': case '1': case '2': case '3': case '4':
-  case '5': case '6': case '7': case '8': case '9':
-    // Next line used to be an interesting functional programming exercise with
-    // a lambda that gets passed to another function via a closure. This would confuse the
-    // clangcl compiler under Visual Studio 2019 (recent release).
-    FAIL_IF(parser.parse_number_with_space_terminated_copy());
-    goto finish;
-  default:
-    parser.log_error("Document starts with a non-value character");
-    goto error;
   }
 
 //
 // Object parser states
 //
-object_begin:
-  switch (parser.advance_char()) {
+object_begin: {
+  const uint8_t *src = parser.advance();
+  switch (*src) {
   case '"': {
     parser.increment_count();
-    FAIL_IF( parser.parse_string(true) );
+    FAIL_IF( parser.parse_string(src, true) );
     goto object_key_state;
   }
   case '}':
@@ -437,18 +423,21 @@ object_begin:
     parser.log_error("Object does not start with a key");
     goto error;
   }
+}
 
 object_key_state:
-  if (parser.advance_char() != ':' ) { parser.log_error("Missing colon after key in object"); goto error; }
+  if (*parser.advance() != ':' ) { parser.log_error("Missing colon after key in object"); goto error; }
   GOTO( parser.parse_value(addresses, addresses.object_continue) );
 
-object_continue:
-  switch (parser.advance_char()) {
-  case ',':
+object_continue: {
+  switch (*parser.advance()) {
+  case ',': {
     parser.increment_count();
-    if (parser.advance_char() != '"' ) { parser.log_error("Key string missing at beginning of field in object"); goto error; }
-    FAIL_IF( parser.parse_string(true) );
+    const uint8_t *src = parser.advance();
+    if (*src != '"' ) { parser.log_error("Key string missing at beginning of field in object"); goto error; }
+    FAIL_IF( parser.parse_string(src, true) );
     goto object_key_state;
+  }
   case '}':
     parser.end_object();
     goto scope_end;
@@ -456,6 +445,7 @@ object_continue:
     parser.log_error("No comma between object fields");
     goto error;
   }
+}
 
 scope_end:
   CONTINUE( parser.parser.ret_address[parser.depth] );
@@ -464,8 +454,7 @@ scope_end:
 // Array parser states
 //
 array_begin:
-  if (parser.peek_next_char() == ']') {
-    parser.advance_char();
+  if (parser.advance_if(']')) {
     parser.end_array();
     goto scope_end;
   }
@@ -477,7 +466,7 @@ main_array_switch:
   GOTO( parser.parse_value(addresses, addresses.array_continue) );
 
 array_continue:
-  switch (parser.advance_char()) {
+  switch (*parser.advance()) {
   case ',':
     parser.increment_count();
     goto main_array_switch;

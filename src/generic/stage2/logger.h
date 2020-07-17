@@ -40,7 +40,7 @@ namespace logger {
   }
 
   // Logs a single line of 
-  template<typename S>
+  template<bool PREV=true, typename S>
   static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
     if (LOG_ENABLED) {
       printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
@@ -50,16 +50,16 @@ namespace logger {
         // Otherwise, print the characters starting from the buffer position.
         // Print spaces for unprintable or newline characters.
         for (int i=0;i<LOG_BUFFER_LEN;i++) {
-          printf("%c", printable_char(structurals.current()[i]));
+          printf("%c", printable_char(structurals.peek(0-PREV)[i]));
         }
         printf(" ");
       }
-      printf("|    %c ", printable_char(structurals.current_char()));
-      printf("|    %c ", printable_char(structurals.peek_next_char()));
-      printf("| %5u ", structurals.parser.structural_indexes[structurals.peek_index(1)]);
+      printf("|    %c ", printable_char(*structurals.peek(0-PREV)));
+      printf("|    %c ", printable_char(*structurals.peek(0-PREV)));
+      printf("| %5u ", structurals.parser.structural_indexes[structurals.peek_index(1-PREV)]);
       printf("| %5u ", structurals.next_tape_index());
       printf("| %-*s ", LOG_DETAIL_LEN, detail);
-      printf("| %*u ", LOG_INDEX_LEN, structurals.peek_index(0));
+      printf("| %*u ", LOG_INDEX_LEN, structurals.peek_index(0-PREV));
       printf("|\n");
     }
   }

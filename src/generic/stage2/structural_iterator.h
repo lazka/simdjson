@@ -18,6 +18,9 @@ public:
   really_inline const uint8_t* current() {
     return &buf[*current_structural];
   }
+  really_inline const uint8_t *peek(int n) {
+    return &buf[*(current_structural+n)];
+  }
   // Get the current structural character
   really_inline char current_char() {
     return buf[*current_structural];
