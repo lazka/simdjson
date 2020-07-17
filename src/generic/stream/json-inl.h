@@ -4,13 +4,13 @@ namespace stream {
 
 really_inline value json::as_value() noexcept { return { this, depth }; }
 
-really_inline simdjson_result<array> json::get_array() noexcept { return as_value().get_array(); }
-really_inline simdjson_result<object> json::get_object() noexcept { return as_value().get_object(); }
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::array> json::get_array() noexcept { return as_value().get_array(); }
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object> json::get_object() noexcept { return as_value().get_object(); }
 really_inline simdjson_result<uint64_t> json::get_uint64() noexcept { return as_value().get_uint64(); }
 really_inline simdjson_result<int64_t> json::get_int64() noexcept { return as_value().get_int64(); }
 really_inline simdjson_result<double> json::get_double() noexcept { return as_value().get_double(); }
 really_inline simdjson_result<std::string_view> json::get_string() noexcept { return as_value().get_string(); }
-really_inline simdjson_result<raw_json_string> json::get_raw_json_string() noexcept { return as_value().get_raw_json_string(); }
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::raw_json_string> json::get_raw_json_string() noexcept { return as_value().get_raw_json_string(); }
 really_inline simdjson_result<bool> json::get_bool() noexcept { return as_value().get_bool(); }
 
 #if SIMDJSON_EXCEPTIONS

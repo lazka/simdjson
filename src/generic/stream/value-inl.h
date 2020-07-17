@@ -6,15 +6,15 @@ really_inline value::value() noexcept : json{}, depth{} {}
 really_inline value::value(stream::json *_json, uint32_t _depth) noexcept : json{_json}, depth{_depth} {}
 really_inline value::value(const value &other) noexcept = default;
 
-really_inline simdjson_result<array> value::get_array() && noexcept {
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::array> value::get_array() && noexcept {
   consumed = true;
   return array::try_begin(*this);
 }
-really_inline simdjson_result<object> value::get_object() && noexcept {
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object> value::get_object() && noexcept {
   consumed = true;
   return object::try_begin(*this);
 }
-really_inline simdjson_result<raw_json_string> value::get_raw_json_string() && noexcept {
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::raw_json_string> value::get_raw_json_string() && noexcept {
   logger::log_event("raw_json_string", json);
   const uint8_t *str = consume();
   bool error = str[0] != '"';
@@ -24,7 +24,7 @@ really_inline simdjson_result<raw_json_string> value::get_raw_json_string() && n
 }
 really_inline simdjson_result<std::string_view> value::get_string() && noexcept {
   logger::log_event("string", json);
-  auto [str, error] = std::forward<value>(*this).get_raw_json_string();
+  auto [str, error] = std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_raw_json_string();
   if (error) { return error; }
   return str.unescape(json->string_buf);
 }
@@ -50,14 +50,14 @@ really_inline simdjson_result<bool> value::get_bool() && noexcept {
 }
 
 #if SIMDJSON_EXCEPTIONS
-really_inline value::operator array() && noexcept(false) { return std::forward<value>(*this).get_array(); }
-really_inline value::operator object() && noexcept(false) { return std::forward<value>(*this).get_object(); }
-really_inline value::operator uint64_t() && noexcept(false) { return std::forward<value>(*this).get_uint64(); }
-really_inline value::operator int64_t() && noexcept(false) { return std::forward<value>(*this).get_int64(); }
-really_inline value::operator double() && noexcept(false) { return std::forward<value>(*this).get_double(); }
-really_inline value::operator std::string_view() && noexcept(false) { return std::forward<value>(*this).get_string(); }
-really_inline value::operator raw_json_string() && noexcept(false) { return std::forward<value>(*this).get_raw_json_string(); }
-really_inline value::operator bool() && noexcept(false) { return std::forward<value>(*this).get_bool(); }
+really_inline value::operator array() && noexcept(false) { return std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_array(); }
+really_inline value::operator object() && noexcept(false) { return std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_object(); }
+really_inline value::operator uint64_t() && noexcept(false) { return std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_uint64(); }
+really_inline value::operator int64_t() && noexcept(false) { return std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_int64(); }
+really_inline value::operator double() && noexcept(false) { return std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_double(); }
+really_inline value::operator std::string_view() && noexcept(false) { return std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_string(); }
+really_inline value::operator raw_json_string() && noexcept(false) { return std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_raw_json_string(); }
+really_inline value::operator bool() && noexcept(false) { return std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_bool(); }
 #endif
 
 really_inline const uint8_t *value::consume() noexcept { consumed = true; return json->advance(); }

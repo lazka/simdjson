@@ -5,7 +5,7 @@ namespace stream {
 really_inline array::array() noexcept : value{}, finished{}, error{} {}
 really_inline array::array(stream::json *json, uint32_t depth, bool _finished, error_code _error) noexcept : value(json, depth), finished{_finished}, error{_error} {}
 really_inline array::array(stream::value &parent, error_code _error) noexcept : array(parent.json, parent.depth+1, true, _error) {}
-really_inline simdjson_result<value> array::operator*() noexcept { return { stream::value(value), error }; }
+really_inline simdjson_result<value> array::operator*() noexcept { return { value, error }; }
 really_inline bool array::operator!=(array &) noexcept { return !finished; }
 really_inline array &array::operator++() noexcept { advance(); return *this; }
 
@@ -30,10 +30,10 @@ really_inline void array::advance() noexcept {
   error = (!finished && !has_next) ? TAPE_ERROR : SUCCESS;
 }
 
-really_inline simdjson_result<array> array::try_begin(stream::value &parent) noexcept {
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::array> array::try_begin(stream::value &parent) noexcept {
   if (!parent.json->advance_if_start('[')) {
     logger::log_error("not an array", parent.json);
-    return simdjson_result<array>(parent, INCORRECT_TYPE);
+    return simdjson_result<SIMDJSON_IMPLEMENTATION::stream::array>(parent, INCORRECT_TYPE);
   }
   return begin(parent, true);
 }

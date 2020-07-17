@@ -10,7 +10,6 @@ namespace {
 namespace westmere {
 
 using namespace simdjson;
-using namespace simdjson::dom;
 
 class implementation final : public simdjson::implementation {
 public:

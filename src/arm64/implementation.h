@@ -8,7 +8,6 @@ namespace {
 namespace arm64 {
 
 using namespace simdjson;
-using namespace simdjson::dom;
 
 class implementation final : public simdjson::implementation {
 public:

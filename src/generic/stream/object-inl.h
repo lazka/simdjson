@@ -33,16 +33,16 @@ really_inline void object::advance() noexcept {
   finished = field.json->advance_if_end('}');
   if (finished) { logger::log_end_event("object", field.json); }
 
-  // Jump to the <value> in , "key" : <value>
+  // Jump to the <SIMDJSON_IMPLEMENTATION::stream::value> in , "key" : <SIMDJSON_IMPLEMENTATION::stream::value>
   bool has_next = field.json->advance_if(',', '"', ':');
   if (!finished && !has_next) { logger::log_error("missing comma, key or :", field.json); }
   error = !finished && !has_next ? TAPE_ERROR : SUCCESS;
 }
 
-really_inline simdjson_result<object> object::try_begin(stream::value &parent) noexcept {
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object> object::try_begin(stream::value &parent) noexcept {
   if (!parent.json->advance_if_start('{')) {
     logger::log_error("not an object", parent.json);
-    return simdjson_result<object>(parent, INCORRECT_TYPE);
+    return simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object>(parent, INCORRECT_TYPE);
   }
   return begin(parent, true);
 }
@@ -62,7 +62,7 @@ really_inline object object::begin(stream::value &parent, bool is_object, error_
   bool finished = !error && parent.json->advance_if('}');
   if (finished) { logger::log_end_event("empty object", parent.json); }
 
-  // Jump to the <value> in { "key" : <value>
+  // Jump to the <SIMDJSON_IMPLEMENTATION::stream::value> in { "key" : <SIMDJSON_IMPLEMENTATION::stream::value>
   bool has_next = !error && parent.json->advance_if('"', ':');
   if (!finished && !has_next) { logger::log_error("missing key or :", parent.json); }
   error = error ? error : (!finished && !has_next ? TAPE_ERROR : SUCCESS);
