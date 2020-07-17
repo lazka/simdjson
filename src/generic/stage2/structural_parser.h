@@ -6,7 +6,7 @@
 #include "generic/stage2/tape_writer.h"
 #include "generic/stage2/logger.h"
 #include "generic/stage2/atomparsing.h"
-#include "generic/stage2/structural_iterator.h"
+#include "generic/stream.h"
 
 namespace { // Make everything here private
 namespace SIMDJSON_IMPLEMENTATION {
@@ -52,19 +52,16 @@ struct unified_machine_addresses {
 #undef FAIL_IF
 #define FAIL_IF(EXPR) { if (EXPR) { return addresses.error; } }
 
-struct structural_parser : structural_iterator {
+struct structural_parser : stream::json {
   /** Lets you append to the tape */
   tape_writer tape;
-  /** Next write location in the string buf for stage 2 parsing */
-  uint8_t *current_string_buf_loc;
-  /** Current depth (nested objects and arrays) */
-  uint32_t depth{0};
+  dom_parser_implementation &parser;
 
   // For non-streaming, to pass an explicit 0 as next_structural, which enables optimizations
   really_inline structural_parser(dom_parser_implementation &_parser, uint32_t start_structural_index)
-    : structural_iterator(_parser, start_structural_index),
-      tape{parser.doc->tape.get()},
-      current_string_buf_loc{parser.doc->string_buf.get()} {
+    : stream::json(&_parser.structural_indexes[start_structural_index], _parser.buf, _parser.doc->string_buf.get()),
+      tape{_parser.doc->tape.get()},
+      parser{_parser} {
   }
 
   WARN_UNUSED really_inline bool start_scope(ret_address_t continue_state) {
@@ -135,20 +132,20 @@ struct structural_parser : structural_iterator {
 
   really_inline uint8_t *on_start_string() noexcept {
     // we advance the point, accounting for the fact that we have a NULL termination
-    tape.append(current_string_buf_loc - parser.doc->string_buf.get(), internal::tape_type::STRING);
-    return current_string_buf_loc + sizeof(uint32_t);
+    tape.append(string_buf - parser.doc->string_buf.get(), internal::tape_type::STRING);
+    return string_buf + sizeof(uint32_t);
   }
 
   really_inline void on_end_string(uint8_t *dst) noexcept {
-    uint32_t str_length = uint32_t(dst - (current_string_buf_loc + sizeof(uint32_t)));
+    uint32_t str_length = uint32_t(dst - (string_buf + sizeof(uint32_t)));
     // TODO check for overflow in case someone has a crazy string (>=4GB?)
     // But only add the overflow check when the document itself exceeds 4GB
     // Currently unneeded because we refuse to parse docs larger or equal to 4GB.
-    memcpy(current_string_buf_loc, &str_length, sizeof(uint32_t));
+    memcpy(string_buf, &str_length, sizeof(uint32_t));
     // NULL termination is still handy if you expect all your strings to
     // be NULL terminated? It comes at a small cost
     *dst = 0;
-    current_string_buf_loc = dst + 1;
+    string_buf = dst + 1;
   }
 
   WARN_UNUSED really_inline bool parse_string(bool key = false) {
@@ -193,7 +190,7 @@ struct structural_parser : structural_iterator {
     }
     memcpy(copy, buf, parser.len);
     memset(copy + parser.len, ' ', SIMDJSON_PADDING);
-    size_t idx = *current_structural;
+    size_t idx = *index;
     bool result = parse_number(&copy[idx]); // parse_number does not throw
     free(copy);
     return result;
@@ -237,7 +234,7 @@ struct structural_parser : structural_iterator {
 
   WARN_UNUSED really_inline error_code finish() {
     end_document();
-    parser.next_structural_index = uint32_t(current_structural + 1 - &parser.structural_indexes[0]);
+    parser.next_structural_index = uint32_t(index + 1 - &parser.structural_indexes[0]);
 
     if (depth != 0) {
       log_error("Unclosed objects or arrays!");
@@ -304,6 +301,39 @@ struct structural_parser : structural_iterator {
       return parser.error = DEPTH_ERROR;
     }
     return SUCCESS;
+  }
+
+  // Get the buffer position of the current structural character
+  really_inline const uint8_t* current() {
+    return peek(0);
+  }
+  // Get the current structural character
+  really_inline char current_char() {
+    return *peek(0);
+  }
+  // Get the next structural character without advancing
+  really_inline char peek_next_char() {
+    return *peek(1);
+  }
+  really_inline char advance_char() {
+    advance();
+    return current_char();
+  }
+  really_inline size_t remaining_len() {
+    return parser.len - *index;
+  }
+  really_inline uint32_t peek_index(int n) {
+    return *(index+n);
+  }
+
+  really_inline bool past_end(uint32_t n_structural_indexes) {
+    return index >= &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_end(uint32_t n_structural_indexes) {
+    return index == &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_beginning() {
+    return index == parser.structural_indexes.get();
   }
 
   really_inline void log_value(const char *type) {

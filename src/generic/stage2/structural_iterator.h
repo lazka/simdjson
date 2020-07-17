@@ -33,6 +33,9 @@ public:
   really_inline size_t remaining_len() {
     return parser.len - *current_structural;
   }
+  really_inline uint32_t peek_index(int n) {
+    return *(current_structural+n);
+  }
 
   really_inline bool past_end(uint32_t n_structural_indexes) {
     return current_structural >= &parser.structural_indexes[n_structural_indexes];

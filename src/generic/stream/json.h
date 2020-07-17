@@ -2,6 +2,11 @@
 
 namespace {
 namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+  struct structural_parser;
+  template<bool STREAMING>
+  static error_code parse_structurals(dom_parser_implementation &, dom::document &) noexcept;
+}
 namespace stream {
 
 class array;
@@ -20,7 +25,6 @@ public:
   really_inline json(json &&other) noexcept;
   really_inline json(const json &other) = delete;
   really_inline json &operator=(const json &other) = delete;
-  really_inline stream::value && as_value() noexcept;
 
   really_inline simdjson_result<array> get_array() noexcept;
   really_inline simdjson_result<object> get_object() noexcept;
@@ -44,15 +48,16 @@ public:
 
   really_inline array begin() noexcept;
   really_inline array end() noexcept;
-  really_inline simdjson_result<stream::value&> operator[](std::string_view key) noexcept;
+  really_inline simdjson_result<stream::value> operator[](std::string_view key) noexcept;
 
-// protected:
+protected:
   really_inline json(const uint32_t *_index, const uint8_t *_buf, uint8_t *_string_buf, uint32_t _depth=0) noexcept;
   const uint32_t *index; //< Current position
   const uint8_t * buf; //< Buffer
   uint8_t *string_buf; //< String buffer
   uint32_t depth; //< Current depth
-  stream::value value; //< Points to this; used internally only, to return value& when needed
+
+  really_inline stream::value as_value() noexcept;
 
   //
   // Token methods
@@ -65,9 +70,10 @@ public:
   really_inline bool advance_if(uint8_t structural, uint8_t structural2) noexcept;
   really_inline bool advance_if(uint8_t structural, uint8_t structural2, uint8_t structural3) noexcept;
 
-  friend class simdjson_result<stream::json>;
-  friend class dom::parser;
-  // friend struct simdjson::SIMDJSON_IMPLEMENTATION::stage2::structural_parser;
+  friend struct simdjson_result<stream::json>;
+  friend struct stage2::structural_parser;
+  template<bool STREAMING>
+  friend error_code stage2::parse_structurals(dom_parser_implementation &, dom::document &) noexcept;
   friend class stream::value;
   friend class object;
   friend class array;
@@ -88,7 +94,6 @@ public:
   really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::json &&value) noexcept; ///< @private
   really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::json &&value, error_code error) noexcept; ///< @private
 
-  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&> as_value() noexcept;
   really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::array> get_array() && noexcept;
   really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object> get_object() && noexcept;
   really_inline simdjson_result<uint64_t> get_uint64() && noexcept;
@@ -111,7 +116,10 @@ public:
 
   really_inline SIMDJSON_IMPLEMENTATION::stream::array begin() noexcept;
   really_inline SIMDJSON_IMPLEMENTATION::stream::array end() noexcept;
-  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&> operator[](std::string_view key) && noexcept;
+  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> operator[](std::string_view key) && noexcept;
+
+protected:
+  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> as_value() noexcept;
 };
 
 } // namespace simdjson

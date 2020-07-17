@@ -11,7 +11,7 @@ really_inline simdjson_result<stream::field&> object::operator*() noexcept {
 really_inline bool object::operator!=(object &) noexcept { return !finished; }
 really_inline object &object::operator++() noexcept { advance(); return *this; }
 
-really_inline simdjson_result<value&> object::operator[](std::string_view key) noexcept {
+really_inline simdjson_result<value> object::operator[](std::string_view key) noexcept {
   // Resume where we left off
   while (!finished) {
     if (error || field.key() == key) { return { field, error }; }
@@ -91,7 +91,7 @@ really_inline SIMDJSON_IMPLEMENTATION::stream::object simdjson_result<SIMDJSON_I
 really_inline SIMDJSON_IMPLEMENTATION::stream::object simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object>::end() noexcept {
   return {};
 }
-really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&> simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object>::operator[](std::string_view key) noexcept {
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object>::operator[](std::string_view key) noexcept {
   if (error()) { return { first.field, error() }; }
   return first[key];
 }

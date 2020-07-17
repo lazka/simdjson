@@ -56,10 +56,10 @@ namespace logger {
       }
       printf("|    %c ", printable_char(structurals.current_char()));
       printf("|    %c ", printable_char(structurals.peek_next_char()));
-      printf("| %5u ", structurals.parser.structural_indexes[*(structurals.current_structural+1)]);
+      printf("| %5u ", structurals.parser.structural_indexes[structurals.peek_index(1)]);
       printf("| %5u ", structurals.next_tape_index());
       printf("| %-*s ", LOG_DETAIL_LEN, detail);
-      printf("| %*u ", LOG_INDEX_LEN, *structurals.current_structural);
+      printf("| %*u ", LOG_INDEX_LEN, structurals.peek_index(0));
       printf("|\n");
     }
   }

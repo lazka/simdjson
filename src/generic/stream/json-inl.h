@@ -2,7 +2,7 @@ namespace {
 namespace SIMDJSON_IMPLEMENTATION {
 namespace stream {
 
-really_inline value && json::as_value() noexcept { return std::move(value); }
+really_inline value json::as_value() noexcept { return { this, depth }; }
 
 really_inline simdjson_result<array> json::get_array() noexcept { return as_value().get_array(); }
 really_inline simdjson_result<object> json::get_object() noexcept { return as_value().get_object(); }
@@ -26,13 +26,13 @@ really_inline json::operator bool() noexcept(false) { return as_value(); }
 
 really_inline array json::begin() noexcept { return as_value().begin(); }
 really_inline array json::end() noexcept { return {}; }
-really_inline simdjson_result<value&> json::operator[](std::string_view key) noexcept { return as_value()[key]; }
+really_inline simdjson_result<value> json::operator[](std::string_view key) noexcept { return as_value()[key]; }
 
 really_inline json::json(json &&other) noexcept
-  : index{other.index}, buf{other.buf}, string_buf{other.string_buf}, depth{other.depth}, value(this, other.value.depth) {}
+  : index{other.index}, buf{other.buf}, string_buf{other.string_buf}, depth{other.depth} {}
 
 really_inline json::json(const uint32_t *_index, const uint8_t *_buf, uint8_t *_string_buf, uint32_t _depth) noexcept
-  : index{_index}, buf{_buf}, string_buf{_string_buf}, depth{_depth}, value(this, _depth) {}
+  : index{_index}, buf{_buf}, string_buf{_string_buf}, depth{_depth} {}
 
 really_inline const uint8_t *json::advance() noexcept { auto result = &buf[*index]; index++; return result; }
 really_inline const uint8_t *json::peek(int n) const noexcept { return &buf[*(index+n)]; }
@@ -74,12 +74,13 @@ really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::json>::simdjson_r
     : internal::simdjson_result_base<SIMDJSON_IMPLEMENTATION::stream::json>(std::forward<SIMDJSON_IMPLEMENTATION::stream::json>(value), error) {}
 
 // TODO make sure the passing of a pointer here isn't about to cause us trouble
-really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&> simdjson_result<SIMDJSON_IMPLEMENTATION::stream::json>::as_value() noexcept {
-  return simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&>(first.value, error());
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> simdjson_result<SIMDJSON_IMPLEMENTATION::stream::json>::as_value() noexcept {
+  // return simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value>(&first, error());
+  return { SIMDJSON_IMPLEMENTATION::stream::value(&first, first.depth), error() };
 }
 really_inline SIMDJSON_IMPLEMENTATION::stream::array simdjson_result<SIMDJSON_IMPLEMENTATION::stream::json>::begin() noexcept { return as_value().begin(); }
 really_inline SIMDJSON_IMPLEMENTATION::stream::array simdjson_result<SIMDJSON_IMPLEMENTATION::stream::json>::end() noexcept { return as_value().end(); }
-really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&> simdjson_result<SIMDJSON_IMPLEMENTATION::stream::json>::operator[](std::string_view key) && noexcept { return as_value()[key]; }
+really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> simdjson_result<SIMDJSON_IMPLEMENTATION::stream::json>::operator[](std::string_view key) && noexcept { return as_value()[key]; }
 
 really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::array> simdjson_result<SIMDJSON_IMPLEMENTATION::stream::json>::get_array() && noexcept { return as_value().get_array(); }
 really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object> simdjson_result<SIMDJSON_IMPLEMENTATION::stream::json>::get_object() && noexcept { return as_value().get_object(); }

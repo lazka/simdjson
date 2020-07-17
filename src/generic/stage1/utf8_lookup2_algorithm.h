@@ -217,9 +217,8 @@ using namespace simd;
 
   }; // struct utf8_checker
 } // namespace utf8_validation
-} // namespace {
 
 using utf8_validation::utf8_checker;
 
 } // namespace SIMDJSON_IMPLEMENTATION
-} // namespace simdjson
+} // namespace {

@@ -14,7 +14,7 @@ public:
   //
   // Iterator interface
   //
-  really_inline simdjson_result<stream::value&> operator*() noexcept;
+  really_inline simdjson_result<stream::value> operator*() noexcept;
   really_inline bool operator!=(array &other) noexcept;
   really_inline array &operator++() noexcept;
   really_inline array begin() noexcept;
@@ -34,8 +34,8 @@ protected:
   error_code error;
 
   friend class stream::value;
-  friend class simdjson_result<stream::value&>;
-  friend class simdjson_result<stream::array>;
+  friend struct simdjson_result<stream::value>;
+  friend struct simdjson_result<stream::array>;
 };
 
 } // namespace stream
@@ -50,7 +50,7 @@ public:
   really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::array &&value) noexcept; ///< @private
   really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::value &parent, error_code error) noexcept; ///< @private
 
-  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&> operator[](std::string_view key) noexcept;
+  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> operator[](std::string_view key) noexcept;
 
   really_inline SIMDJSON_IMPLEMENTATION::stream::array begin() noexcept;
   really_inline SIMDJSON_IMPLEMENTATION::stream::array end() noexcept;

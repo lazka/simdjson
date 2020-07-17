@@ -1,4 +1,4 @@
-namespace simdjson {
+namespace {
 namespace SIMDJSON_IMPLEMENTATION {
 //
 // Detect UTF-8 errors.

@@ -12,8 +12,6 @@ static constexpr const int LOG_DEPTH_LEN = 5;
 
 static int log_depth; // Not threadsafe. Log only.
 
-namespace {
-
 // Helper to turn unprintable or newline characters into spaces
 static really_inline char printable_char(char c) {
   if (c >= 0x20) {
@@ -22,8 +20,6 @@ static really_inline char printable_char(char c) {
     return ' ';
   }
 }
-
-} // namespace {}
 
 static really_inline void log_string(const char *message) {
   if (LOG_ENABLED) {

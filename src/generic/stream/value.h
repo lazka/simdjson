@@ -17,6 +17,7 @@ class raw_json_string;
 class value {
 public:
   really_inline value() noexcept;
+  really_inline value(const value &other) noexcept;
   really_inline simdjson_result<array> get_array() && noexcept;
   really_inline simdjson_result<object> get_object() && noexcept;
   really_inline simdjson_result<uint64_t> get_uint64() && noexcept;
@@ -39,7 +40,7 @@ public:
 
   really_inline array begin() noexcept;
   really_inline array end() noexcept;
-  really_inline simdjson_result<value&> operator[](std::string_view key) && noexcept;
+  really_inline simdjson_result<value> operator[](std::string_view key) && noexcept;
 
 protected:
   really_inline value(stream::json *json, uint32_t depth) noexcept;
@@ -50,8 +51,9 @@ protected:
   stream::json *json;
   uint32_t depth;
   bool consumed{false};
-  friend class simdjson_result<stream::value&>;
-  friend class simdjson_result<stream::object>;
+  friend struct simdjson_result<value>;
+  friend struct simdjson_result<object>;
+  friend struct simdjson_result<stream::json>;
   friend class stream::json;
   friend class field;
   friend class object;
@@ -65,10 +67,13 @@ protected:
 namespace simdjson {
 
 template<>
-struct simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&> : public internal::simdjson_result_base<SIMDJSON_IMPLEMENTATION::stream::value&> {
+struct simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> : public internal::simdjson_result_base<SIMDJSON_IMPLEMENTATION::stream::value> {
 public:
-  really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::value &value) noexcept; ///< @private
-  really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::value &value, error_code error) noexcept; ///< @private
+  really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::value &&value) noexcept; ///< @private
+  really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::value &&value, error_code error) noexcept; ///< @private
+  really_inline simdjson_result(const SIMDJSON_IMPLEMENTATION::stream::value &value, error_code error) noexcept; ///< @private
+  // TODO not sure why I had to make this.
+  really_inline simdjson_result(const simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> &other) noexcept;
 
   really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::array> get_array() && noexcept;
   really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object> get_object() && noexcept;
@@ -92,7 +97,7 @@ public:
 
   really_inline SIMDJSON_IMPLEMENTATION::stream::array begin() noexcept;
   really_inline SIMDJSON_IMPLEMENTATION::stream::array end() noexcept;
-  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&> operator[](std::string_view key) && noexcept;
+  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> operator[](std::string_view key) && noexcept;
 };
 
 } // namespace simdjson

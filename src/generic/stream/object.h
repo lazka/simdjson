@@ -11,7 +11,7 @@ class object {
 public:
   really_inline object() noexcept;
 
-  really_inline simdjson_result<value&> operator[](std::string_view key) noexcept;
+  really_inline simdjson_result<value> operator[](std::string_view key) noexcept;
 
   //
   // iterator interface
@@ -39,7 +39,7 @@ protected:
   error_code error;
 
   friend class value;
-  friend class simdjson_result<stream::object>;
+  friend struct simdjson_result<stream::object>;
 };
 
 } // namespace stream
@@ -56,7 +56,7 @@ public:
 
   really_inline SIMDJSON_IMPLEMENTATION::stream::object begin() noexcept;
   really_inline SIMDJSON_IMPLEMENTATION::stream::object end() noexcept;
-  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value&> operator[](std::string_view key) noexcept;
+  really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> operator[](std::string_view key) noexcept;
 };
 
 } // namespace simdjson
