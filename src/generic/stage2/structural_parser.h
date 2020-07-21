@@ -84,13 +84,6 @@ struct structural_parser : stream::json {
     return exceeded_max_depth();
   }
 
-  WARN_UNUSED really_inline bool start_array(ret_address_t continue_state) {
-    log_start_value("array");
-    start_scope(continue_state);
-    depth++;
-    return exceeded_max_depth();
-  }
-
   // this function is responsible for annotating the start of the scope
   really_inline void end_scope(internal::tape_type start, internal::tape_type end) noexcept {
     // write our doc->tape location to the header scope
@@ -109,11 +102,6 @@ struct structural_parser : stream::json {
     return uint32_t(tape.next_tape_loc - parser.doc->tape.get());
   }
 
-  really_inline void end_array() {
-    depth--;
-    log_end_value("array");
-    end_scope(internal::tape_type::START_ARRAY, internal::tape_type::END_ARRAY);
-  }
   really_inline void end_document() {
     depth--;
     log_end_value("document");
@@ -240,7 +228,7 @@ struct structural_parser : stream::json {
       start_scope(continue_state);
       return addresses.object_begin;
     case '[':
-      FAIL_IF( start_array(continue_state) );
+      start_scope(continue_state);
       return addresses.array_begin;
     default:
       log_error("Non-value found when value was expected!");
@@ -357,7 +345,7 @@ WARN_UNUSED static error_code parse_structurals(dom_parser_implementation &dom_p
       parser.start_scope(addresses.finish);
       goto object_begin;
     case '[':
-      FAIL_IF( parser.start_array(addresses.finish) );
+      parser.start_scope(addresses.finish);
       // Make sure the outer array is closed before continuing; otherwise, there are ways we could get
       // into memory corruption. See https://github.com/simdjson/simdjson/issues/906
       if (!STREAMING) {
@@ -411,57 +399,57 @@ object_begin: {
   goto object_value;
 }
 
+//
+// Object parser states
+//
 object_continue: {
   const uint8_t *key_string;
   if (auto error = parser.next_object_field().get(key_string)) { return error; }
   if (!key_string) { goto object_end; }
   if (parser.parse_string(key_string, true)) { goto error; }
-  goto object_value;
 }
 
 object_value: {
-  // Parse the value
   GOTO( parser.parse_value(addresses, addresses.object_continue) );
 }
 
 object_end: {
   parser.end_scope(internal::tape_type::START_OBJECT, internal::tape_type::END_OBJECT);
+  CONTINUE( parser.parser.ret_address[parser.depth] );
 }
 
-scope_end:
+array_end: {
+  parser.end_scope(internal::tape_type::START_ARRAY, internal::tape_type::END_ARRAY);
   CONTINUE( parser.parser.ret_address[parser.depth] );
+}
 
 //
 // Array parser states
 //
-array_begin:
-  if (parser.advance_if(']')) {
-    parser.end_array();
-    goto scope_end;
-  }
+array_begin: {
+  // Start the array
+  if (!parser.first_array_element()) { goto array_end; }
+  if (parser.exceeded_max_depth()) { return DEPTH_ERROR; }
+  goto array_value;
+}
 
-array_value:
-  /* we call update char on all paths in, so we can peek at parser.c on the
-   * on paths that can accept a close square brace (post-, and at start) */
+array_continue: {
+  bool has_element;
+  if (auto error = parser.next_array_element().get(has_element)) { return error; }
+  if (!has_element) { goto array_end; }
+}
+
+array_value: {
   GOTO( parser.parse_value(addresses, addresses.array_continue) );
+}
 
-array_continue:
-  switch (*parser.advance()) {
-  case ',':
-    goto array_value;
-  case ']':
-    parser.end_array();
-    goto scope_end;
-  default:
-    parser.log_error("Missing comma between array values");
-    goto error;
-  }
-
-finish:
+finish: {
   return parser.finish();
+}
 
-error:
+error: {
   return parser.error();
+}
 }
 
 } // namespace stage2

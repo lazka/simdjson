@@ -61,7 +61,7 @@ really_inline value::operator bool() && noexcept(false) { return std::forward<SI
 #endif
 
 really_inline const uint8_t *value::consume() noexcept { consumed = true; return json->advance(); }
-really_inline array value::begin() noexcept { consumed = true; return array::begin(*this, json->advance_if_start('[')); }
+really_inline array value::begin() noexcept { consumed = true; return array::begin(*this); }
 really_inline array value::end() noexcept { return {}; }
 // TODO this CANNOT be reused. Each time you try, it will get you a new object.
 really_inline simdjson_result<value> value::operator[](std::string_view key) && noexcept { return std::forward<value>(*this).get_object()[key]; }
@@ -99,7 +99,8 @@ really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value>::simdjson_
     : internal::simdjson_result_base<SIMDJSON_IMPLEMENTATION::stream::value>(SIMDJSON_IMPLEMENTATION::stream::value(other.first), other.second) {}
 
 really_inline SIMDJSON_IMPLEMENTATION::stream::array simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value>::begin() noexcept {
-  return SIMDJSON_IMPLEMENTATION::stream::array::begin(first, error());
+  if (error()) { return { first, error() }; }
+  return SIMDJSON_IMPLEMENTATION::stream::array::begin(first);
 }
 really_inline SIMDJSON_IMPLEMENTATION::stream::array simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value>::end() noexcept {
   return {};

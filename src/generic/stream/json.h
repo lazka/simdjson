@@ -78,6 +78,10 @@ protected:
   really_inline simdjson_result<const uint8_t *> first_object_field() noexcept;
   really_inline simdjson_result<const uint8_t *> next_object_field() noexcept;
 
+  really_inline simdjson_result<bool> begin_array() noexcept;
+  really_inline bool first_array_element() noexcept;
+  really_inline simdjson_result<bool> next_array_element() noexcept;
+
   template<bool DELTA=0>
   really_inline void log_value(const char *type) const noexcept;
   template<bool DELTA=0>

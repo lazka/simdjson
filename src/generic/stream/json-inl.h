@@ -37,37 +37,43 @@ really_inline json::json(const uint32_t *_index, const uint8_t *_buf, uint8_t *_
 really_inline const uint8_t *json::advance() noexcept { return &buf[*(index++)]; }
 really_inline const uint8_t *json::peek(int n) const noexcept { return &buf[*(index+n)]; }
 really_inline uint32_t json::peek_index(int n) const noexcept { return *(index+n); }
-
-really_inline bool json::advance_if_start(uint8_t structural) noexcept {
-  bool found = advance_if(structural);
-  depth += found;
-  return found;
-}
-really_inline bool json::advance_if_end(uint8_t structural) noexcept {
-  bool found = advance_if(structural);
-  depth -= found;
-  return found;
-}
 really_inline bool json::advance_if(uint8_t structural) noexcept {
   bool found = buf[*index] == structural;
   index += found;
   return found;
 }
-really_inline bool json::advance_if(uint8_t structural, uint8_t structural2) noexcept {
-  bool found = buf[*index] == structural && buf[*(index+1)] == structural2;
-  index += found*2;
-  return found;
+
+really_inline simdjson_result<bool> json::begin_array() noexcept {
+  if (*advance() != '[') { return INCORRECT_TYPE; }
+  return first_array_element();
 }
-really_inline bool json::advance_if(uint8_t structural, uint8_t structural2, uint8_t structural3) noexcept {
-  bool found = buf[*index] == structural && buf[*(index+1)] == structural2 && buf[*(index+2)] == structural3;
-  index += found*3;
-  return found;
+
+really_inline bool json::first_array_element() noexcept {
+  if (advance_if(']')) {
+    log_value("empty array");
+    return false;
+  }
+  depth++;
+  log_start_value("array");
+  return true;
+}
+
+really_inline simdjson_result<bool> json::next_array_element() noexcept {
+  uint8_t next = *advance();
+  if (next == ']') {
+    depth--;
+    log_end_value("array");
+    return false;
+  }
+  if (next != ',') {
+    log_error("missing ,");
+    return TAPE_ERROR;
+  }
+  return true;
 }
 
 really_inline simdjson_result<const uint8_t *> json::begin_object() noexcept {
-  if (*advance() != '{') {
-    return INCORRECT_TYPE;
-  }
+  if (*advance() != '{') { return INCORRECT_TYPE; }
   return first_object_field();
 }
 

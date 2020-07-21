@@ -21,16 +21,13 @@ public:
   really_inline array end() noexcept;
 
 protected:
-  really_inline array(stream::json *_json, uint32_t _depth, bool _finished, error_code _error=SUCCESS) noexcept;
-  really_inline array(stream::value &parent, error_code _error) noexcept;
+  really_inline array(stream::value &parent, error_code _error=SUCCESS) noexcept;
 
   really_inline void advance() noexcept;
   really_inline static simdjson_result<array> try_begin(stream::value &parent) noexcept;
-  really_inline static array begin(stream::value &parent, error_code error = SUCCESS) noexcept;
-  really_inline static array begin(stream::value &parent, bool is_array, error_code error = SUCCESS) noexcept;
+  really_inline static array begin(stream::value &parent) noexcept;
 
   stream::value value;
-  bool finished;
   error_code error;
 
   friend class stream::value;
