@@ -71,30 +71,24 @@ struct structural_parser : stream::json {
     parser.ret_address[depth] = continue_state;
   }
 
-  WARN_UNUSED really_inline bool check_max_depth() {
-    bool exceeded_max_depth = depth >= parser.max_depth();
-    if (exceeded_max_depth) { log_error("Exceeded max depth!"); }
-    return exceeded_max_depth;
+  WARN_UNUSED really_inline bool exceeded_max_depth() {
+    bool exceeded = depth >= parser.max_depth();
+    if (exceeded) { log_error("Exceeded max depth!"); }
+    return exceeded;
   }
 
   WARN_UNUSED really_inline bool start_document(ret_address_t continue_state) {
     log_start_value("document");
     start_scope(continue_state);
     depth++;
-    return check_max_depth();
-  }
-
-  WARN_UNUSED really_inline stream::object start_object(ret_address_t continue_state) {
-    log_start_value("object");
-    start_scope(continue_state);
-    return begin_object(true);
+    return exceeded_max_depth();
   }
 
   WARN_UNUSED really_inline bool start_array(ret_address_t continue_state) {
     log_start_value("array");
     start_scope(continue_state);
     depth++;
-    return check_max_depth();
+    return exceeded_max_depth();
   }
 
   // this function is responsible for annotating the start of the scope
@@ -115,18 +109,14 @@ struct structural_parser : stream::json {
     return uint32_t(tape.next_tape_loc - parser.doc->tape.get());
   }
 
-  really_inline void end_object() {
-    log_end_value("object");
-    end_scope(internal::tape_type::START_OBJECT, internal::tape_type::END_OBJECT);
-  }
   really_inline void end_array() {
-    log_end_value("array");
     depth--;
+    log_end_value("array");
     end_scope(internal::tape_type::START_ARRAY, internal::tape_type::END_ARRAY);
   }
   really_inline void end_document() {
-    log_end_value("document");
     depth--;
+    log_end_value("document");
     end_scope(internal::tape_type::ROOT, internal::tape_type::ROOT);
   }
 
@@ -187,16 +177,6 @@ struct structural_parser : stream::json {
     return false;
   }
 
-  WARN_UNUSED really_inline bool parse_key(stream::object &o) {
-    // Validate , "key" and :
-    auto field = *o;
-    bool error = field.error() || parse_string(field.first.key(), true);
-    if (error) {
-      log_error("Object field missing \" or : or has invalid string");
-    }
-    return error;
-  }
-
   WARN_UNUSED really_inline bool parse_number(const uint8_t *src) {
     log_value("number");
     bool succeeded = numberparsing::parse_number(src, tape);
@@ -234,7 +214,7 @@ struct structural_parser : stream::json {
     const uint8_t *src = advance();
     switch (*src) {
     case '"':
-      FAIL_IF( parse_string(src) );
+      FAIL_IF( parse_string(src+1) );
       return continue_state;
     case 't':
       log_value("true");
@@ -257,6 +237,7 @@ struct structural_parser : stream::json {
       FAIL_IF( parse_number(src) );
       return continue_state;
     case '{':
+      start_scope(continue_state);
       return addresses.object_begin;
     case '[':
       FAIL_IF( start_array(continue_state) );
@@ -320,7 +301,7 @@ struct structural_parser : stream::json {
   }
 
   really_inline void init() {
-    log_start();
+    logger::log_start();
     parser.error = UNINITIALIZED;
   }
 
@@ -341,9 +322,6 @@ struct structural_parser : stream::json {
   really_inline size_t remaining_len() {
     return parser.len - peek_index(-1);
   }
-  really_inline uint32_t peek_index(int n) {
-    return *(index+n);
-  }
 
   really_inline bool past_end() {
     return index >= &parser.structural_indexes[parser.n_structural_indexes];
@@ -353,28 +331,6 @@ struct structural_parser : stream::json {
   }
   really_inline bool at_beginning() {
     return index == parser.structural_indexes.get();
-  }
-
-  really_inline void log_value(const char *type) {
-    logger::log_line(*this, "", type, "");
-  }
-
-  static really_inline void log_start() {
-    logger::log_start();
-  }
-
-  really_inline void log_start_value(const char *type) {
-    logger::log_line(*this, "+", type, "");
-    if (logger::LOG_ENABLED) { logger::log_depth++; }
-  }
-
-  really_inline void log_end_value(const char *type) {
-    if (logger::LOG_ENABLED) { logger::log_depth--; }
-    logger::log_line(*this, "-", type, "");
-  }
-
-  really_inline void log_error(const char *error) {
-    logger::log_line(*this, "", "ERROR", error);
   }
 }; // struct structural_parser
 
@@ -398,6 +354,7 @@ WARN_UNUSED static error_code parse_structurals(dom_parser_implementation &dom_p
     const uint8_t *src = parser.advance();
     switch (*src) {
     case '{':
+      parser.start_scope(addresses.finish);
       goto object_begin;
     case '[':
       FAIL_IF( parser.start_array(addresses.finish) );
@@ -410,7 +367,7 @@ WARN_UNUSED static error_code parse_structurals(dom_parser_implementation &dom_p
       }
       goto array_begin;
     case '"':
-      FAIL_IF( parser.parse_string(src) );
+      FAIL_IF( parser.parse_string(src+1) );
       goto finish;
     case 't':
       parser.log_value("true");
@@ -445,26 +402,31 @@ WARN_UNUSED static error_code parse_structurals(dom_parser_implementation &dom_p
 // Object parser states
 //
 object_begin: {
-  stream::object o = parser.start_object(addresses.finish);
-
-  // Check for empty {}
-  if (o == o.end()) { goto object_end; }
-  if (parser.check_max_depth() || parser.parse_key(o)) { goto error; }
-  goto object_continue;
+  // Start the object
+  const uint8_t *key_string;
+  if (auto error = parser.first_object_field().get(key_string)) { return error; }
+  if (parser.exceeded_max_depth()) { return DEPTH_ERROR; }
+  if (!key_string) { goto object_end; }
+  if (parser.parse_string(key_string, true)) { goto error; }
+  goto object_value;
 }
 
 object_continue: {
-  // Parse the value
-  GOTO( parser.parse_value(addresses, addresses.object_continue) );
-  
-  stream::object o = parser.resume_object();
-  if (o == o.end()) { goto object_end; }
-  if (parser.parse_key(o)) { goto error; }
-  goto object_continue;
+  const uint8_t *key_string;
+  if (auto error = parser.next_object_field().get(key_string)) { return error; }
+  if (!key_string) { goto object_end; }
+  if (parser.parse_string(key_string, true)) { goto error; }
+  goto object_value;
 }
 
-object_end:
-  parser.end_object();
+object_value: {
+  // Parse the value
+  GOTO( parser.parse_value(addresses, addresses.object_continue) );
+}
+
+object_end: {
+  parser.end_scope(internal::tape_type::START_OBJECT, internal::tape_type::END_OBJECT);
+}
 
 scope_end:
   CONTINUE( parser.parser.ret_address[parser.depth] );
@@ -477,9 +439,8 @@ array_begin:
     parser.end_array();
     goto scope_end;
   }
-  parser.increment_count();
 
-main_array_switch:
+array_value:
   /* we call update char on all paths in, so we can peek at parser.c on the
    * on paths that can accept a close square brace (post-, and at start) */
   GOTO( parser.parse_value(addresses, addresses.array_continue) );
@@ -487,8 +448,7 @@ main_array_switch:
 array_continue:
   switch (*parser.advance()) {
   case ',':
-    parser.increment_count();
-    goto main_array_switch;
+    goto array_value;
   case ']':
     parser.end_array();
     goto scope_end;

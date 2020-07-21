@@ -28,10 +28,11 @@ namespace logger {
     if (LOG_ENABLED) {
       log_depth = 0;
       printf("\n");
-      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Tape#", LOG_DETAIL_LEN, "Detail", LOG_INDEX_LEN, "index");
-      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES, LOG_INDEX_LEN+2, DASHES);
+      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Depth", LOG_DETAIL_LEN, "Detail");
+      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES);
     }
   }
+
 
   static really_inline void log_string(const char *message) {
     if (LOG_ENABLED) {
@@ -39,27 +40,24 @@ namespace logger {
     }
   }
 
-  // Logs a single line of 
-  template<bool PREV=true, typename S>
-  static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
+  // Logs a single value line
+  template<int DELTA=-1, typename T>
+  static really_inline void log_line(T &json, const char *title_prefix, const char *title, const char *detail) {
     if (LOG_ENABLED) {
       printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
       {
         // Print the next N characters in the buffer.
         printf("| ");
-        // Otherwise, print the characters starting from the buffer position.
-        // Print spaces for unprintable or newline characters.
         for (int i=0;i<LOG_BUFFER_LEN;i++) {
-          printf("%c", printable_char(structurals.peek(0-PREV)[i]));
+          printf("%c", printable_char(json.peek(DELTA)[i]));
         }
         printf(" ");
       }
-      printf("|    %c ", printable_char(*structurals.peek(0-PREV)));
-      printf("|    %c ", printable_char(*structurals.peek(0-PREV)));
-      printf("| %5u ", structurals.parser.structural_indexes[structurals.peek_index(1-PREV)]);
-      printf("| %5u ", structurals.next_tape_index());
+      printf("|    %c ", printable_char(*json.peek(DELTA)));
+      printf("|    %c ", printable_char(*json.peek(DELTA+1)));
+      printf("| %5u ", json.peek_index(DELTA+1));
+      printf("| %5d ", json.depth);
       printf("| %-*s ", LOG_DETAIL_LEN, detail);
-      printf("| %*u ", LOG_INDEX_LEN, structurals.peek_index(0-PREV));
       printf("|\n");
     }
   }

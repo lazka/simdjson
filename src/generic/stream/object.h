@@ -25,18 +25,16 @@ public:
   really_inline object end() noexcept;
 
 protected:
-  really_inline object(const uint8_t *key_string, stream::json *_json, uint32_t _depth, bool _finished, error_code _error=SUCCESS) noexcept;
+  /** Create a valid object */
+  really_inline object(stream::value &parent, const uint8_t *key_string) noexcept;
+  /** Create an error object */
   really_inline object(stream::value &parent, error_code _error) noexcept;
 
-  really_inline void resume() noexcept;
   really_inline void advance() noexcept;
-  really_inline static simdjson_result<object> try_begin(stream::value &parent) noexcept;
-  really_inline static object begin(stream::value &parent, error_code error=SUCCESS) noexcept;
-  really_inline static object begin(stream::value &parent, bool is_object, error_code error=SUCCESS) noexcept;
-  really_inline static object resume(stream::json *json) noexcept;
+  static really_inline simdjson_result<stream::object> try_begin(stream::value &parent) noexcept;
+  static really_inline object begin(stream::value &parent) noexcept;
 
   stream::field field;
-  bool finished;
   // TODO check whether this gets cleverly elided by the compiler or not. If not, store it in the json
   // so we don't keep multiple of them
   error_code error;

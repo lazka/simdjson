@@ -22,17 +22,17 @@ really_inline void array::advance() noexcept {
   // on error) here using !has_next, but that might confuse the optimizer, so check performance
   // without it (and maybe wrap in if debug?).
   finished = value.json->advance_if_end(']');
-  if (finished) { logger::log_end_event("array", value.json); }
+  if (finished) { value.json->log_end_value("array"); }
 
   // Jump past the comma
   bool has_next = value.json->advance_if(',');
-  if (!finished && !has_next) { logger::log_error("missing comma", value.json); }
+  if (!finished && !has_next) { value.json->log_error("missing comma"); }
   error = (!finished && !has_next) ? TAPE_ERROR : SUCCESS;
 }
 
 really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::array> array::try_begin(stream::value &parent) noexcept {
   if (!parent.json->advance_if_start('[')) {
-    logger::log_error("not an array", parent.json);
+    parent.json->log_error("not an array");
     return simdjson_result<SIMDJSON_IMPLEMENTATION::stream::array>(parent, INCORRECT_TYPE);
   }
   return begin(parent, true);
@@ -44,14 +44,14 @@ really_inline array array::begin(stream::value &parent, error_code error) noexce
 
 really_inline array array::begin(stream::value &parent, bool is_array, error_code error) noexcept {
   SIMDJSON_ASSUME(!is_array || parent.json->depth == parent.depth+1);
-  logger::log_start_event("array", parent.json);
-  if (!is_array) { logger::log_error("not an array", parent.json); }
+  parent.json->log_start_value("array");
+  if (!is_array) { parent.json->log_error("not an array"); }
   error = error ? error : (is_array ? SUCCESS : INCORRECT_TYPE);
 
   // Check for []
   bool finished = !error && parent.json->advance_if(']');
-  if (finished) { logger::log_end_event("empty array", parent.json); }
-  else { logger::log_event("first element", parent.json); }
+  if (finished) { parent.json->log_end_value("empty array"); }
+  else { parent.json->log_event("first element"); }
 
   return { parent.json, parent.depth+1, finished, error };
 }

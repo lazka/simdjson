@@ -34,8 +34,10 @@ really_inline json::json(json &&other) noexcept
 really_inline json::json(const uint32_t *_index, const uint8_t *_buf, uint8_t *_string_buf, uint32_t _depth) noexcept
   : index{_index}, buf{_buf}, string_buf{_string_buf}, depth{_depth} {}
 
-really_inline const uint8_t *json::advance() noexcept { auto result = &buf[*index]; index++; return result; }
+really_inline const uint8_t *json::advance() noexcept { return &buf[*(index++)]; }
 really_inline const uint8_t *json::peek(int n) const noexcept { return &buf[*(index+n)]; }
+really_inline uint32_t json::peek_index(int n) const noexcept { return *(index+n); }
+
 really_inline bool json::advance_if_start(uint8_t structural) noexcept {
   bool found = advance_if(structural);
   depth += found;
@@ -62,12 +64,87 @@ really_inline bool json::advance_if(uint8_t structural, uint8_t structural2, uin
   return found;
 }
 
-really_inline stream::object json::resume_object() noexcept {
-  return stream::object::resume(this);
+really_inline simdjson_result<const uint8_t *> json::begin_object() noexcept {
+  if (*advance() != '{') {
+    return INCORRECT_TYPE;
+  }
+  return first_object_field();
 }
 
-really_inline stream::object json::begin_object(bool is_object) noexcept {
-  return stream::object::begin(value, is_object);
+really_inline simdjson_result<const uint8_t *> json::first_object_field() noexcept {
+  // Check for {}
+  const uint8_t *key_string = advance();
+  if (*key_string == '}') {
+    log_value("empty object");
+    return nullptr;
+  }
+
+  depth++;
+  log_start_value("object");
+
+  // Check for " :
+  if (*(key_string++) != '"') {
+    log_error("missing key");
+    return TAPE_ERROR;
+  }
+  if (*advance() != ':') {
+    log_error("missing :");
+    return TAPE_ERROR;
+  }
+  return key_string;
+}
+
+really_inline simdjson_result<const uint8_t *> json::next_object_field() noexcept {
+  // Check whether we are finished
+  uint8_t next = *advance();
+  if (next == '}') {
+    depth--;
+    log_end_value("object");
+    return nullptr;
+  }
+  if (next != ',') {
+    log_error("missing comma");
+  }
+
+  // Read "key" :
+  const uint8_t *key_string = advance();
+  if (*(key_string++) != '"') {
+    log_error("missing key");
+    return TAPE_ERROR;
+  }
+  if (*advance() != ':') {
+    log_error("missing :");
+    return TAPE_ERROR;
+  }
+
+  return key_string;
+}
+
+template<bool DELTA=0>
+really_inline void json::log_event(const char *type) const noexcept {
+  logger::log_line<DELTA>(*this, "", type, "");
+}
+
+template<bool DELTA=0>
+really_inline void json::log_value(const char *type) const noexcept {
+  logger::log_line<DELTA>(*this, "", type, "");
+}
+
+template<bool DELTA=0>
+really_inline void json::log_start_value(const char *type) const noexcept {
+  logger::log_line<DELTA>(*this, "+", type, "");
+  if (logger::LOG_ENABLED) { logger::log_depth++; }
+}
+
+template<bool DELTA=0>
+really_inline void json::log_end_value(const char *type) const noexcept {
+  if (logger::LOG_ENABLED) { logger::log_depth--; }
+  logger::log_line<DELTA>(*this, "-", type, "");
+}
+
+template<bool DELTA=0>
+really_inline void json::log_error(const char *error) const noexcept {
+  logger::log_line<DELTA>(*this, "", "ERROR", error);
 }
 
 } // namespace stream

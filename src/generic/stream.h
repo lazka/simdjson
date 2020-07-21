@@ -1,4 +1,3 @@
-#include "generic/stream/logger.h"
 #include "generic/stream/raw_json_string.h"
 #include "generic/stream/value.h"
 #include "generic/stream/json.h"

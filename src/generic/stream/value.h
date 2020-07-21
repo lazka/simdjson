@@ -71,7 +71,7 @@ struct simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> : public internal
 public:
   really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::value &&value) noexcept; ///< @private
   really_inline simdjson_result(SIMDJSON_IMPLEMENTATION::stream::value &&value, error_code error) noexcept; ///< @private
-  really_inline simdjson_result(const SIMDJSON_IMPLEMENTATION::stream::value &value, error_code error) noexcept; ///< @private
+  really_inline simdjson_result(const SIMDJSON_IMPLEMENTATION::stream::value &value, error_code error=SUCCESS) noexcept; ///< @private
   // TODO not sure why I had to make this.
   really_inline simdjson_result(const simdjson_result<SIMDJSON_IMPLEMENTATION::stream::value> &other) noexcept;
 

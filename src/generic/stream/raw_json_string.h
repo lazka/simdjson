@@ -20,6 +20,7 @@ public:
   really_inline WARN_UNUSED simdjson_result<std::string_view> unescape(uint8_t *&dst) const noexcept;
 private:
   const uint8_t * buf;
+  friend class object;
 };
 
 really_inline bool operator==(const raw_json_string &a, std::string_view b) noexcept;

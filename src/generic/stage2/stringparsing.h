@@ -73,7 +73,6 @@ really_inline bool handle_unicode_codepoint(const uint8_t **src_ptr,
 }
 
 WARN_UNUSED really_inline uint8_t *parse_string(const uint8_t *src, uint8_t *dst) {
-  src++;
   while (1) {
     // Copy the next n bytes, and find the backslash and quote in them.
     auto bs_quote = backslash_and_quote::copy_and_find(src, dst);

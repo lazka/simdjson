@@ -15,33 +15,33 @@ really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::object> value::ge
   return object::try_begin(*this);
 }
 really_inline simdjson_result<SIMDJSON_IMPLEMENTATION::stream::raw_json_string> value::get_raw_json_string() && noexcept {
-  logger::log_event("raw_json_string", json);
+  json->log_value("raw_json_string");
   const uint8_t *str = consume();
   bool error = str[0] != '"';
-  if (error) { logger::log_error("not a string", json); }
+  if (error) { json->log_error("not a string"); }
   ++json;
   return { raw_json_string{&str[1]}, error ? INCORRECT_TYPE : SUCCESS };
 }
 really_inline simdjson_result<std::string_view> value::get_string() && noexcept {
-  logger::log_event("string", json);
+  json->log_value("string");
   auto [str, error] = std::forward<SIMDJSON_IMPLEMENTATION::stream::value>(*this).get_raw_json_string();
   if (error) { return error; }
   return str.unescape(json->string_buf);
 }
 really_inline simdjson_result<double> value::get_double() && noexcept {
-  logger::log_event("double", json);
+  json->log_value("double");
   return stage2::numberparsing::parse_double(consume());
 }
 really_inline simdjson_result<uint64_t> value::get_uint64() && noexcept {
-  logger::log_event("unsigned", json);
+  json->log_value("unsigned");
   return stage2::numberparsing::parse_unsigned(consume());
 }
 really_inline simdjson_result<int64_t> value::get_int64() && noexcept {
-  logger::log_event("integer", json);
+  json->log_value("integer");
   return stage2::numberparsing::parse_integer(consume());
 }
 really_inline simdjson_result<bool> value::get_bool() && noexcept {
-  logger::log_event("bool", json);
+  json->log_value("bool");
   const uint8_t *src = consume();
   auto not_true = stage2::atomparsing::str4ncmp(src, "true");
   auto not_false = stage2::atomparsing::str4ncmp(src, "fals") | (src[4] ^ 'e');
@@ -70,16 +70,16 @@ really_inline void value::finish() noexcept {
   if (!consumed) {
     auto ch = *json->advance() & ~(1<<5); // Masking out the 6th bit turns { into [ and } into ]
     json->depth += (ch == '[') - (ch == ']'); // depth-- for [ or {, depth++ for ] or }
-    if (ch == '[') { logger::log_start_event("skip unconsumed start", json, true); }
-    else if (ch == ']') { logger::log_end_event("skip unconsumed end", json, true); }
-    else { logger::log_event("skip unconsumed", json, true); }
+    if (ch == '[') { json->log_start_value("skip unconsumed start"); }
+    else if (ch == ']') { json->log_end_value("skip unconsumed end"); }
+    else { json->log_event("skip unconsumed"); }
   }
   while (json->depth != depth) {
     auto ch = *json->advance() & ~(1<<5); // Masking out the 6th bit turns { into [ and } into ]
     json->depth += (ch == '[') - (ch == ']'); // depth-- for [ or {, depth++ for ] or }
-    if (ch == '[') { logger::log_start_event("skip", json, true); }
-    else if (ch == ']') { logger::log_end_event("skip", json, true); }
-    else { logger::log_event("skip", json, true); }
+    if (ch == '[') { json->log_start_value("skip"); }
+    else if (ch == ']') { json->log_end_value("skip"); }
+    else { json->log_event("skip"); }
   }
 }
 
