@@ -197,6 +197,39 @@ struct structural_parser : stream::json {
     free(copy);
     return result;
   }
+
+  WARN_UNUSED really_inline bool parse_primitive_value_at_end(const uint8_t *src) {
+    switch (*src) {
+    case '"':
+      return parse_string(src+1);
+    case 't':
+      log_value("true");
+      if (!atomparsing::is_valid_true_atom(src, remaining_len())) { return true; }
+      tape.append(0, internal::tape_type::TRUE_VALUE);
+      return false;
+    case 'f':
+      log_value("false");
+      if (!atomparsing::is_valid_false_atom(src, remaining_len())) { return true; }
+      tape.append(0, internal::tape_type::FALSE_VALUE);
+      return false;
+    case 'n':
+      log_value("null");
+      if (!atomparsing::is_valid_null_atom(src, remaining_len())) { return true; }
+      tape.append(0, internal::tape_type::NULL_VALUE);
+      return false;
+    case '-':
+    case '0': case '1': case '2': case '3': case '4':
+    case '5': case '6': case '7': case '8': case '9':
+      // Next line used to be an interesting functional programming exercise with
+      // a lambda that gets passed to another function via a closure. This would confuse the
+      // clangcl compiler under Visual Studio 2019 (recent release).
+      return parse_number_with_space_terminated_copy();
+    default:
+      log_error("Document starts with a non-value character");
+      return true;
+    }
+  }
+
   WARN_UNUSED really_inline bool parse_primitive_value(const uint8_t *src) {
     switch (*src) {
     case '"':
@@ -344,35 +377,9 @@ WARN_UNUSED static error_code parse_structurals(dom_parser_implementation &dom_p
         }
       }
       goto array_begin;
-    case '"':
-      FAIL_IF( parser.parse_string(src+1) );
-      goto finish;
-    case 't':
-      parser.log_value("true");
-      FAIL_IF( !atomparsing::is_valid_true_atom(src, parser.remaining_len()) );
-      parser.tape.append(0, internal::tape_type::TRUE_VALUE);
-      goto finish;
-    case 'f':
-      parser.log_value("false");
-      FAIL_IF( !atomparsing::is_valid_false_atom(src, parser.remaining_len()) );
-      parser.tape.append(0, internal::tape_type::FALSE_VALUE);
-      goto finish;
-    case 'n':
-      parser.log_value("null");
-      FAIL_IF( !atomparsing::is_valid_null_atom(src, parser.remaining_len()) );
-      parser.tape.append(0, internal::tape_type::NULL_VALUE);
-      goto finish;
-    case '-':
-    case '0': case '1': case '2': case '3': case '4':
-    case '5': case '6': case '7': case '8': case '9':
-      // Next line used to be an interesting functional programming exercise with
-      // a lambda that gets passed to another function via a closure. This would confuse the
-      // clangcl compiler under Visual Studio 2019 (recent release).
-      FAIL_IF(parser.parse_number_with_space_terminated_copy());
-      goto finish;
     default:
-      parser.log_error("Document starts with a non-value character");
-      goto error;
+      if (parser.parse_primitive_value_at_end(src)) { goto error; }
+      goto finish;
     }
   }
 
