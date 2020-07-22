@@ -197,42 +197,32 @@ struct structural_parser : stream::json {
     free(copy);
     return result;
   }
-  WARN_UNUSED really_inline ret_address_t parse_value(const unified_machine_addresses &addresses, ret_address_t continue_state) {
-    increment_count();
-    const uint8_t *src = advance();
+  WARN_UNUSED really_inline bool parse_primitive_value(const uint8_t *src) {
     switch (*src) {
     case '"':
-      FAIL_IF( parse_string(src+1) );
-      return continue_state;
+      return parse_string(src+1);
     case 't':
       log_value("true");
-      FAIL_IF( !atomparsing::is_valid_true_atom(src) );
+      if (!atomparsing::is_valid_true_atom(src)) { return true; }
       tape.append(0, internal::tape_type::TRUE_VALUE);
-      return continue_state;
+      return false;
     case 'f':
       log_value("false");
-      FAIL_IF( !atomparsing::is_valid_false_atom(src) );
+      if (!atomparsing::is_valid_false_atom(src)) { return true; }
       tape.append(0, internal::tape_type::FALSE_VALUE);
-      return continue_state;
+      return false;
     case 'n':
       log_value("null");
-      FAIL_IF( !atomparsing::is_valid_null_atom(src) );
+      if (!atomparsing::is_valid_null_atom(src)) { return true; }
       tape.append(0, internal::tape_type::NULL_VALUE);
-      return continue_state;
+      return false;
     case '-':
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
-      FAIL_IF( parse_number(src) );
-      return continue_state;
-    case '{':
-      start_scope(continue_state);
-      return addresses.object_begin;
-    case '[':
-      start_scope(continue_state);
-      return addresses.array_begin;
+      return parse_number(src);
     default:
       log_error("Non-value found when value was expected!");
-      return addresses.error;
+      return true;
     }
   }
 
@@ -387,44 +377,74 @@ WARN_UNUSED static error_code parse_structurals(dom_parser_implementation &dom_p
   }
 
 //
-// Object parser states
+// { }
+// { "key" :
+//   ^^^^^^^
 //
 object_begin: {
   // Start the object
   const uint8_t *key_string;
-  if (auto error = parser.first_object_field().get(key_string)) { return error; }
+  if (auto error = parser.first_object_field().get(key_string)) { return error; } // Read "key" : 
   if (parser.exceeded_max_depth()) { return DEPTH_ERROR; }
   if (!key_string) { goto object_end; }
-  if (parser.parse_string(key_string, true)) { goto error; }
+  if (parser.parse_string(key_string, true)) { return STRING_ERROR; }
   goto object_value;
 }
 
 //
-// Object parser states
+// "key" : <value> }
+// "key" : <value> , "key" : <value>
+//                 ^^^^^^^^^
 //
 object_continue: {
   const uint8_t *key_string;
   if (auto error = parser.next_object_field().get(key_string)) { return error; }
   if (!key_string) { goto object_end; }
-  if (parser.parse_string(key_string, true)) { goto error; }
+  if (parser.parse_string(key_string, true)) { return STRING_ERROR; }
 }
 
+//
+// "key" : <value>
+//         ^^^^^^^
+//
 object_value: {
-  GOTO( parser.parse_value(addresses, addresses.object_continue) );
+  parser.increment_count();
+  const uint8_t *src = parser.advance();
+  switch (*src) {
+  case '{':
+    parser.start_scope(addresses.object_continue);
+    goto object_begin;
+  case '[':
+    parser.start_scope(addresses.object_continue);
+    goto array_begin;
+  default:
+    if (parser.parse_primitive_value(src)) { goto error; }
+    goto object_continue;
+  }
 }
 
+//
+// }
+//  ^
+//
 object_end: {
   parser.end_scope(internal::tape_type::START_OBJECT, internal::tape_type::END_OBJECT);
   CONTINUE( parser.parser.ret_address[parser.depth] );
 }
 
+//
+// ]
+//  ^
+//
 array_end: {
   parser.end_scope(internal::tape_type::START_ARRAY, internal::tape_type::END_ARRAY);
   CONTINUE( parser.parser.ret_address[parser.depth] );
 }
 
 //
-// Array parser states
+// [ ]
+// [   <value>
+//   ^
 //
 array_begin: {
   // Start the array
@@ -433,14 +453,35 @@ array_begin: {
   goto array_value;
 }
 
+//
+// <value> , <value>
+//         ^
+//
 array_continue: {
   bool has_element;
   if (auto error = parser.next_array_element().get(has_element)) { return error; }
   if (!has_element) { goto array_end; }
 }
 
+//
+// [ <value>
+// , <value>
+//   ^^^^^^^
+//
 array_value: {
-  GOTO( parser.parse_value(addresses, addresses.array_continue) );
+  parser.increment_count();
+  const uint8_t *src = parser.advance();
+  switch (*src) {
+  case '{':
+    parser.start_scope(addresses.array_continue);
+    goto object_begin;
+  case '[':
+    parser.start_scope(addresses.array_continue);
+    goto array_begin;
+  default:
+    if (parser.parse_primitive_value(src)) { goto error; }
+    goto array_continue;
+  }
 }
 
 finish: {
