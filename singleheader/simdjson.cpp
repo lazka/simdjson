@@ -1,4 +1,4 @@
-/* auto-generated on Tue 21 Jul 2020 17:54:23 EDT. Do not edit! */
+/* auto-generated on Fri Jul 24 02:57:35 PDT 2020. Do not edit! */
 /* begin file src/simdjson.cpp */
 #include "simdjson.h"
 
@@ -361,6 +361,7 @@ static const uint64_t thintable_epi8[256] = {
 
 /* isadetection.h already included: #include "isadetection.h" */
 
+// The constructor may be executed on any host, so we take care not to use SIMDJSON_TARGET_REGION
 namespace simdjson {
 namespace haswell {
 
@@ -395,6 +396,7 @@ namespace simdjson { namespace internal { const haswell::implementation haswell_
 
 /* isadetection.h already included: #include "isadetection.h" */
 
+// The constructor may be executed on any host, so we take care not to use SIMDJSON_TARGET_REGION
 namespace simdjson {
 namespace westmere {
 
@@ -481,7 +483,6 @@ public:
 };
 
 } // namespace fallback
-
 } // namespace simdjson
 
 #endif // SIMDJSON_FALLBACK_IMPLEMENTATION_H
@@ -619,9 +620,9 @@ WARN_UNUSED bool validate_utf8(const char *buf, size_t len) noexcept {
 // Anything in the top level directory MUST be included outside of the #if statements
 // below, or amalgamation will screw them up!
 /* isadetection.h already included: #include "isadetection.h" */
-/* begin file src/jsoncharutils.h */
-#ifndef SIMDJSON_JSONCHARUTILS_H
-#define SIMDJSON_JSONCHARUTILS_H
+/* begin file src/jsoncharutils_tables.h */
+#ifndef SIMDJSON_JSONCHARUTILS_TABLES_H
+#define SIMDJSON_JSONCHARUTILS_TABLES_H
 
 
 #ifdef JSON_TEST_STRINGS
@@ -655,12 +656,6 @@ const uint32_t structural_or_whitespace_or_null_negated[256] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-// return non-zero if not a structural or whitespace char
-// zero otherwise
-really_inline uint32_t is_not_structural_or_whitespace_or_null(uint8_t c) {
-  return structural_or_whitespace_or_null_negated[c];
-}
-
 const uint32_t structural_or_whitespace_negated[256] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -678,12 +673,6 @@ const uint32_t structural_or_whitespace_negated[256] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-// return non-zero if not a structural or whitespace char
-// zero otherwise
-really_inline uint32_t is_not_structural_or_whitespace(uint8_t c) {
-  return structural_or_whitespace_negated[c];
-}
-
 const uint32_t structural_or_whitespace_or_null[256] = {
     1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
@@ -697,10 +686,6 @@ const uint32_t structural_or_whitespace_or_null[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-really_inline uint32_t is_structural_or_whitespace_or_null(uint8_t c) {
-  return structural_or_whitespace_or_null[c];
-}
-
 const uint32_t structural_or_whitespace[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
@@ -713,10 +698,6 @@ const uint32_t structural_or_whitespace[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-really_inline uint32_t is_structural_or_whitespace(uint8_t c) {
-  return structural_or_whitespace[c];
-}
 
 const uint32_t digit_to_val32[886] = {
     0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -867,62 +848,6 @@ const uint32_t digit_to_val32[886] = {
     0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
     0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
     0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
-// returns a value with the high 16 bits set if not valid
-// otherwise returns the conversion of the 4 hex digits at src into the bottom
-// 16 bits of the 32-bit return register
-//
-// see
-// https://lemire.me/blog/2019/04/17/parsing-short-hexadecimal-strings-efficiently/
-static inline uint32_t hex_to_u32_nocheck(
-    const uint8_t *src) { // strictly speaking, static inline is a C-ism
-  uint32_t v1 = digit_to_val32[630 + src[0]];
-  uint32_t v2 = digit_to_val32[420 + src[1]];
-  uint32_t v3 = digit_to_val32[210 + src[2]];
-  uint32_t v4 = digit_to_val32[0 + src[3]];
-  return v1 | v2 | v3 | v4;
-}
-
-// given a code point cp, writes to c
-// the utf-8 code, outputting the length in
-// bytes, if the length is zero, the code point
-// is invalid
-//
-// This can possibly be made faster using pdep
-// and clz and table lookups, but JSON documents
-// have few escaped code points, and the following
-// function looks cheap.
-//
-// Note: we assume that surrogates are treated separately
-//
-inline size_t codepoint_to_utf8(uint32_t cp, uint8_t *c) {
-  if (cp <= 0x7F) {
-    c[0] = uint8_t(cp);
-    return 1; // ascii
-  }
-  if (cp <= 0x7FF) {
-    c[0] = uint8_t((cp >> 6) + 192);
-    c[1] = uint8_t((cp & 63) + 128);
-    return 2; // universal plane
-    //  Surrogates are treated elsewhere...
-    //} //else if (0xd800 <= cp && cp <= 0xdfff) {
-    //  return 0; // surrogates // could put assert here
-  } else if (cp <= 0xFFFF) {
-    c[0] = uint8_t((cp >> 12) + 224);
-    c[1] = uint8_t(((cp >> 6) & 63) + 128);
-    c[2] = uint8_t((cp & 63) + 128);
-    return 3;
-  } else if (cp <= 0x10FFFF) { // if you know you have a valid code point, this
-                               // is not needed
-    c[0] = uint8_t((cp >> 18) + 240);
-    c[1] = uint8_t(((cp >> 12) & 63) + 128);
-    c[2] = uint8_t(((cp >> 6) & 63) + 128);
-    c[3] = uint8_t((cp & 63) + 128);
-    return 4;
-  }
-  // will return 0 when the code point was too large.
-  return 0; // bad r
-}
-
 ////
 // The following code is used in number parsing. It is not
 // properly "char utils" stuff, but we move it here so that
@@ -937,42 +862,6 @@ struct value128 {
   uint64_t low;
   uint64_t high;
 };
-
-#ifdef SIMDJSON_IS_32BITS // _umul128 for x86, arm
-// this is a slow emulation routine for 32-bit
-//
-static inline uint64_t __emulu(uint32_t x, uint32_t y) {
-  return x * (uint64_t)y;
-}
-static inline uint64_t _umul128(uint64_t ab, uint64_t cd, uint64_t *hi) {
-  uint64_t ad = __emulu((uint32_t)(ab >> 32), (uint32_t)cd);
-  uint64_t bd = __emulu((uint32_t)ab, (uint32_t)cd);
-  uint64_t adbc = ad + __emulu((uint32_t)ab, (uint32_t)(cd >> 32));
-  uint64_t adbc_carry = !!(adbc < ad);
-  uint64_t lo = bd + (adbc << 32);
-  *hi = __emulu((uint32_t)(ab >> 32), (uint32_t)(cd >> 32)) + (adbc >> 32) +
-        (adbc_carry << 32) + !!(lo < bd);
-  return lo;
-}
-#endif
-
-really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
-  value128 answer;
-#if defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
-#ifdef _M_ARM64
-  // ARM64 has native support for 64-bit multiplications, no need to emultate
-  answer.high = __umulh(value1, value2);
-  answer.low = value1 * value2;
-#else
-  answer.low = _umul128(value1, value2, &answer.high); // _umul128 not available on ARM64
-#endif // _M_ARM64
-#else // defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
-  __uint128_t r = ((__uint128_t)value1) * value2;
-  answer.low = uint64_t(r);
-  answer.high = uint64_t(r >> 64);
-#endif
-  return answer;
-}
 
 // Precomputed powers of ten from 10^0 to 10^22. These
 // can be represented exactly using the double type.
@@ -1954,161 +1843,15 @@ const uint64_t mantissa_128[] = {
 
 } // namespace simdjson
 
-#endif // SIMDJSON_JSONCHARUTILS_H
-/* end file src/jsoncharutils.h */
+#endif // SIMDJSON_JSONCHARUTILS_TABLES_H
+/* end file src/jsoncharutils_tables.h */
 /* simdprune_tables.h already included: #include "simdprune_tables.h" */
 
 #if SIMDJSON_IMPLEMENTATION_ARM64
 /* begin file src/arm64/implementation.cpp */
+/* begin file src/arm64/begin_implementation.h */
+#define SIMDJSON_IMPLEMENTATION arm64
 /* arm64/implementation.h already included: #include "arm64/implementation.h" */
-/* begin file src/arm64/dom_parser_implementation.h */
-#ifndef SIMDJSON_ARM64_DOM_PARSER_IMPLEMENTATION_H
-#define SIMDJSON_ARM64_DOM_PARSER_IMPLEMENTATION_H
-
-/* isadetection.h already included: #include "isadetection.h" */
-
-namespace simdjson {
-namespace arm64 {
-
-/* begin file src/generic/dom_parser_implementation.h */
-// expectation: sizeof(scope_descriptor) = 64/8.
-struct scope_descriptor {
-  uint32_t tape_index; // where, on the tape, does the scope ([,{) begins
-  uint32_t count; // how many elements in the scope
-}; // struct scope_descriptor
-
-#ifdef SIMDJSON_USE_COMPUTED_GOTO
-typedef void* ret_address_t;
-#else
-typedef char ret_address_t;
-#endif
-
-class dom_parser_implementation final : public internal::dom_parser_implementation {
-public:
-  /** Tape location of each open { or [ */
-  std::unique_ptr<scope_descriptor[]> containing_scope{};
-  /** Return address of each open { or [ */
-  std::unique_ptr<ret_address_t[]> ret_address{};
-  /** Buffer passed to stage 1 */
-  const uint8_t *buf{};
-  /** Length passed to stage 1 */
-  size_t len{0};
-  /** Document passed to stage 2 */
-  dom::document *doc{};
-  /** Error code (TODO remove, this is not even used, we just set it so the g++ optimizer doesn't get confused) */
-  error_code error{UNINITIALIZED};
-
-  really_inline dom_parser_implementation();
-  dom_parser_implementation(const dom_parser_implementation &) = delete;
-  dom_parser_implementation & operator=(const dom_parser_implementation &) = delete;
-
-  WARN_UNUSED error_code parse(const uint8_t *buf, size_t len, dom::document &doc) noexcept final;
-  WARN_UNUSED error_code stage1(const uint8_t *buf, size_t len, bool partial) noexcept final;
-  WARN_UNUSED error_code check_for_unclosed_array() noexcept;
-  WARN_UNUSED error_code stage2(dom::document &doc) noexcept final;
-  WARN_UNUSED error_code stage2_next(dom::document &doc) noexcept final;
-  WARN_UNUSED error_code set_capacity(size_t capacity) noexcept final;
-  WARN_UNUSED error_code set_max_depth(size_t max_depth) noexcept final;
-};
-
-/* begin file src/generic/stage1/allocate.h */
-namespace stage1 {
-namespace allocate {
-
-//
-// Allocates stage 1 internal state and outputs in the parser
-//
-really_inline error_code set_capacity(internal::dom_parser_implementation &parser, size_t capacity) {
-  size_t max_structures = ROUNDUP_N(capacity, 64) + 2 + 7;
-  parser.structural_indexes.reset( new (std::nothrow) uint32_t[max_structures] );
-  if (!parser.structural_indexes) { return MEMALLOC; }
-  parser.structural_indexes[0] = 0;
-  parser.n_structural_indexes = 0;
-  return SUCCESS;
-}
-
-} // namespace allocate
-} // namespace stage1
-/* end file src/generic/stage1/allocate.h */
-/* begin file src/generic/stage2/allocate.h */
-namespace stage2 {
-namespace allocate {
-
-//
-// Allocates stage 2 internal state and outputs in the parser
-//
-really_inline error_code set_max_depth(dom_parser_implementation &parser, size_t max_depth) {
-  parser.containing_scope.reset(new (std::nothrow) scope_descriptor[max_depth]);
-  parser.ret_address.reset(new (std::nothrow) ret_address_t[max_depth]);
-
-  if (!parser.ret_address || !parser.containing_scope) {
-    return MEMALLOC;
-  }
-  return SUCCESS;
-}
-
-} // namespace allocate
-} // namespace stage2
-/* end file src/generic/stage2/allocate.h */
-
-really_inline dom_parser_implementation::dom_parser_implementation() {}
-
-// Leaving these here so they can be inlined if so desired
-WARN_UNUSED error_code dom_parser_implementation::set_capacity(size_t capacity) noexcept {
-  error_code err = stage1::allocate::set_capacity(*this, capacity);
-  if (err) { _capacity = 0; return err; }
-  _capacity = capacity;
-  return SUCCESS;
-}
-
-WARN_UNUSED error_code dom_parser_implementation::set_max_depth(size_t max_depth) noexcept {
-  error_code err = stage2::allocate::set_max_depth(*this, max_depth);
-  if (err) { _max_depth = 0; return err; }
-  _max_depth = max_depth;
-  return SUCCESS;
-}
-/* end file src/generic/stage2/allocate.h */
-
-} // namespace arm64
-} // namespace simdjson
-
-#endif // SIMDJSON_ARM64_DOM_PARSER_IMPLEMENTATION_H
-/* end file src/generic/stage2/allocate.h */
-
-TARGET_HASWELL
-
-namespace simdjson {
-namespace arm64 {
-
-WARN_UNUSED error_code implementation::create_dom_parser_implementation(
-  size_t capacity,
-  size_t max_depth,
-  std::unique_ptr<internal::dom_parser_implementation>& dst
-) const noexcept {
-  dst.reset( new (std::nothrow) dom_parser_implementation() );
-  if (!dst) { return MEMALLOC; }
-  dst->set_capacity(capacity);
-  dst->set_max_depth(max_depth);
-  return SUCCESS;
-}
-
-} // namespace arm64
-} // namespace simdjson
-
-UNTARGET_REGION
-/* end file src/generic/stage2/allocate.h */
-/* begin file src/arm64/dom_parser_implementation.cpp */
-/* arm64/implementation.h already included: #include "arm64/implementation.h" */
-/* arm64/dom_parser_implementation.h already included: #include "arm64/dom_parser_implementation.h" */
-
-//
-// Stage 1
-//
-/* begin file src/arm64/bitmask.h */
-#ifndef SIMDJSON_ARM64_BITMASK_H
-#define SIMDJSON_ARM64_BITMASK_H
-
-
 /* begin file src/arm64/intrinsics.h */
 #ifndef SIMDJSON_ARM64_INTRINSICS_H
 #define SIMDJSON_ARM64_INTRINSICS_H
@@ -2120,54 +1863,9 @@ UNTARGET_REGION
 
 #endif //  SIMDJSON_ARM64_INTRINSICS_H
 /* end file src/arm64/intrinsics.h */
-
-namespace simdjson {
-namespace arm64 {
-
-//
-// Perform a "cumulative bitwise xor," flipping bits each time a 1 is encountered.
-//
-// For example, prefix_xor(00100100) == 00011100
-//
-really_inline uint64_t prefix_xor(uint64_t bitmask) {
-  /////////////
-  // We could do this with PMULL, but it is apparently slow.
-  //  
-  //#ifdef __ARM_FEATURE_CRYPTO // some ARM processors lack this extension
-  //return vmull_p64(-1ULL, bitmask);
-  //#else
-  // Analysis by @sebpop:
-  // When diffing the assembly for src/stage1_find_marks.cpp I see that the eors are all spread out
-  // in between other vector code, so effectively the extra cycles of the sequence do not matter 
-  // because the GPR units are idle otherwise and the critical path is on the FP side.
-  // Also the PMULL requires two extra fmovs: GPR->FP (3 cycles in N1, 5 cycles in A72 ) 
-  // and FP->GPR (2 cycles on N1 and 5 cycles on A72.)
-  ///////////
-  bitmask ^= bitmask << 1;
-  bitmask ^= bitmask << 2;
-  bitmask ^= bitmask << 4;
-  bitmask ^= bitmask << 8;
-  bitmask ^= bitmask << 16;
-  bitmask ^= bitmask << 32;
-  return bitmask;
-}
-
-} // namespace arm64
-} // namespace simdjson
-UNTARGET_REGION
-
-#endif
-/* end file src/arm64/intrinsics.h */
-/* begin file src/arm64/simd.h */
-#ifndef SIMDJSON_ARM64_SIMD_H
-#define SIMDJSON_ARM64_SIMD_H
-
-/* simdprune_tables.h already included: #include "simdprune_tables.h" */
 /* begin file src/arm64/bitmanipulation.h */
 #ifndef SIMDJSON_ARM64_BITMANIPULATION_H
 #define SIMDJSON_ARM64_BITMANIPULATION_H
-
-/* arm64/intrinsics.h already included: #include "arm64/intrinsics.h" */
 
 namespace simdjson {
 namespace arm64 {
@@ -2237,7 +1935,53 @@ really_inline bool mul_overflow(uint64_t value1, uint64_t value2, uint64_t *resu
 
 #endif // SIMDJSON_ARM64_BITMANIPULATION_H
 /* end file src/arm64/bitmanipulation.h */
-/* arm64/intrinsics.h already included: #include "arm64/intrinsics.h" */
+/* begin file src/arm64/bitmask.h */
+#ifndef SIMDJSON_ARM64_BITMASK_H
+#define SIMDJSON_ARM64_BITMASK_H
+
+namespace simdjson {
+namespace arm64 {
+
+//
+// Perform a "cumulative bitwise xor," flipping bits each time a 1 is encountered.
+//
+// For example, prefix_xor(00100100) == 00011100
+//
+really_inline uint64_t prefix_xor(uint64_t bitmask) {
+  /////////////
+  // We could do this with PMULL, but it is apparently slow.
+  //  
+  //#ifdef __ARM_FEATURE_CRYPTO // some ARM processors lack this extension
+  //return vmull_p64(-1ULL, bitmask);
+  //#else
+  // Analysis by @sebpop:
+  // When diffing the assembly for src/stage1_find_marks.cpp I see that the eors are all spread out
+  // in between other vector code, so effectively the extra cycles of the sequence do not matter 
+  // because the GPR units are idle otherwise and the critical path is on the FP side.
+  // Also the PMULL requires two extra fmovs: GPR->FP (3 cycles in N1, 5 cycles in A72 ) 
+  // and FP->GPR (2 cycles on N1 and 5 cycles on A72.)
+  ///////////
+  bitmask ^= bitmask << 1;
+  bitmask ^= bitmask << 2;
+  bitmask ^= bitmask << 4;
+  bitmask ^= bitmask << 8;
+  bitmask ^= bitmask << 16;
+  bitmask ^= bitmask << 32;
+  return bitmask;
+}
+
+} // namespace arm64
+} // namespace simdjson
+SIMDJSON_UNTARGET_REGION
+
+#endif
+/* end file src/arm64/bitmask.h */
+/* begin file src/arm64/simd.h */
+#ifndef SIMDJSON_ARM64_SIMD_H
+#define SIMDJSON_ARM64_SIMD_H
+
+/* simdprune_tables.h already included: #include "simdprune_tables.h" */
+/* arm64/bitmanipulation.h already included: #include "arm64/bitmanipulation.h" */
 #include <type_traits>
 
 
@@ -2732,11 +2476,295 @@ really_inline int8x16_t make_int8x16_t(int8_t x1,  int8_t x2,  int8_t x3,  int8_
 } // namespace simdjson
 
 #endif // SIMDJSON_ARM64_SIMD_H
-/* end file src/arm64/bitmanipulation.h */
-/* arm64/bitmanipulation.h already included: #include "arm64/bitmanipulation.h" */
+/* end file src/arm64/simd.h */
+/* end file src/arm64/simd.h */
+/* begin file src/arm64/dom_parser_implementation.h */
+#ifndef SIMDJSON_ARM64_DOM_PARSER_IMPLEMENTATION_H
+#define SIMDJSON_ARM64_DOM_PARSER_IMPLEMENTATION_H
+
+/* begin file src/generic/dom_parser_implementation.h */
+/* isadetection.h already included: #include "isadetection.h" */
 
 namespace simdjson {
-namespace arm64 {
+namespace SIMDJSON_IMPLEMENTATION {
+
+// expectation: sizeof(scope_descriptor) = 64/8.
+struct scope_descriptor {
+  uint32_t tape_index; // where, on the tape, does the scope ([,{) begins
+  uint32_t count; // how many elements in the scope
+}; // struct scope_descriptor
+
+#ifdef SIMDJSON_USE_COMPUTED_GOTO
+typedef void* ret_address_t;
+#else
+typedef char ret_address_t;
+#endif
+
+class dom_parser_implementation final : public internal::dom_parser_implementation {
+public:
+  /** Tape location of each open { or [ */
+  std::unique_ptr<scope_descriptor[]> containing_scope{};
+  /** Return address of each open { or [ */
+  std::unique_ptr<ret_address_t[]> ret_address{};
+  /** Buffer passed to stage 1 */
+  const uint8_t *buf{};
+  /** Length passed to stage 1 */
+  size_t len{0};
+  /** Document passed to stage 2 */
+  dom::document *doc{};
+  /** Error code (TODO remove, this is not even used, we just set it so the g++ optimizer doesn't get confused) */
+  error_code error{UNINITIALIZED};
+
+  really_inline dom_parser_implementation();
+  dom_parser_implementation(const dom_parser_implementation &) = delete;
+  dom_parser_implementation & operator=(const dom_parser_implementation &) = delete;
+
+  WARN_UNUSED error_code parse(const uint8_t *buf, size_t len, dom::document &doc) noexcept final;
+  WARN_UNUSED error_code stage1(const uint8_t *buf, size_t len, bool partial) noexcept final;
+  WARN_UNUSED error_code check_for_unclosed_array() noexcept;
+  WARN_UNUSED error_code stage2(dom::document &doc) noexcept final;
+  WARN_UNUSED error_code stage2_next(dom::document &doc) noexcept final;
+  WARN_UNUSED error_code set_capacity(size_t capacity) noexcept final;
+  WARN_UNUSED error_code set_max_depth(size_t max_depth) noexcept final;
+};
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
+/* begin file src/generic/stage1/allocate.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+namespace allocate {
+
+//
+// Allocates stage 1 internal state and outputs in the parser
+//
+really_inline error_code set_capacity(internal::dom_parser_implementation &parser, size_t capacity) {
+  size_t max_structures = ROUNDUP_N(capacity, 64) + 2 + 7;
+  parser.structural_indexes.reset( new (std::nothrow) uint32_t[max_structures] );
+  if (!parser.structural_indexes) { return MEMALLOC; }
+  parser.structural_indexes[0] = 0;
+  parser.n_structural_indexes = 0;
+  return SUCCESS;
+}
+
+} // namespace allocate
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/allocate.h */
+/* begin file src/generic/stage2/allocate.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+namespace allocate {
+
+//
+// Allocates stage 2 internal state and outputs in the parser
+//
+really_inline error_code set_max_depth(dom_parser_implementation &parser, size_t max_depth) {
+  parser.containing_scope.reset(new (std::nothrow) scope_descriptor[max_depth]);
+  parser.ret_address.reset(new (std::nothrow) ret_address_t[max_depth]);
+
+  if (!parser.ret_address || !parser.containing_scope) {
+    return MEMALLOC;
+  }
+  return SUCCESS;
+}
+
+} // namespace allocate
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/allocate.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+really_inline dom_parser_implementation::dom_parser_implementation() {}
+
+// Leaving these here so they can be inlined if so desired
+WARN_UNUSED error_code dom_parser_implementation::set_capacity(size_t capacity) noexcept {
+  error_code err = stage1::allocate::set_capacity(*this, capacity);
+  if (err) { _capacity = 0; return err; }
+  _capacity = capacity;
+  return SUCCESS;
+}
+
+WARN_UNUSED error_code dom_parser_implementation::set_max_depth(size_t max_depth) noexcept {
+  error_code err = stage2::allocate::set_max_depth(*this, max_depth);
+  if (err) { _max_depth = 0; return err; }
+  _max_depth = max_depth;
+  return SUCCESS;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/allocate.h */
+
+#endif // SIMDJSON_ARM64_DOM_PARSER_IMPLEMENTATION_H
+/* end file src/generic/stage2/allocate.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+WARN_UNUSED error_code implementation::create_dom_parser_implementation(
+  size_t capacity,
+  size_t max_depth,
+  std::unique_ptr<internal::dom_parser_implementation>& dst
+) const noexcept {
+  dst.reset( new (std::nothrow) dom_parser_implementation() );
+  if (!dst) { return MEMALLOC; }
+  dst->set_capacity(capacity);
+  dst->set_max_depth(max_depth);
+  return SUCCESS;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
+/* begin file src/arm64/end_implementation.h */
+#undef SIMDJSON_IMPLEMENTATION
+/* end file src/arm64/end_implementation.h */
+/* end file src/arm64/end_implementation.h */
+/* begin file src/arm64/dom_parser_implementation.cpp */
+/* begin file src/arm64/begin_implementation.h */
+#define SIMDJSON_IMPLEMENTATION arm64
+/* arm64/implementation.h already included: #include "arm64/implementation.h" */
+/* arm64/intrinsics.h already included: #include "arm64/intrinsics.h" */
+/* arm64/bitmanipulation.h already included: #include "arm64/bitmanipulation.h" */
+/* arm64/bitmask.h already included: #include "arm64/bitmask.h" */
+/* arm64/simd.h already included: #include "arm64/simd.h" */
+/* end file src/arm64/begin_implementation.h */
+/* arm64/dom_parser_implementation.h already included: #include "arm64/dom_parser_implementation.h" */
+/* begin file src/generic/stage2/jsoncharutils.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+// return non-zero if not a structural or whitespace char
+// zero otherwise
+really_inline uint32_t is_not_structural_or_whitespace_or_null(uint8_t c) {
+  return structural_or_whitespace_or_null_negated[c];
+}
+
+// return non-zero if not a structural or whitespace char
+// zero otherwise
+really_inline uint32_t is_not_structural_or_whitespace(uint8_t c) {
+  return structural_or_whitespace_negated[c];
+}
+
+really_inline uint32_t is_structural_or_whitespace_or_null(uint8_t c) {
+  return structural_or_whitespace_or_null[c];
+}
+
+really_inline uint32_t is_structural_or_whitespace(uint8_t c) {
+  return structural_or_whitespace[c];
+}
+
+// returns a value with the high 16 bits set if not valid
+// otherwise returns the conversion of the 4 hex digits at src into the bottom
+// 16 bits of the 32-bit return register
+//
+// see
+// https://lemire.me/blog/2019/04/17/parsing-short-hexadecimal-strings-efficiently/
+static inline uint32_t hex_to_u32_nocheck(
+    const uint8_t *src) { // strictly speaking, static inline is a C-ism
+  uint32_t v1 = digit_to_val32[630 + src[0]];
+  uint32_t v2 = digit_to_val32[420 + src[1]];
+  uint32_t v3 = digit_to_val32[210 + src[2]];
+  uint32_t v4 = digit_to_val32[0 + src[3]];
+  return v1 | v2 | v3 | v4;
+}
+
+// given a code point cp, writes to c
+// the utf-8 code, outputting the length in
+// bytes, if the length is zero, the code point
+// is invalid
+//
+// This can possibly be made faster using pdep
+// and clz and table lookups, but JSON documents
+// have few escaped code points, and the following
+// function looks cheap.
+//
+// Note: we assume that surrogates are treated separately
+//
+really_inline size_t codepoint_to_utf8(uint32_t cp, uint8_t *c) {
+  if (cp <= 0x7F) {
+    c[0] = uint8_t(cp);
+    return 1; // ascii
+  }
+  if (cp <= 0x7FF) {
+    c[0] = uint8_t((cp >> 6) + 192);
+    c[1] = uint8_t((cp & 63) + 128);
+    return 2; // universal plane
+    //  Surrogates are treated elsewhere...
+    //} //else if (0xd800 <= cp && cp <= 0xdfff) {
+    //  return 0; // surrogates // could put assert here
+  } else if (cp <= 0xFFFF) {
+    c[0] = uint8_t((cp >> 12) + 224);
+    c[1] = uint8_t(((cp >> 6) & 63) + 128);
+    c[2] = uint8_t((cp & 63) + 128);
+    return 3;
+  } else if (cp <= 0x10FFFF) { // if you know you have a valid code point, this
+                               // is not needed
+    c[0] = uint8_t((cp >> 18) + 240);
+    c[1] = uint8_t(((cp >> 12) & 63) + 128);
+    c[2] = uint8_t(((cp >> 6) & 63) + 128);
+    c[3] = uint8_t((cp & 63) + 128);
+    return 4;
+  }
+  // will return 0 when the code point was too large.
+  return 0; // bad r
+}
+
+#ifdef SIMDJSON_IS_32BITS // _umul128 for x86, arm
+// this is a slow emulation routine for 32-bit
+//
+static really_inline uint64_t __emulu(uint32_t x, uint32_t y) {
+  return x * (uint64_t)y;
+}
+static really_inline uint64_t _umul128(uint64_t ab, uint64_t cd, uint64_t *hi) {
+  uint64_t ad = __emulu((uint32_t)(ab >> 32), (uint32_t)cd);
+  uint64_t bd = __emulu((uint32_t)ab, (uint32_t)cd);
+  uint64_t adbc = ad + __emulu((uint32_t)ab, (uint32_t)(cd >> 32));
+  uint64_t adbc_carry = !!(adbc < ad);
+  uint64_t lo = bd + (adbc << 32);
+  *hi = __emulu((uint32_t)(ab >> 32), (uint32_t)(cd >> 32)) + (adbc >> 32) +
+        (adbc_carry << 32) + !!(lo < bd);
+  return lo;
+}
+#endif
+
+really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
+  value128 answer;
+#if defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
+#ifdef _M_ARM64
+  // ARM64 has native support for 64-bit multiplications, no need to emultate
+  answer.high = __umulh(value1, value2);
+  answer.low = value1 * value2;
+#else
+  answer.low = _umul128(value1, value2, &answer.high); // _umul128 not available on ARM64
+#endif // _M_ARM64
+#else // defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
+  __uint128_t r = ((__uint128_t)value1) * value2;
+  answer.low = uint64_t(r);
+  answer.high = uint64_t(r >> 64);
+#endif
+  return answer;
+}
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/jsoncharutils.h */
+
+//
+// Stage 1
+//
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 
 using namespace simd;
 
@@ -2828,521 +2856,12 @@ really_inline simd8<bool> must_be_2_3_continuation(const simd8<uint8_t> prev2, c
     return is_third_byte ^ is_fourth_byte;
 }
 
-/* begin file src/generic/stage1/buf_block_reader.h */
-// Walks through a buffer in block-sized increments, loading the last part with spaces
-template<size_t STEP_SIZE>
-struct buf_block_reader {
-public:
-  really_inline buf_block_reader(const uint8_t *_buf, size_t _len);
-  really_inline size_t block_index();
-  really_inline bool has_full_block() const;
-  really_inline const uint8_t *full_block() const;
-  /**
-   * Get the last block, padded with spaces.
-   *
-   * There will always be a last block, with at least 1 byte, unless len == 0 (in which case this
-   * function fills the buffer with spaces and returns 0. In particular, if len == STEP_SIZE there
-   * will be 0 full_blocks and 1 remainder block with STEP_SIZE bytes and no spaces for padding.
-   *
-   * @return the number of effective characters in the last block.
-   */
-  really_inline size_t get_remainder(uint8_t *dst) const;
-  really_inline void advance();
-private:
-  const uint8_t *buf;
-  const size_t len;
-  const size_t lenminusstep;
-  size_t idx;
-};
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 
-// Routines to print masks and text for debugging bitmask operations
-UNUSED static char * format_input_text_64(const uint8_t *text) {
-  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
-  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
-    buf[i] = int8_t(text[i]) < ' ' ? '_' : int8_t(text[i]);
-  }
-  buf[sizeof(simd8x64<uint8_t>)] = '\0';
-  return buf;
-}
-
-// Routines to print masks and text for debugging bitmask operations
-UNUSED static char * format_input_text(const simd8x64<uint8_t>& in) {
-  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
-  in.store((uint8_t*)buf);
-  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
-    if (buf[i] < ' ') { buf[i] = '_'; }
-  }
-  buf[sizeof(simd8x64<uint8_t>)] = '\0';
-  return buf;
-}
-
-UNUSED static char * format_mask(uint64_t mask) {
-  static char *buf = (char*)malloc(64 + 1);
-  for (size_t i=0; i<64; i++) {
-    buf[i] = (mask & (size_t(1) << i)) ? 'X' : ' ';
-  }
-  buf[64] = '\0';
-  return buf;
-}
-
-template<size_t STEP_SIZE>
-really_inline buf_block_reader<STEP_SIZE>::buf_block_reader(const uint8_t *_buf, size_t _len) : buf{_buf}, len{_len}, lenminusstep{len < STEP_SIZE ? 0 : len - STEP_SIZE}, idx{0} {}
-
-template<size_t STEP_SIZE>
-really_inline size_t buf_block_reader<STEP_SIZE>::block_index() { return idx; }
-
-template<size_t STEP_SIZE>
-really_inline bool buf_block_reader<STEP_SIZE>::has_full_block() const {
-  return idx < lenminusstep;
-}
-
-template<size_t STEP_SIZE>
-really_inline const uint8_t *buf_block_reader<STEP_SIZE>::full_block() const {
-  return &buf[idx];
-}
-
-template<size_t STEP_SIZE>
-really_inline size_t buf_block_reader<STEP_SIZE>::get_remainder(uint8_t *dst) const {
-  memset(dst, 0x20, STEP_SIZE); // memset STEP_SIZE because it's more efficient to write out 8 or 16 bytes at once.
-  memcpy(dst, buf + idx, len - idx);
-  return len - idx;
-}
-
-template<size_t STEP_SIZE>
-really_inline void buf_block_reader<STEP_SIZE>::advance() {
-  idx += STEP_SIZE;
-}
-/* end file src/generic/stage1/buf_block_reader.h */
-/* begin file src/generic/stage1/json_string_scanner.h */
-namespace stage1 {
-
-struct json_string_block {
-  // Escaped characters (characters following an escape() character)
-  really_inline uint64_t escaped() const { return _escaped; }
-  // Escape characters (backslashes that are not escaped--i.e. in \\, includes only the first \)
-  really_inline uint64_t escape() const { return _backslash & ~_escaped; }
-  // Real (non-backslashed) quotes
-  really_inline uint64_t quote() const { return _quote; }
-  // Start quotes of strings
-  really_inline uint64_t string_end() const { return _quote & _in_string; }
-  // End quotes of strings
-  really_inline uint64_t string_start() const { return _quote & ~_in_string; }
-  // Only characters inside the string (not including the quotes)
-  really_inline uint64_t string_content() const { return _in_string & ~_quote; }
-  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
-  really_inline uint64_t non_quote_inside_string(uint64_t mask) const { return mask & _in_string; }
-  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
-  really_inline uint64_t non_quote_outside_string(uint64_t mask) const { return mask & ~_in_string; }
-  // Tail of string (everything except the start quote)
-  really_inline uint64_t string_tail() const { return _in_string ^ _quote; }
-
-  // backslash characters
-  uint64_t _backslash;
-  // escaped characters (backslashed--does not include the hex characters after \u)
-  uint64_t _escaped;
-  // real quotes (non-backslashed ones)
-  uint64_t _quote;
-  // string characters (includes start quote but not end quote)
-  uint64_t _in_string;
-};
-
-// Scans blocks for string characters, storing the state necessary to do so
-class json_string_scanner {
-public:
-  really_inline json_string_block next(const simd::simd8x64<uint8_t>& in);
-  really_inline error_code finish(bool streaming);
-
-private:
-  // Intended to be defined by the implementation
-  really_inline uint64_t find_escaped(uint64_t escape);
-  really_inline uint64_t find_escaped_branchless(uint64_t escape);
-
-  // Whether the last iteration was still inside a string (all 1's = true, all 0's = false).
-  uint64_t prev_in_string = 0ULL;
-  // Whether the first character of the next iteration is escaped.
-  uint64_t prev_escaped = 0ULL;
-};
-
-//
-// Finds escaped characters (characters following \).
-//
-// Handles runs of backslashes like \\\" and \\\\" correctly (yielding 0101 and 01010, respectively).
-//
-// Does this by:
-// - Shift the escape mask to get potentially escaped characters (characters after backslashes).
-// - Mask escaped sequences that start on *even* bits with 1010101010 (odd bits are escaped, even bits are not)
-// - Mask escaped sequences that start on *odd* bits with 0101010101 (even bits are escaped, odd bits are not)
-//
-// To distinguish between escaped sequences starting on even/odd bits, it finds the start of all
-// escape sequences, filters out the ones that start on even bits, and adds that to the mask of
-// escape sequences. This causes the addition to clear out the sequences starting on odd bits (since
-// the start bit causes a carry), and leaves even-bit sequences alone.
-//
-// Example:
-//
-// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
-// escape         |  xxx |  xx xxx  xxx  xx xx  | Removed overflow backslash; will | it into follows_escape
-// odd_starts     |  x   |  x       x       x   | escape & ~even_bits & ~follows_escape
-// even_seq       |     c|    cxxx     c xx   c | c = carry bit -- will be masked out later
-// invert_mask    |      |     cxxx     c xx   c| even_seq << 1
-// follows_escape |   xx | x xx xxx  xxx  xx xx | Includes overflow bit
-// escaped        |   x  | x x  x x  x x  x  x  |
-// desired        |   x  | x x  x x  x x  x  x  |
-// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
-//
-really_inline uint64_t json_string_scanner::find_escaped_branchless(uint64_t backslash) {
-  // If there was overflow, pretend the first character isn't a backslash
-  backslash &= ~prev_escaped;
-  uint64_t follows_escape = backslash << 1 | prev_escaped;
-
-  // Get sequences starting on even bits by clearing out the odd series using +
-  const uint64_t even_bits = 0x5555555555555555ULL;
-  uint64_t odd_sequence_starts = backslash & ~even_bits & ~follows_escape;
-  uint64_t sequences_starting_on_even_bits;
-  prev_escaped = add_overflow(odd_sequence_starts, backslash, &sequences_starting_on_even_bits);
-  uint64_t invert_mask = sequences_starting_on_even_bits << 1; // The mask we want to return is the *escaped* bits, not escapes.
-
-  // Mask every other backslashed character as an escaped character
-  // Flip the mask for sequences that start on even bits, to correct them
-  return (even_bits ^ invert_mask) & follows_escape;
-}
-
-//
-// Return a mask of all string characters plus end quotes.
-//
-// prev_escaped is overflow saying whether the next character is escaped.
-// prev_in_string is overflow saying whether we're still in a string.
-//
-// Backslash sequences outside of quotes will be detected in stage 2.
-//
-really_inline json_string_block json_string_scanner::next(const simd::simd8x64<uint8_t>& in) {
-  const uint64_t backslash = in.eq('\\');
-  const uint64_t escaped = find_escaped(backslash);
-  const uint64_t quote = in.eq('"') & ~escaped;
-
-  //
-  // prefix_xor flips on bits inside the string (and flips off the end quote).
-  //
-  // Then we xor with prev_in_string: if we were in a string already, its effect is flipped
-  // (characters inside strings are outside, and characters outside strings are inside).
-  //
-  const uint64_t in_string = prefix_xor(quote) ^ prev_in_string;
-
-  //
-  // Check if we're still in a string at the end of the box so the next block will know
-  //
-  // right shift of a signed value expected to be well-defined and standard
-  // compliant as of C++20, John Regher from Utah U. says this is fine code
-  //
-  prev_in_string = uint64_t(static_cast<int64_t>(in_string) >> 63);
-
-  // Use ^ to turn the beginning quote off, and the end quote on.
-  return {
-    backslash,
-    escaped,
-    quote,
-    in_string
-  };
-}
-
-really_inline error_code json_string_scanner::finish(bool streaming) {
-  if (prev_in_string and (not streaming)) {
-    return UNCLOSED_STRING;
-  }
-  return SUCCESS;
-}
-
-} // namespace stage1
-/* end file src/generic/stage1/json_string_scanner.h */
-/* begin file src/generic/stage1/json_scanner.h */
-namespace stage1 {
-
-/**
- * A block of scanned json, with information on operators and scalars.
- */
-struct json_block {
-public:
-  /** The start of structurals */
-  really_inline uint64_t structural_start() { return potential_structural_start() & ~_string.string_tail(); }
-  /** All JSON whitespace (i.e. not in a string) */
-  really_inline uint64_t whitespace() { return non_quote_outside_string(_characters.whitespace()); }
-
-  // Helpers
-
-  /** Whether the given characters are inside a string (only works on non-quotes) */
-  really_inline uint64_t non_quote_inside_string(uint64_t mask) { return _string.non_quote_inside_string(mask); }
-  /** Whether the given characters are outside a string (only works on non-quotes) */
-  really_inline uint64_t non_quote_outside_string(uint64_t mask) { return _string.non_quote_outside_string(mask); }
-
-  // string and escape characters
-  json_string_block _string;
-  // whitespace, operators, scalars
-  json_character_block _characters;
-  // whether the previous character was a scalar
-  uint64_t _follows_potential_scalar;
-private:
-  // Potential structurals (i.e. disregarding strings)
-
-  /** operators plus scalar starts like 123, true and "abc" */
-  really_inline uint64_t potential_structural_start() { return _characters.op() | potential_scalar_start(); }
-  /** the start of non-operator runs, like 123, true and "abc" */
-  really_inline uint64_t potential_scalar_start() { return _characters.scalar() & ~follows_potential_scalar(); }
-  /** whether the given character is immediately after a non-operator like 123, true or " */
-  really_inline uint64_t follows_potential_scalar() { return _follows_potential_scalar; }
-};
-
-/**
- * Scans JSON for important bits: operators, strings, and scalars.
- *
- * The scanner starts by calculating two distinct things:
- * - string characters (taking \" into account)
- * - operators ([]{},:) and scalars (runs of non-operators like 123, true and "abc")
- *
- * To minimize data dependency (a key component of the scanner's speed), it finds these in parallel:
- * in particular, the operator/scalar bit will find plenty of things that are actually part of
- * strings. When we're done, json_block will fuse the two together by masking out tokens that are
- * part of a string.
- */
-class json_scanner {
-public:
-  json_scanner() {}
-  really_inline json_block next(const simd::simd8x64<uint8_t>& in);
-  really_inline error_code finish(bool streaming);
-
-private:
-  // Whether the last character of the previous iteration is part of a scalar token
-  // (anything except whitespace or an operator).
-  uint64_t prev_scalar = 0ULL;
-  json_string_scanner string_scanner{};
-};
-
-
-//
-// Check if the current character immediately follows a matching character.
-//
-// For example, this checks for quotes with backslashes in front of them:
-//
-//     const uint64_t backslashed_quote = in.eq('"') & immediately_follows(in.eq('\'), prev_backslash);
-//
-really_inline uint64_t follows(const uint64_t match, uint64_t &overflow) {
-  const uint64_t result = match << 1 | overflow;
-  overflow = match >> 63;
-  return result;
-}
-
-//
-// Check if the current character follows a matching character, with possible "filler" between.
-// For example, this checks for empty curly braces, e.g.
-//
-//     in.eq('}') & follows(in.eq('['), in.eq(' '), prev_empty_array) // { <whitespace>* }
-//
-really_inline uint64_t follows(const uint64_t match, const uint64_t filler, uint64_t &overflow) {
-  uint64_t follows_match = follows(match, overflow);
-  uint64_t result;
-  overflow |= uint64_t(add_overflow(follows_match, filler, &result));
-  return result;
-}
-
-really_inline json_block json_scanner::next(const simd::simd8x64<uint8_t>& in) {
-  json_string_block strings = string_scanner.next(in);
-  json_character_block characters = json_character_block::classify(in);
-  uint64_t follows_scalar = follows(characters.scalar(), prev_scalar);
-  return {
-    strings,
-    characters,
-    follows_scalar
-  };
-}
-
-really_inline error_code json_scanner::finish(bool streaming) {
-  return string_scanner.finish(streaming);
-}
-
-} // namespace stage1
-/* end file src/generic/stage1/json_scanner.h */
-
-namespace stage1 {
-really_inline uint64_t json_string_scanner::find_escaped(uint64_t backslash) {
-  // On ARM, we don't short-circuit this if there are no backslashes, because the branch gives us no
-  // benefit and therefore makes things worse.
-  // if (!backslash) { uint64_t escaped = prev_escaped; prev_escaped = 0; return escaped; }
-  return find_escaped_branchless(backslash);
-}
-}
-
-/* begin file src/generic/stage1/json_minifier.h */
-// This file contains the common code every implementation uses in stage1
-// It is intended to be included multiple times and compiled multiple times
-// We assume the file in which it is included already includes
-// "simdjson/stage1.h" (this simplifies amalgation)
-
-namespace stage1 {
-
-class json_minifier {
-public:
-  template<size_t STEP_SIZE>
-  static error_code minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept;
-
-private:
-  really_inline json_minifier(uint8_t *_dst)
-  : dst{_dst}
-  {}
-  template<size_t STEP_SIZE>
-  really_inline void step(const uint8_t *block_buf, buf_block_reader<STEP_SIZE> &reader) noexcept;
-  really_inline void next(const simd::simd8x64<uint8_t>& in, json_block block);
-  really_inline error_code finish(uint8_t *dst_start, size_t &dst_len);
-  json_scanner scanner{};
-  uint8_t *dst;
-};
-
-really_inline void json_minifier::next(const simd::simd8x64<uint8_t>& in, json_block block) {
-  uint64_t mask = block.whitespace();
-  in.compress(mask, dst);
-  dst += 64 - count_ones(mask);
-}
-
-really_inline error_code json_minifier::finish(uint8_t *dst_start, size_t &dst_len) {
-  *dst = '\0';
-  error_code error = scanner.finish(false);
-  if (error) { dst_len = 0; return error; }
-  dst_len = dst - dst_start;
-  return SUCCESS;
-}
-
-template<>
-really_inline void json_minifier::step<128>(const uint8_t *block_buf, buf_block_reader<128> &reader) noexcept {
-  simd::simd8x64<uint8_t> in_1(block_buf);
-  simd::simd8x64<uint8_t> in_2(block_buf+64);
-  json_block block_1 = scanner.next(in_1);
-  json_block block_2 = scanner.next(in_2);
-  this->next(in_1, block_1);
-  this->next(in_2, block_2);
-  reader.advance();
-}
-
-template<>
-really_inline void json_minifier::step<64>(const uint8_t *block_buf, buf_block_reader<64> &reader) noexcept {
-  simd::simd8x64<uint8_t> in_1(block_buf);
-  json_block block_1 = scanner.next(in_1);
-  this->next(block_buf, block_1);
-  reader.advance();
-}
-
-template<size_t STEP_SIZE>
-error_code json_minifier::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept {
-  buf_block_reader<STEP_SIZE> reader(buf, len);
-  json_minifier minifier(dst);
-
-  // Index the first n-1 blocks
-  while (reader.has_full_block()) {
-    minifier.step<STEP_SIZE>(reader.full_block(), reader);
-  }
-
-  // Index the last (remainder) block, padded with spaces
-  uint8_t block[STEP_SIZE];
-  if (likely(reader.get_remainder(block)) > 0) {
-    minifier.step<STEP_SIZE>(block, reader);
-  }
-
-  return minifier.finish(dst, dst_len);
-}
-
-} // namespace stage1
-/* end file src/generic/stage1/json_minifier.h */
-WARN_UNUSED error_code implementation::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) const noexcept {
-  return arm64::stage1::json_minifier::minify<64>(buf, len, dst, dst_len);
-}
-
-/* begin file src/generic/stage1/find_next_document_index.h */
-/**
-  * This algorithm is used to quickly identify the last structural position that
-  * makes up a complete document.
-  *
-  * It does this by going backwards and finding the last *document boundary* (a
-  * place where one value follows another without a comma between them). If the
-  * last document (the characters after the boundary) has an equal number of
-  * start and end brackets, it is considered complete.
-  *
-  * Simply put, we iterate over the structural characters, starting from
-  * the end. We consider that we found the end of a JSON document when the
-  * first element of the pair is NOT one of these characters: '{' '[' ';' ','
-  * and when the second element is NOT one of these characters: '}' '}' ';' ','.
-  *
-  * This simple comparison works most of the time, but it does not cover cases
-  * where the batch's structural indexes contain a perfect amount of documents.
-  * In such a case, we do not have access to the structural index which follows
-  * the last document, therefore, we do not have access to the second element in
-  * the pair, and that means we cannot identify the last document. To fix this
-  * issue, we keep a count of the open and closed curly/square braces we found
-  * while searching for the pair. When we find a pair AND the count of open and
-  * closed curly/square braces is the same, we know that we just passed a
-  * complete document, therefore the last json buffer location is the end of the
-  * batch.
-  */
-really_inline uint32_t find_next_document_index(dom_parser_implementation &parser) {
-  // TODO don't count separately, just figure out depth
-  auto arr_cnt = 0;
-  auto obj_cnt = 0;
-  for (auto i = parser.n_structural_indexes - 1; i > 0; i--) {
-    auto idxb = parser.structural_indexes[i];
-    switch (parser.buf[idxb]) {
-    case ':':
-    case ',':
-      continue;
-    case '}':
-      obj_cnt--;
-      continue;
-    case ']':
-      arr_cnt--;
-      continue;
-    case '{':
-      obj_cnt++;
-      break;
-    case '[':
-      arr_cnt++;
-      break;
-    }
-    auto idxa = parser.structural_indexes[i - 1];
-    switch (parser.buf[idxa]) {
-    case '{':
-    case '[':
-    case ':':
-    case ',':
-      continue;
-    }
-    // Last document is complete, so the next document will appear after!
-    if (!arr_cnt && !obj_cnt) {
-      return parser.n_structural_indexes;
-    }
-    // Last document is incomplete; mark the document at i + 1 as the next one
-    return i;
-  }
-  return 0;
-}
-
-// Skip the last character if it is partial
-really_inline size_t trim_partial_utf8(const uint8_t *buf, size_t len) {
-  if (unlikely(len < 3)) {
-    switch (len) {
-      case 2:
-        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
-        if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 2 bytes left
-        return len;
-      case 1:
-        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
-        return len;
-      case 0:
-        return len;
-    }
-  }
-  if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
-  if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 1 byte left
-  if (buf[len-3] >= 0b11110000) { return len-3; } // 4-byte characters with only 3 bytes left
-  return len;
-}
-/* end file src/generic/stage1/find_next_document_index.h */
 /* begin file src/generic/stage1/utf8_lookup4_algorithm.h */
-using namespace simd;
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 
 namespace utf8_validation {
 
@@ -3517,9 +3036,12 @@ using namespace simd;
     }
 
   }; // struct utf8_checker
-}
+} // namespace utf8_validation
 
 using utf8_validation::utf8_checker;
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage1/utf8_lookup4_algorithm.h */
 /* begin file src/generic/stage1/json_structural_indexer.h */
 // This file contains the common code every implementation uses in stage1
@@ -3527,6 +3049,532 @@ using utf8_validation::utf8_checker;
 // We assume the file in which it is included already includes
 // "simdjson/stage1.h" (this simplifies amalgation)
 
+/* begin file src/generic/stage1/buf_block_reader.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+// Walks through a buffer in block-sized increments, loading the last part with spaces
+template<size_t STEP_SIZE>
+struct buf_block_reader {
+public:
+  really_inline buf_block_reader(const uint8_t *_buf, size_t _len);
+  really_inline size_t block_index();
+  really_inline bool has_full_block() const;
+  really_inline const uint8_t *full_block() const;
+  /**
+   * Get the last block, padded with spaces.
+   *
+   * There will always be a last block, with at least 1 byte, unless len == 0 (in which case this
+   * function fills the buffer with spaces and returns 0. In particular, if len == STEP_SIZE there
+   * will be 0 full_blocks and 1 remainder block with STEP_SIZE bytes and no spaces for padding.
+   *
+   * @return the number of effective characters in the last block.
+   */
+  really_inline size_t get_remainder(uint8_t *dst) const;
+  really_inline void advance();
+private:
+  const uint8_t *buf;
+  const size_t len;
+  const size_t lenminusstep;
+  size_t idx;
+};
+
+// Routines to print masks and text for debugging bitmask operations
+UNUSED static char * format_input_text_64(const uint8_t *text) {
+  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
+  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
+    buf[i] = int8_t(text[i]) < ' ' ? '_' : int8_t(text[i]);
+  }
+  buf[sizeof(simd8x64<uint8_t>)] = '\0';
+  return buf;
+}
+
+// Routines to print masks and text for debugging bitmask operations
+UNUSED static char * format_input_text(const simd8x64<uint8_t>& in) {
+  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
+  in.store((uint8_t*)buf);
+  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
+    if (buf[i] < ' ') { buf[i] = '_'; }
+  }
+  buf[sizeof(simd8x64<uint8_t>)] = '\0';
+  return buf;
+}
+
+UNUSED static char * format_mask(uint64_t mask) {
+  static char *buf = (char*)malloc(64 + 1);
+  for (size_t i=0; i<64; i++) {
+    buf[i] = (mask & (size_t(1) << i)) ? 'X' : ' ';
+  }
+  buf[64] = '\0';
+  return buf;
+}
+
+template<size_t STEP_SIZE>
+really_inline buf_block_reader<STEP_SIZE>::buf_block_reader(const uint8_t *_buf, size_t _len) : buf{_buf}, len{_len}, lenminusstep{len < STEP_SIZE ? 0 : len - STEP_SIZE}, idx{0} {}
+
+template<size_t STEP_SIZE>
+really_inline size_t buf_block_reader<STEP_SIZE>::block_index() { return idx; }
+
+template<size_t STEP_SIZE>
+really_inline bool buf_block_reader<STEP_SIZE>::has_full_block() const {
+  return idx < lenminusstep;
+}
+
+template<size_t STEP_SIZE>
+really_inline const uint8_t *buf_block_reader<STEP_SIZE>::full_block() const {
+  return &buf[idx];
+}
+
+template<size_t STEP_SIZE>
+really_inline size_t buf_block_reader<STEP_SIZE>::get_remainder(uint8_t *dst) const {
+  memset(dst, 0x20, STEP_SIZE); // memset STEP_SIZE because it's more efficient to write out 8 or 16 bytes at once.
+  memcpy(dst, buf + idx, len - idx);
+  return len - idx;
+}
+
+template<size_t STEP_SIZE>
+really_inline void buf_block_reader<STEP_SIZE>::advance() {
+  idx += STEP_SIZE;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/buf_block_reader.h */
+/* begin file src/generic/stage1/json_string_scanner.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+
+struct json_string_block {
+  // Escaped characters (characters following an escape() character)
+  really_inline uint64_t escaped() const { return _escaped; }
+  // Escape characters (backslashes that are not escaped--i.e. in \\, includes only the first \)
+  really_inline uint64_t escape() const { return _backslash & ~_escaped; }
+  // Real (non-backslashed) quotes
+  really_inline uint64_t quote() const { return _quote; }
+  // Start quotes of strings
+  really_inline uint64_t string_end() const { return _quote & _in_string; }
+  // End quotes of strings
+  really_inline uint64_t string_start() const { return _quote & ~_in_string; }
+  // Only characters inside the string (not including the quotes)
+  really_inline uint64_t string_content() const { return _in_string & ~_quote; }
+  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
+  really_inline uint64_t non_quote_inside_string(uint64_t mask) const { return mask & _in_string; }
+  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
+  really_inline uint64_t non_quote_outside_string(uint64_t mask) const { return mask & ~_in_string; }
+  // Tail of string (everything except the start quote)
+  really_inline uint64_t string_tail() const { return _in_string ^ _quote; }
+
+  // backslash characters
+  uint64_t _backslash;
+  // escaped characters (backslashed--does not include the hex characters after \u)
+  uint64_t _escaped;
+  // real quotes (non-backslashed ones)
+  uint64_t _quote;
+  // string characters (includes start quote but not end quote)
+  uint64_t _in_string;
+};
+
+// Scans blocks for string characters, storing the state necessary to do so
+class json_string_scanner {
+public:
+  really_inline json_string_block next(const simd::simd8x64<uint8_t>& in);
+  really_inline error_code finish(bool streaming);
+
+private:
+  // Intended to be defined by the implementation
+  really_inline uint64_t find_escaped(uint64_t escape);
+  really_inline uint64_t find_escaped_branchless(uint64_t escape);
+
+  // Whether the last iteration was still inside a string (all 1's = true, all 0's = false).
+  uint64_t prev_in_string = 0ULL;
+  // Whether the first character of the next iteration is escaped.
+  uint64_t prev_escaped = 0ULL;
+};
+
+//
+// Finds escaped characters (characters following \).
+//
+// Handles runs of backslashes like \\\" and \\\\" correctly (yielding 0101 and 01010, respectively).
+//
+// Does this by:
+// - Shift the escape mask to get potentially escaped characters (characters after backslashes).
+// - Mask escaped sequences that start on *even* bits with 1010101010 (odd bits are escaped, even bits are not)
+// - Mask escaped sequences that start on *odd* bits with 0101010101 (even bits are escaped, odd bits are not)
+//
+// To distinguish between escaped sequences starting on even/odd bits, it finds the start of all
+// escape sequences, filters out the ones that start on even bits, and adds that to the mask of
+// escape sequences. This causes the addition to clear out the sequences starting on odd bits (since
+// the start bit causes a carry), and leaves even-bit sequences alone.
+//
+// Example:
+//
+// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
+// escape         |  xxx |  xx xxx  xxx  xx xx  | Removed overflow backslash; will | it into follows_escape
+// odd_starts     |  x   |  x       x       x   | escape & ~even_bits & ~follows_escape
+// even_seq       |     c|    cxxx     c xx   c | c = carry bit -- will be masked out later
+// invert_mask    |      |     cxxx     c xx   c| even_seq << 1
+// follows_escape |   xx | x xx xxx  xxx  xx xx | Includes overflow bit
+// escaped        |   x  | x x  x x  x x  x  x  |
+// desired        |   x  | x x  x x  x x  x  x  |
+// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
+//
+really_inline uint64_t json_string_scanner::find_escaped_branchless(uint64_t backslash) {
+  // If there was overflow, pretend the first character isn't a backslash
+  backslash &= ~prev_escaped;
+  uint64_t follows_escape = backslash << 1 | prev_escaped;
+
+  // Get sequences starting on even bits by clearing out the odd series using +
+  const uint64_t even_bits = 0x5555555555555555ULL;
+  uint64_t odd_sequence_starts = backslash & ~even_bits & ~follows_escape;
+  uint64_t sequences_starting_on_even_bits;
+  prev_escaped = add_overflow(odd_sequence_starts, backslash, &sequences_starting_on_even_bits);
+  uint64_t invert_mask = sequences_starting_on_even_bits << 1; // The mask we want to return is the *escaped* bits, not escapes.
+
+  // Mask every other backslashed character as an escaped character
+  // Flip the mask for sequences that start on even bits, to correct them
+  return (even_bits ^ invert_mask) & follows_escape;
+}
+
+//
+// Return a mask of all string characters plus end quotes.
+//
+// prev_escaped is overflow saying whether the next character is escaped.
+// prev_in_string is overflow saying whether we're still in a string.
+//
+// Backslash sequences outside of quotes will be detected in stage 2.
+//
+really_inline json_string_block json_string_scanner::next(const simd::simd8x64<uint8_t>& in) {
+  const uint64_t backslash = in.eq('\\');
+  const uint64_t escaped = find_escaped(backslash);
+  const uint64_t quote = in.eq('"') & ~escaped;
+
+  //
+  // prefix_xor flips on bits inside the string (and flips off the end quote).
+  //
+  // Then we xor with prev_in_string: if we were in a string already, its effect is flipped
+  // (characters inside strings are outside, and characters outside strings are inside).
+  //
+  const uint64_t in_string = prefix_xor(quote) ^ prev_in_string;
+
+  //
+  // Check if we're still in a string at the end of the box so the next block will know
+  //
+  // right shift of a signed value expected to be well-defined and standard
+  // compliant as of C++20, John Regher from Utah U. says this is fine code
+  //
+  prev_in_string = uint64_t(static_cast<int64_t>(in_string) >> 63);
+
+  // Use ^ to turn the beginning quote off, and the end quote on.
+  return {
+    backslash,
+    escaped,
+    quote,
+    in_string
+  };
+}
+
+really_inline error_code json_string_scanner::finish(bool streaming) {
+  if (prev_in_string and (not streaming)) {
+    return UNCLOSED_STRING;
+  }
+  return SUCCESS;
+}
+
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/json_string_scanner.h */
+/* begin file src/generic/stage1/json_scanner.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+
+/**
+ * A block of scanned json, with information on operators and scalars.
+ */
+struct json_block {
+public:
+  /** The start of structurals */
+  really_inline uint64_t structural_start() { return potential_structural_start() & ~_string.string_tail(); }
+  /** All JSON whitespace (i.e. not in a string) */
+  really_inline uint64_t whitespace() { return non_quote_outside_string(_characters.whitespace()); }
+
+  // Helpers
+
+  /** Whether the given characters are inside a string (only works on non-quotes) */
+  really_inline uint64_t non_quote_inside_string(uint64_t mask) { return _string.non_quote_inside_string(mask); }
+  /** Whether the given characters are outside a string (only works on non-quotes) */
+  really_inline uint64_t non_quote_outside_string(uint64_t mask) { return _string.non_quote_outside_string(mask); }
+
+  // string and escape characters
+  json_string_block _string;
+  // whitespace, operators, scalars
+  json_character_block _characters;
+  // whether the previous character was a scalar
+  uint64_t _follows_potential_scalar;
+private:
+  // Potential structurals (i.e. disregarding strings)
+
+  /** operators plus scalar starts like 123, true and "abc" */
+  really_inline uint64_t potential_structural_start() { return _characters.op() | potential_scalar_start(); }
+  /** the start of non-operator runs, like 123, true and "abc" */
+  really_inline uint64_t potential_scalar_start() { return _characters.scalar() & ~follows_potential_scalar(); }
+  /** whether the given character is immediately after a non-operator like 123, true or " */
+  really_inline uint64_t follows_potential_scalar() { return _follows_potential_scalar; }
+};
+
+/**
+ * Scans JSON for important bits: operators, strings, and scalars.
+ *
+ * The scanner starts by calculating two distinct things:
+ * - string characters (taking \" into account)
+ * - operators ([]{},:) and scalars (runs of non-operators like 123, true and "abc")
+ *
+ * To minimize data dependency (a key component of the scanner's speed), it finds these in parallel:
+ * in particular, the operator/scalar bit will find plenty of things that are actually part of
+ * strings. When we're done, json_block will fuse the two together by masking out tokens that are
+ * part of a string.
+ */
+class json_scanner {
+public:
+  json_scanner() {}
+  really_inline json_block next(const simd::simd8x64<uint8_t>& in);
+  really_inline error_code finish(bool streaming);
+
+private:
+  // Whether the last character of the previous iteration is part of a scalar token
+  // (anything except whitespace or an operator).
+  uint64_t prev_scalar = 0ULL;
+  json_string_scanner string_scanner{};
+};
+
+
+//
+// Check if the current character immediately follows a matching character.
+//
+// For example, this checks for quotes with backslashes in front of them:
+//
+//     const uint64_t backslashed_quote = in.eq('"') & immediately_follows(in.eq('\'), prev_backslash);
+//
+really_inline uint64_t follows(const uint64_t match, uint64_t &overflow) {
+  const uint64_t result = match << 1 | overflow;
+  overflow = match >> 63;
+  return result;
+}
+
+//
+// Check if the current character follows a matching character, with possible "filler" between.
+// For example, this checks for empty curly braces, e.g.
+//
+//     in.eq('}') & follows(in.eq('['), in.eq(' '), prev_empty_array) // { <whitespace>* }
+//
+really_inline uint64_t follows(const uint64_t match, const uint64_t filler, uint64_t &overflow) {
+  uint64_t follows_match = follows(match, overflow);
+  uint64_t result;
+  overflow |= uint64_t(add_overflow(follows_match, filler, &result));
+  return result;
+}
+
+really_inline json_block json_scanner::next(const simd::simd8x64<uint8_t>& in) {
+  json_string_block strings = string_scanner.next(in);
+  json_character_block characters = json_character_block::classify(in);
+  uint64_t follows_scalar = follows(characters.scalar(), prev_scalar);
+  return {
+    strings,
+    characters,
+    follows_scalar
+  };
+}
+
+really_inline error_code json_scanner::finish(bool streaming) {
+  return string_scanner.finish(streaming);
+}
+
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/json_scanner.h */
+/* begin file src/generic/stage1/json_minifier.h */
+// This file contains the common code every implementation uses in stage1
+// It is intended to be included multiple times and compiled multiple times
+// We assume the file in which it is included already includes
+// "simdjson/stage1.h" (this simplifies amalgation)
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+
+class json_minifier {
+public:
+  template<size_t STEP_SIZE>
+  static error_code minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept;
+
+private:
+  really_inline json_minifier(uint8_t *_dst)
+  : dst{_dst}
+  {}
+  template<size_t STEP_SIZE>
+  really_inline void step(const uint8_t *block_buf, buf_block_reader<STEP_SIZE> &reader) noexcept;
+  really_inline void next(const simd::simd8x64<uint8_t>& in, json_block block);
+  really_inline error_code finish(uint8_t *dst_start, size_t &dst_len);
+  json_scanner scanner{};
+  uint8_t *dst;
+};
+
+really_inline void json_minifier::next(const simd::simd8x64<uint8_t>& in, json_block block) {
+  uint64_t mask = block.whitespace();
+  in.compress(mask, dst);
+  dst += 64 - count_ones(mask);
+}
+
+really_inline error_code json_minifier::finish(uint8_t *dst_start, size_t &dst_len) {
+  *dst = '\0';
+  error_code error = scanner.finish(false);
+  if (error) { dst_len = 0; return error; }
+  dst_len = dst - dst_start;
+  return SUCCESS;
+}
+
+template<>
+really_inline void json_minifier::step<128>(const uint8_t *block_buf, buf_block_reader<128> &reader) noexcept {
+  simd::simd8x64<uint8_t> in_1(block_buf);
+  simd::simd8x64<uint8_t> in_2(block_buf+64);
+  json_block block_1 = scanner.next(in_1);
+  json_block block_2 = scanner.next(in_2);
+  this->next(in_1, block_1);
+  this->next(in_2, block_2);
+  reader.advance();
+}
+
+template<>
+really_inline void json_minifier::step<64>(const uint8_t *block_buf, buf_block_reader<64> &reader) noexcept {
+  simd::simd8x64<uint8_t> in_1(block_buf);
+  json_block block_1 = scanner.next(in_1);
+  this->next(block_buf, block_1);
+  reader.advance();
+}
+
+template<size_t STEP_SIZE>
+error_code json_minifier::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept {
+  buf_block_reader<STEP_SIZE> reader(buf, len);
+  json_minifier minifier(dst);
+
+  // Index the first n-1 blocks
+  while (reader.has_full_block()) {
+    minifier.step<STEP_SIZE>(reader.full_block(), reader);
+  }
+
+  // Index the last (remainder) block, padded with spaces
+  uint8_t block[STEP_SIZE];
+  if (likely(reader.get_remainder(block)) > 0) {
+    minifier.step<STEP_SIZE>(block, reader);
+  }
+
+  return minifier.finish(dst, dst_len);
+}
+
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/json_minifier.h */
+/* begin file src/generic/stage1/find_next_document_index.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+/**
+  * This algorithm is used to quickly identify the last structural position that
+  * makes up a complete document.
+  *
+  * It does this by going backwards and finding the last *document boundary* (a
+  * place where one value follows another without a comma between them). If the
+  * last document (the characters after the boundary) has an equal number of
+  * start and end brackets, it is considered complete.
+  *
+  * Simply put, we iterate over the structural characters, starting from
+  * the end. We consider that we found the end of a JSON document when the
+  * first element of the pair is NOT one of these characters: '{' '[' ';' ','
+  * and when the second element is NOT one of these characters: '}' '}' ';' ','.
+  *
+  * This simple comparison works most of the time, but it does not cover cases
+  * where the batch's structural indexes contain a perfect amount of documents.
+  * In such a case, we do not have access to the structural index which follows
+  * the last document, therefore, we do not have access to the second element in
+  * the pair, and that means we cannot identify the last document. To fix this
+  * issue, we keep a count of the open and closed curly/square braces we found
+  * while searching for the pair. When we find a pair AND the count of open and
+  * closed curly/square braces is the same, we know that we just passed a
+  * complete document, therefore the last json buffer location is the end of the
+  * batch.
+  */
+really_inline uint32_t find_next_document_index(dom_parser_implementation &parser) {
+  // TODO don't count separately, just figure out depth
+  auto arr_cnt = 0;
+  auto obj_cnt = 0;
+  for (auto i = parser.n_structural_indexes - 1; i > 0; i--) {
+    auto idxb = parser.structural_indexes[i];
+    switch (parser.buf[idxb]) {
+    case ':':
+    case ',':
+      continue;
+    case '}':
+      obj_cnt--;
+      continue;
+    case ']':
+      arr_cnt--;
+      continue;
+    case '{':
+      obj_cnt++;
+      break;
+    case '[':
+      arr_cnt++;
+      break;
+    }
+    auto idxa = parser.structural_indexes[i - 1];
+    switch (parser.buf[idxa]) {
+    case '{':
+    case '[':
+    case ':':
+    case ',':
+      continue;
+    }
+    // Last document is complete, so the next document will appear after!
+    if (!arr_cnt && !obj_cnt) {
+      return parser.n_structural_indexes;
+    }
+    // Last document is incomplete; mark the document at i + 1 as the next one
+    return i;
+  }
+  return 0;
+}
+
+// Skip the last character if it is partial
+really_inline size_t trim_partial_utf8(const uint8_t *buf, size_t len) {
+  if (unlikely(len < 3)) {
+    switch (len) {
+      case 2:
+        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
+        if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 2 bytes left
+        return len;
+      case 1:
+        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
+        return len;
+      case 0:
+        return len;
+    }
+  }
+  if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
+  if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 1 byte left
+  if (buf[len-3] >= 0b11110000) { return len-3; } // 4-byte characters with only 3 bytes left
+  return len;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/find_next_document_index.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage1 {
 
 class bit_indexer {
@@ -3720,14 +3768,14 @@ really_inline error_code json_structural_indexer::finish(dom_parser_implementati
 }
 
 } // namespace stage1
-/* end file src/generic/stage1/json_structural_indexer.h */
-WARN_UNUSED error_code dom_parser_implementation::stage1(const uint8_t *_buf, size_t _len, bool streaming) noexcept {
-  this->buf = _buf;
-  this->len = _len;
-  return arm64::stage1::json_structural_indexer::index<64>(buf, len, *this, streaming);
-}
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/find_next_document_index.h */
 /* begin file src/generic/stage1/utf8_validator.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage1 {
+
 /**
  * Validates that the string is actual UTF-8.
  */
@@ -3753,12 +3801,9 @@ bool generic_validate_utf8(const char * input, size_t length) {
 }
 
 } // namespace stage1
-/* end file src/generic/stage1/utf8_validator.h */
-WARN_UNUSED bool implementation::validate_utf8(const char *buf, size_t len) const noexcept {
-  return simdjson::arm64::stage1::generic_validate_utf8(buf,len);
-}
-} // namespace arm64
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
+/* end file src/generic/stage1/utf8_validator.h */
 
 //
 // Stage 2
@@ -3768,9 +3813,7 @@ WARN_UNUSED bool implementation::validate_utf8(const char *buf, size_t len) cons
 #ifndef SIMDJSON_ARM64_STRINGPARSING_H
 #define SIMDJSON_ARM64_STRINGPARSING_H
 
-/* jsoncharutils.h already included: #include "jsoncharutils.h" */
 /* arm64/simd.h already included: #include "arm64/simd.h" */
-/* arm64/intrinsics.h already included: #include "arm64/intrinsics.h" */
 /* arm64/bitmanipulation.h already included: #include "arm64/bitmanipulation.h" */
 
 namespace simdjson {
@@ -3811,12 +3854,15 @@ really_inline backslash_and_quote backslash_and_quote::copy_and_find(const uint8
   };
 }
 
+} // namespace arm64
+} // namespace simdjson
+
 /* begin file src/generic/stage2/stringparsing.h */
 // This file contains the common code every implementation uses
 // It is intended to be included multiple times and compiled multiple times
-// We assume the file in which it is include already includes
-// "stringparsing.h" (this simplifies amalgation)
 
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage2 {
 namespace stringparsing {
 
@@ -3935,30 +3981,15 @@ WARN_UNUSED really_inline uint8_t *parse_string(const uint8_t *src, uint8_t *dst
 
 } // namespace stringparsing
 } // namespace stage2
-/* end file src/generic/stage2/stringparsing.h */
-
-} // namespace arm64
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
+/* end file src/generic/stage2/stringparsing.h */
 
 #endif // SIMDJSON_ARM64_STRINGPARSING_H
 /* end file src/generic/stage2/stringparsing.h */
 /* begin file src/arm64/numberparsing.h */
 #ifndef SIMDJSON_ARM64_NUMBERPARSING_H
 #define SIMDJSON_ARM64_NUMBERPARSING_H
-
-/* jsoncharutils.h already included: #include "jsoncharutils.h" */
-/* arm64/intrinsics.h already included: #include "arm64/intrinsics.h" */
-/* arm64/bitmanipulation.h already included: #include "arm64/bitmanipulation.h" */
-#include <cmath>
-#include <limits>
-
-
-#ifdef JSON_TEST_NUMBERS // for unit testing
-void found_invalid_number(const uint8_t *buf);
-void found_integer(int64_t result, const uint8_t *buf);
-void found_unsigned_integer(uint64_t result, const uint8_t *buf);
-void found_float(double result, const uint8_t *buf);
-#endif
 
 namespace simdjson {
 namespace arm64 {
@@ -3973,9 +4004,17 @@ static really_inline uint32_t parse_eight_digits_unrolled(const uint8_t *chars) 
   return uint32_t((val & 0x0000FFFF0000FFFF) * 42949672960001 >> 32);
 }
 
+} // namespace arm64
+} // namespace simdjson
+
 #define SWAR_NUMBER_PARSING
 
 /* begin file src/generic/stage2/numberparsing.h */
+#include <cmath>
+#include <limits>
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage2 {
 namespace numberparsing {
 
@@ -4450,205 +4489,23 @@ really_inline bool parse_number(const uint8_t *const src, W &writer) {
 
 } // namespace numberparsing
 } // namespace stage2
-/* end file src/generic/stage2/numberparsing.h */
-
-} // namespace arm64
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
+/* end file src/generic/stage2/numberparsing.h */
 
 #endif // SIMDJSON_ARM64_NUMBERPARSING_H
 /* end file src/generic/stage2/numberparsing.h */
-
-namespace simdjson {
-namespace arm64 {
-
-/* begin file src/generic/stage2/logger.h */
-// This is for an internal-only stage 2 specific logger.
-// Set LOG_ENABLED = true to log what stage 2 is doing!
-namespace logger {
-  static constexpr const char * DASHES = "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
-
-  static constexpr const bool LOG_ENABLED = false;
-  static constexpr const int LOG_EVENT_LEN = 30;
-  static constexpr const int LOG_BUFFER_LEN = 20;
-  static constexpr const int LOG_DETAIL_LEN = 50;
-  static constexpr const int LOG_INDEX_LEN = 10;
-
-  static int log_depth; // Not threadsafe. Log only.
-
-  // Helper to turn unprintable or newline characters into spaces
-  static really_inline char printable_char(char c) {
-    if (c >= 0x20) {
-      return c;
-    } else {
-      return ' ';
-    }
-  }
-
-  // Print the header and set up log_start
-  static really_inline void log_start() {
-    if (LOG_ENABLED) {
-      log_depth = 0;
-      printf("\n");
-      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Tape#", LOG_DETAIL_LEN, "Detail", LOG_INDEX_LEN, "index");
-      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES, LOG_INDEX_LEN+2, DASHES);
-    }
-  }
-
-  static really_inline void log_string(const char *message) {
-    if (LOG_ENABLED) {
-      printf("%s\n", message);
-    }
-  }
-
-  // Logs a single line of 
-  template<typename S>
-  static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
-    if (LOG_ENABLED) {
-      printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
-      {
-        // Print the next N characters in the buffer.
-        printf("| ");
-        // Otherwise, print the characters starting from the buffer position.
-        // Print spaces for unprintable or newline characters.
-        for (int i=0;i<LOG_BUFFER_LEN;i++) {
-          printf("%c", printable_char(structurals.current()[i]));
-        }
-        printf(" ");
-      }
-      printf("|    %c ", printable_char(structurals.current_char()));
-      printf("|    %c ", printable_char(structurals.peek_next_char()));
-      printf("| %5u ", structurals.parser.structural_indexes[*(structurals.current_structural+1)]);
-      printf("| %5u ", structurals.next_tape_index());
-      printf("| %-*s ", LOG_DETAIL_LEN, detail);
-      printf("| %*u ", LOG_INDEX_LEN, *structurals.current_structural);
-      printf("|\n");
-    }
-  }
-} // namespace logger
-
-/* end file src/generic/stage2/logger.h */
-/* begin file src/generic/stage2/atomparsing.h */
-namespace stage2 {
-namespace atomparsing {
-
-namespace{
-// The string_to_uint32 is exclusively used to map literal strings to 32-bit values.
-// We use memcpy instead of a pointer cast to avoid undefined behaviors since we cannot
-// be certain that the character pointer will be properly aligned.
-// You might think that using memcpy makes this function expensive, but you'd be wrong.
-// All decent optimizing compilers (GCC, clang, Visual Studio) will compile string_to_uint32("false");
-// to the compile-time constant 1936482662.
-really_inline uint32_t string_to_uint32(const char* str) { uint32_t val; std::memcpy(&val, str, sizeof(uint32_t)); return val; }
-
-
-// Again in str4ncmp we use a memcpy to avoid undefined behavior. The memcpy may appear expensive.
-// Yet all decent optimizing compilers will compile memcpy to a single instruction, just about.
-WARN_UNUSED
-really_inline uint32_t str4ncmp(const uint8_t *src, const char* atom) {
-  uint32_t srcval; // we want to avoid unaligned 32-bit loads (undefined in C/C++)
-  static_assert(sizeof(uint32_t) <= SIMDJSON_PADDING, "SIMDJSON_PADDING must be larger than 4 bytes");
-  std::memcpy(&srcval, src, sizeof(uint32_t));
-  return srcval ^ string_to_uint32(atom);
-}
-} // anonymous namespace
-
-WARN_UNUSED
-really_inline bool is_valid_true_atom(const uint8_t *src) {
-  return (str4ncmp(src, "true") | is_not_structural_or_whitespace(src[4])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_true_atom(const uint8_t *src, size_t len) {
-  if (len > 4) { return is_valid_true_atom(src); }
-  else if (len == 4) { return !str4ncmp(src, "true"); }
-  else { return false; }
-}
-
-WARN_UNUSED
-really_inline bool is_valid_false_atom(const uint8_t *src) {
-  return (str4ncmp(src+1, "alse") | is_not_structural_or_whitespace(src[5])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_false_atom(const uint8_t *src, size_t len) {
-  if (len > 5) { return is_valid_false_atom(src); }
-  else if (len == 5) { return !str4ncmp(src+1, "alse"); }
-  else { return false; }
-}
-
-WARN_UNUSED
-really_inline bool is_valid_null_atom(const uint8_t *src) {
-  return (str4ncmp(src, "null") | is_not_structural_or_whitespace(src[4])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_null_atom(const uint8_t *src, size_t len) {
-  if (len > 4) { return is_valid_null_atom(src); }
-  else if (len == 4) { return !str4ncmp(src, "null"); }
-  else { return false; }
-}
-
-} // namespace atomparsing
-} // namespace stage2
-/* end file src/generic/stage2/atomparsing.h */
-/* begin file src/generic/stage2/structural_iterator.h */
-namespace stage2 {
-
-class structural_iterator {
-public:
-  const uint8_t* const buf;
-  uint32_t *current_structural;
-  dom_parser_implementation &parser;
-
-  // Start a structural 
-  really_inline structural_iterator(dom_parser_implementation &_parser, size_t start_structural_index)
-    : buf{_parser.buf},
-      current_structural{&_parser.structural_indexes[start_structural_index]},
-      parser{_parser} {
-  }
-  // Get the buffer position of the current structural character
-  really_inline const uint8_t* current() {
-    return &buf[*current_structural];
-  }
-  // Get the current structural character
-  really_inline char current_char() {
-    return buf[*current_structural];
-  }
-  // Get the next structural character without advancing
-  really_inline char peek_next_char() {
-    return buf[*(current_structural+1)];
-  }
-  really_inline char advance_char() {
-    current_structural++;
-    return buf[*current_structural];
-  }
-  really_inline size_t remaining_len() {
-    return parser.len - *current_structural;
-  }
-
-  really_inline bool past_end(uint32_t n_structural_indexes) {
-    return current_structural >= &parser.structural_indexes[n_structural_indexes];
-  }
-  really_inline bool at_end(uint32_t n_structural_indexes) {
-    return current_structural == &parser.structural_indexes[n_structural_indexes];
-  }
-  really_inline bool at_beginning() {
-    return current_structural == parser.structural_indexes.get();
-  }
-};
-
-} // namespace stage2
-/* end file src/generic/stage2/structural_iterator.h */
 /* begin file src/generic/stage2/structural_parser.h */
 // This file contains the common code every implementation uses for stage2
 // It is intended to be included multiple times and compiled multiple times
 // We assume the file in which it is include already includes
 // "simdjson/stage2.h" (this simplifies amalgation)
 
-namespace stage2 {
-namespace { // Make everything here private
-
 /* begin file src/generic/stage2/tape_writer.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
 struct tape_writer {
   /** The next place to write to tape */
   uint64_t *next_tape_loc;
@@ -4744,7 +4601,206 @@ really_inline void tape_writer::append2(uint64_t val, T val2, internal::tape_typ
 really_inline void tape_writer::write(uint64_t &tape_loc, uint64_t val, internal::tape_type t) noexcept {
   tape_loc = val | ((uint64_t(char(t))) << 56);
 }
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage2/tape_writer.h */
+/* begin file src/generic/stage2/logger.h */
+// This is for an internal-only stage 2 specific logger.
+// Set LOG_ENABLED = true to log what stage 2 is doing!
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace logger {
+  static constexpr const char * DASHES = "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+
+  static constexpr const bool LOG_ENABLED = false;
+  static constexpr const int LOG_EVENT_LEN = 30;
+  static constexpr const int LOG_BUFFER_LEN = 20;
+  static constexpr const int LOG_DETAIL_LEN = 50;
+  static constexpr const int LOG_INDEX_LEN = 10;
+
+  static int log_depth; // Not threadsafe. Log only.
+
+  // Helper to turn unprintable or newline characters into spaces
+  static really_inline char printable_char(char c) {
+    if (c >= 0x20) {
+      return c;
+    } else {
+      return ' ';
+    }
+  }
+
+  // Print the header and set up log_start
+  static really_inline void log_start() {
+    if (LOG_ENABLED) {
+      log_depth = 0;
+      printf("\n");
+      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Tape#", LOG_DETAIL_LEN, "Detail", LOG_INDEX_LEN, "index");
+      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES, LOG_INDEX_LEN+2, DASHES);
+    }
+  }
+
+  static really_inline void log_string(const char *message) {
+    if (LOG_ENABLED) {
+      printf("%s\n", message);
+    }
+  }
+
+  // Logs a single line of 
+  template<typename S>
+  static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
+    if (LOG_ENABLED) {
+      printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
+      {
+        // Print the next N characters in the buffer.
+        printf("| ");
+        // Otherwise, print the characters starting from the buffer position.
+        // Print spaces for unprintable or newline characters.
+        for (int i=0;i<LOG_BUFFER_LEN;i++) {
+          printf("%c", printable_char(structurals.current()[i]));
+        }
+        printf(" ");
+      }
+      printf("|    %c ", printable_char(structurals.current_char()));
+      printf("|    %c ", printable_char(structurals.peek_next_char()));
+      printf("| %5u ", structurals.parser.structural_indexes[*(structurals.current_structural+1)]);
+      printf("| %5u ", structurals.next_tape_index());
+      printf("| %-*s ", LOG_DETAIL_LEN, detail);
+      printf("| %*u ", LOG_INDEX_LEN, *structurals.current_structural);
+      printf("|\n");
+    }
+  }
+} // namespace logger
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/logger.h */
+/* begin file src/generic/stage2/atomparsing.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+namespace atomparsing {
+
+namespace{
+// The string_to_uint32 is exclusively used to map literal strings to 32-bit values.
+// We use memcpy instead of a pointer cast to avoid undefined behaviors since we cannot
+// be certain that the character pointer will be properly aligned.
+// You might think that using memcpy makes this function expensive, but you'd be wrong.
+// All decent optimizing compilers (GCC, clang, Visual Studio) will compile string_to_uint32("false");
+// to the compile-time constant 1936482662.
+really_inline uint32_t string_to_uint32(const char* str) { uint32_t val; std::memcpy(&val, str, sizeof(uint32_t)); return val; }
+
+
+// Again in str4ncmp we use a memcpy to avoid undefined behavior. The memcpy may appear expensive.
+// Yet all decent optimizing compilers will compile memcpy to a single instruction, just about.
+WARN_UNUSED
+really_inline uint32_t str4ncmp(const uint8_t *src, const char* atom) {
+  uint32_t srcval; // we want to avoid unaligned 32-bit loads (undefined in C/C++)
+  static_assert(sizeof(uint32_t) <= SIMDJSON_PADDING, "SIMDJSON_PADDING must be larger than 4 bytes");
+  std::memcpy(&srcval, src, sizeof(uint32_t));
+  return srcval ^ string_to_uint32(atom);
+}
+} // anonymous namespace
+
+WARN_UNUSED
+really_inline bool is_valid_true_atom(const uint8_t *src) {
+  return (str4ncmp(src, "true") | is_not_structural_or_whitespace(src[4])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_true_atom(const uint8_t *src, size_t len) {
+  if (len > 4) { return is_valid_true_atom(src); }
+  else if (len == 4) { return !str4ncmp(src, "true"); }
+  else { return false; }
+}
+
+WARN_UNUSED
+really_inline bool is_valid_false_atom(const uint8_t *src) {
+  return (str4ncmp(src+1, "alse") | is_not_structural_or_whitespace(src[5])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_false_atom(const uint8_t *src, size_t len) {
+  if (len > 5) { return is_valid_false_atom(src); }
+  else if (len == 5) { return !str4ncmp(src+1, "alse"); }
+  else { return false; }
+}
+
+WARN_UNUSED
+really_inline bool is_valid_null_atom(const uint8_t *src) {
+  return (str4ncmp(src, "null") | is_not_structural_or_whitespace(src[4])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_null_atom(const uint8_t *src, size_t len) {
+  if (len > 4) { return is_valid_null_atom(src); }
+  else if (len == 4) { return !str4ncmp(src, "null"); }
+  else { return false; }
+}
+
+} // namespace atomparsing
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/atomparsing.h */
+/* begin file src/generic/stage2/structural_iterator.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+class structural_iterator {
+public:
+  const uint8_t* const buf;
+  uint32_t *current_structural;
+  dom_parser_implementation &parser;
+
+  // Start a structural 
+  really_inline structural_iterator(dom_parser_implementation &_parser, size_t start_structural_index)
+    : buf{_parser.buf},
+      current_structural{&_parser.structural_indexes[start_structural_index]},
+      parser{_parser} {
+  }
+  // Get the buffer position of the current structural character
+  really_inline const uint8_t* current() {
+    return &buf[*current_structural];
+  }
+  // Get the current structural character
+  really_inline char current_char() {
+    return buf[*current_structural];
+  }
+  // Get the next structural character without advancing
+  really_inline char peek_next_char() {
+    return buf[*(current_structural+1)];
+  }
+  really_inline char advance_char() {
+    current_structural++;
+    return buf[*current_structural];
+  }
+  really_inline size_t remaining_len() {
+    return parser.len - *current_structural;
+  }
+
+  really_inline bool past_end(uint32_t n_structural_indexes) {
+    return current_structural >= &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_end(uint32_t n_structural_indexes) {
+    return current_structural == &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_beginning() {
+    return current_structural == parser.structural_indexes.get();
+  }
+};
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/structural_iterator.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+namespace { // Make everything here private
 
 #ifdef SIMDJSON_USE_COMPUTED_GOTO
 #define INIT_ADDRESSES() { &&array_begin, &&array_continue, &&error, &&finish, &&object_begin, &&object_continue }
@@ -5227,7 +5283,41 @@ WARN_UNUSED error_code dom_parser_implementation::stage2(dom::document &_doc) no
 WARN_UNUSED error_code dom_parser_implementation::stage2_next(dom::document &_doc) noexcept {
   return stage2::parse_structurals<true>(*this, _doc);
 }
-/* end file src/generic/stage2/tape_writer.h */
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/structural_iterator.h */
+
+//
+// Implementation-specific overrides
+//
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+namespace stage1 {
+
+really_inline uint64_t json_string_scanner::find_escaped(uint64_t backslash) {
+  // On ARM, we don't short-circuit this if there are no backslashes, because the branch gives us no
+  // benefit and therefore makes things worse.
+  // if (!backslash) { uint64_t escaped = prev_escaped; prev_escaped = 0; return escaped; }
+  return find_escaped_branchless(backslash);
+}
+
+} // namespace stage1
+
+WARN_UNUSED error_code implementation::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) const noexcept {
+  return arm64::stage1::json_minifier::minify<64>(buf, len, dst, dst_len);
+}
+
+WARN_UNUSED error_code dom_parser_implementation::stage1(const uint8_t *_buf, size_t _len, bool streaming) noexcept {
+  this->buf = _buf;
+  this->len = _len;
+  return arm64::stage1::json_structural_indexer::index<64>(buf, len, *this, streaming);
+}
+
+WARN_UNUSED bool implementation::validate_utf8(const char *buf, size_t len) const noexcept {
+  return simdjson::arm64::stage1::generic_validate_utf8(buf,len);
+}
 
 WARN_UNUSED error_code dom_parser_implementation::parse(const uint8_t *_buf, size_t _len, dom::document &_doc) noexcept {
   error_code err = stage1(_buf, _len, false);
@@ -5235,23 +5325,108 @@ WARN_UNUSED error_code dom_parser_implementation::parse(const uint8_t *_buf, siz
   return stage2(_doc);
 }
 
-} // namespace arm64
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-/* end file src/generic/stage2/tape_writer.h */
+
+/* begin file src/arm64/end_implementation.h */
+#undef SIMDJSON_IMPLEMENTATION
+/* end file src/arm64/end_implementation.h */
+/* end file src/arm64/end_implementation.h */
 #endif
 #if SIMDJSON_IMPLEMENTATION_FALLBACK
 /* begin file src/fallback/implementation.cpp */
+/* begin file src/fallback/begin_implementation.h */
+#define SIMDJSON_IMPLEMENTATION fallback
 /* fallback/implementation.h already included: #include "fallback/implementation.h" */
-/* begin file src/fallback/dom_parser_implementation.h */
-#ifndef SIMDJSON_FALLBACK_DOM_PARSER_IMPLEMENTATION_H
-#define SIMDJSON_FALLBACK_DOM_PARSER_IMPLEMENTATION_H
+/* begin file src/fallback/bitmanipulation.h */
+#ifndef SIMDJSON_FALLBACK_BITMANIPULATION_H
+#define SIMDJSON_FALLBACK_BITMANIPULATION_H
 
-/* isadetection.h already included: #include "isadetection.h" */
+#include <limits>
 
 namespace simdjson {
 namespace fallback {
 
+#if defined(_MSC_VER) && !defined(_M_ARM64) && !defined(_M_X64)
+static inline unsigned char _BitScanForward64(unsigned long* ret, uint64_t x) {
+  unsigned long x0 = (unsigned long)x, top, bottom;
+  _BitScanForward(&top, (unsigned long)(x >> 32));
+  _BitScanForward(&bottom, x0);
+  *ret = x0 ? bottom : 32 + top;
+  return x != 0;
+}
+static unsigned char _BitScanReverse64(unsigned long* ret, uint64_t x) {
+  unsigned long x1 = (unsigned long)(x >> 32), top, bottom;
+  _BitScanReverse(&top, x1);
+  _BitScanReverse(&bottom, (unsigned long)x);
+  *ret = x1 ? top + 32 : bottom;
+  return x != 0;
+}
+#endif
+
+// We sometimes call trailing_zero on inputs that are zero,
+// but the algorithms do not end up using the returned value.
+// Sadly, sanitizers are not smart enough to figure it out.
+NO_SANITIZE_UNDEFINED
+really_inline int trailing_zeroes(uint64_t input_num) {
+#ifdef _MSC_VER
+  unsigned long ret;
+  // Search the mask data from least significant bit (LSB) 
+  // to the most significant bit (MSB) for a set bit (1).
+  _BitScanForward64(&ret, input_num);
+  return (int)ret;
+#else // _MSC_VER
+  return __builtin_ctzll(input_num);
+#endif // _MSC_VER
+}
+
+/* result might be undefined when input_num is zero */
+really_inline uint64_t clear_lowest_bit(uint64_t input_num) {
+  return input_num & (input_num-1);
+}
+
+/* result might be undefined when input_num is zero */
+really_inline int leading_zeroes(uint64_t input_num) {
+#ifdef _MSC_VER
+  unsigned long leading_zero = 0;
+  // Search the mask data from most significant bit (MSB) 
+  // to least significant bit (LSB) for a set bit (1).
+  if (_BitScanReverse64(&leading_zero, input_num))
+    return (int)(63 - leading_zero);
+  else
+    return 64;
+#else
+  return __builtin_clzll(input_num);
+#endif// _MSC_VER
+}
+
+really_inline bool add_overflow(uint64_t value1, uint64_t value2, uint64_t *result) {
+  *result = value1 + value2;
+  return *result < value1;
+}
+
+really_inline bool mul_overflow(uint64_t value1, uint64_t value2, uint64_t *result) {
+  *result = value1 * value2;
+  // TODO there must be a faster way
+  return value2 > 0 && value1 > std::numeric_limits<uint64_t>::max() / value2;
+}
+
+} // namespace fallback
+} // namespace simdjson
+
+#endif // SIMDJSON_FALLBACK_BITMANIPULATION_H
+/* end file src/fallback/bitmanipulation.h */
+/* end file src/fallback/bitmanipulation.h */
+/* begin file src/fallback/dom_parser_implementation.h */
+#ifndef SIMDJSON_FALLBACK_DOM_PARSER_IMPLEMENTATION_H
+#define SIMDJSON_FALLBACK_DOM_PARSER_IMPLEMENTATION_H
+
 /* begin file src/generic/dom_parser_implementation.h */
+/* isadetection.h already included: #include "isadetection.h" */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
 // expectation: sizeof(scope_descriptor) = 64/8.
 struct scope_descriptor {
   uint32_t tape_index; // where, on the tape, does the scope ([,{) begins
@@ -5292,7 +5467,12 @@ public:
   WARN_UNUSED error_code set_max_depth(size_t max_depth) noexcept final;
 };
 
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
 /* begin file src/generic/stage1/allocate.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage1 {
 namespace allocate {
 
@@ -5310,8 +5490,12 @@ really_inline error_code set_capacity(internal::dom_parser_implementation &parse
 
 } // namespace allocate
 } // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage1/allocate.h */
 /* begin file src/generic/stage2/allocate.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage2 {
 namespace allocate {
 
@@ -5330,7 +5514,12 @@ really_inline error_code set_max_depth(dom_parser_implementation &parser, size_t
 
 } // namespace allocate
 } // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage2/allocate.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 
 really_inline dom_parser_implementation::dom_parser_implementation() {}
 
@@ -5348,18 +5537,16 @@ WARN_UNUSED error_code dom_parser_implementation::set_max_depth(size_t max_depth
   _max_depth = max_depth;
   return SUCCESS;
 }
-/* end file src/generic/stage2/allocate.h */
 
-} // namespace fallback
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
+/* end file src/generic/stage2/allocate.h */
 
 #endif // SIMDJSON_FALLBACK_DOM_PARSER_IMPLEMENTATION_H
 /* end file src/generic/stage2/allocate.h */
 
-TARGET_HASWELL
-
 namespace simdjson {
-namespace fallback {
+namespace SIMDJSON_IMPLEMENTATION {
 
 WARN_UNUSED error_code implementation::create_dom_parser_implementation(
   size_t capacity,
@@ -5373,23 +5560,149 @@ WARN_UNUSED error_code implementation::create_dom_parser_implementation(
   return SUCCESS;
 }
 
-} // namespace fallback
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
 
-UNTARGET_REGION
-/* end file src/generic/stage2/allocate.h */
+/* begin file src/fallback/end_implementation.h */
+#undef SIMDJSON_IMPLEMENTATION
+/* end file src/fallback/end_implementation.h */
+/* end file src/fallback/end_implementation.h */
 /* begin file src/fallback/dom_parser_implementation.cpp */
+/* begin file src/fallback/begin_implementation.h */
+#define SIMDJSON_IMPLEMENTATION fallback
 /* fallback/implementation.h already included: #include "fallback/implementation.h" */
+/* fallback/bitmanipulation.h already included: #include "fallback/bitmanipulation.h" */
+/* end file src/fallback/begin_implementation.h */
 /* fallback/dom_parser_implementation.h already included: #include "fallback/dom_parser_implementation.h" */
+/* begin file src/generic/stage2/jsoncharutils.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+// return non-zero if not a structural or whitespace char
+// zero otherwise
+really_inline uint32_t is_not_structural_or_whitespace_or_null(uint8_t c) {
+  return structural_or_whitespace_or_null_negated[c];
+}
+
+// return non-zero if not a structural or whitespace char
+// zero otherwise
+really_inline uint32_t is_not_structural_or_whitespace(uint8_t c) {
+  return structural_or_whitespace_negated[c];
+}
+
+really_inline uint32_t is_structural_or_whitespace_or_null(uint8_t c) {
+  return structural_or_whitespace_or_null[c];
+}
+
+really_inline uint32_t is_structural_or_whitespace(uint8_t c) {
+  return structural_or_whitespace[c];
+}
+
+// returns a value with the high 16 bits set if not valid
+// otherwise returns the conversion of the 4 hex digits at src into the bottom
+// 16 bits of the 32-bit return register
+//
+// see
+// https://lemire.me/blog/2019/04/17/parsing-short-hexadecimal-strings-efficiently/
+static inline uint32_t hex_to_u32_nocheck(
+    const uint8_t *src) { // strictly speaking, static inline is a C-ism
+  uint32_t v1 = digit_to_val32[630 + src[0]];
+  uint32_t v2 = digit_to_val32[420 + src[1]];
+  uint32_t v3 = digit_to_val32[210 + src[2]];
+  uint32_t v4 = digit_to_val32[0 + src[3]];
+  return v1 | v2 | v3 | v4;
+}
+
+// given a code point cp, writes to c
+// the utf-8 code, outputting the length in
+// bytes, if the length is zero, the code point
+// is invalid
+//
+// This can possibly be made faster using pdep
+// and clz and table lookups, but JSON documents
+// have few escaped code points, and the following
+// function looks cheap.
+//
+// Note: we assume that surrogates are treated separately
+//
+really_inline size_t codepoint_to_utf8(uint32_t cp, uint8_t *c) {
+  if (cp <= 0x7F) {
+    c[0] = uint8_t(cp);
+    return 1; // ascii
+  }
+  if (cp <= 0x7FF) {
+    c[0] = uint8_t((cp >> 6) + 192);
+    c[1] = uint8_t((cp & 63) + 128);
+    return 2; // universal plane
+    //  Surrogates are treated elsewhere...
+    //} //else if (0xd800 <= cp && cp <= 0xdfff) {
+    //  return 0; // surrogates // could put assert here
+  } else if (cp <= 0xFFFF) {
+    c[0] = uint8_t((cp >> 12) + 224);
+    c[1] = uint8_t(((cp >> 6) & 63) + 128);
+    c[2] = uint8_t((cp & 63) + 128);
+    return 3;
+  } else if (cp <= 0x10FFFF) { // if you know you have a valid code point, this
+                               // is not needed
+    c[0] = uint8_t((cp >> 18) + 240);
+    c[1] = uint8_t(((cp >> 12) & 63) + 128);
+    c[2] = uint8_t(((cp >> 6) & 63) + 128);
+    c[3] = uint8_t((cp & 63) + 128);
+    return 4;
+  }
+  // will return 0 when the code point was too large.
+  return 0; // bad r
+}
+
+#ifdef SIMDJSON_IS_32BITS // _umul128 for x86, arm
+// this is a slow emulation routine for 32-bit
+//
+static really_inline uint64_t __emulu(uint32_t x, uint32_t y) {
+  return x * (uint64_t)y;
+}
+static really_inline uint64_t _umul128(uint64_t ab, uint64_t cd, uint64_t *hi) {
+  uint64_t ad = __emulu((uint32_t)(ab >> 32), (uint32_t)cd);
+  uint64_t bd = __emulu((uint32_t)ab, (uint32_t)cd);
+  uint64_t adbc = ad + __emulu((uint32_t)ab, (uint32_t)(cd >> 32));
+  uint64_t adbc_carry = !!(adbc < ad);
+  uint64_t lo = bd + (adbc << 32);
+  *hi = __emulu((uint32_t)(ab >> 32), (uint32_t)(cd >> 32)) + (adbc >> 32) +
+        (adbc_carry << 32) + !!(lo < bd);
+  return lo;
+}
+#endif
+
+really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
+  value128 answer;
+#if defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
+#ifdef _M_ARM64
+  // ARM64 has native support for 64-bit multiplications, no need to emultate
+  answer.high = __umulh(value1, value2);
+  answer.low = value1 * value2;
+#else
+  answer.low = _umul128(value1, value2, &answer.high); // _umul128 not available on ARM64
+#endif // _M_ARM64
+#else // defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
+  __uint128_t r = ((__uint128_t)value1) * value2;
+  answer.low = uint64_t(r);
+  answer.high = uint64_t(r >> 64);
+#endif
+  return answer;
+}
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/jsoncharutils.h */
 
 //
 // Stage 1
 //
-namespace simdjson {
-namespace fallback {
-namespace stage1 {
-
 /* begin file src/generic/stage1/find_next_document_index.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
 /**
   * This algorithm is used to quickly identify the last structural position that
   * makes up a complete document.
@@ -5476,7 +5789,14 @@ really_inline size_t trim_partial_utf8(const uint8_t *buf, size_t len) {
   if (buf[len-3] >= 0b11110000) { return len-3; } // 4-byte characters with only 3 bytes left
   return len;
 }
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage1/find_next_document_index.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
 
 class structural_scanner {
 public:
@@ -5647,7 +5967,6 @@ private:
 
 } // namespace stage1
 
-
 WARN_UNUSED error_code dom_parser_implementation::stage1(const uint8_t *_buf, size_t _len, bool partial) noexcept {
   this->buf = _buf;
   this->len = _len;
@@ -5775,7 +6094,7 @@ WARN_UNUSED bool implementation::validate_utf8(const char *buf, size_t len) cons
   return true;
 }
 
-} // namespace fallback
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
 
 //
@@ -5785,7 +6104,6 @@ WARN_UNUSED bool implementation::validate_utf8(const char *buf, size_t len) cons
 #ifndef SIMDJSON_FALLBACK_STRINGPARSING_H
 #define SIMDJSON_FALLBACK_STRINGPARSING_H
 
-/* jsoncharutils.h already included: #include "jsoncharutils.h" */
 
 namespace simdjson {
 namespace fallback {
@@ -5810,12 +6128,15 @@ really_inline backslash_and_quote backslash_and_quote::copy_and_find(const uint8
   return { src[0] };
 }
 
+} // namespace fallback
+} // namespace simdjson
+
 /* begin file src/generic/stage2/stringparsing.h */
 // This file contains the common code every implementation uses
 // It is intended to be included multiple times and compiled multiple times
-// We assume the file in which it is include already includes
-// "stringparsing.h" (this simplifies amalgation)
 
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage2 {
 namespace stringparsing {
 
@@ -5934,98 +6255,15 @@ WARN_UNUSED really_inline uint8_t *parse_string(const uint8_t *src, uint8_t *dst
 
 } // namespace stringparsing
 } // namespace stage2
-/* end file src/generic/stage2/stringparsing.h */
-
-} // namespace fallback
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
+/* end file src/generic/stage2/stringparsing.h */
 
 #endif // SIMDJSON_FALLBACK_STRINGPARSING_H
 /* end file src/generic/stage2/stringparsing.h */
 /* begin file src/fallback/numberparsing.h */
 #ifndef SIMDJSON_FALLBACK_NUMBERPARSING_H
 #define SIMDJSON_FALLBACK_NUMBERPARSING_H
-
-/* jsoncharutils.h already included: #include "jsoncharutils.h" */
-/* begin file src/fallback/bitmanipulation.h */
-#ifndef SIMDJSON_FALLBACK_BITMANIPULATION_H
-#define SIMDJSON_FALLBACK_BITMANIPULATION_H
-
-#include <limits>
-
-namespace simdjson {
-namespace fallback {
-
-#if defined(_MSC_VER) && !defined(_M_ARM64) && !defined(_M_X64)
-static inline unsigned char _BitScanForward64(unsigned long* ret, uint64_t x) {
-  unsigned long x0 = (unsigned long)x, top, bottom;
-  _BitScanForward(&top, (unsigned long)(x >> 32));
-  _BitScanForward(&bottom, x0);
-  *ret = x0 ? bottom : 32 + top;
-  return x != 0;
-}
-static unsigned char _BitScanReverse64(unsigned long* ret, uint64_t x) {
-  unsigned long x1 = (unsigned long)(x >> 32), top, bottom;
-  _BitScanReverse(&top, x1);
-  _BitScanReverse(&bottom, (unsigned long)x);
-  *ret = x1 ? top + 32 : bottom;
-  return x != 0;
-}
-#endif
-
-// We sometimes call trailing_zero on inputs that are zero,
-// but the algorithms do not end up using the returned value.
-// Sadly, sanitizers are not smart enough to figure it out.
-NO_SANITIZE_UNDEFINED
-really_inline int trailing_zeroes(uint64_t input_num) {
-#ifdef _MSC_VER
-  unsigned long ret;
-  // Search the mask data from least significant bit (LSB) 
-  // to the most significant bit (MSB) for a set bit (1).
-  _BitScanForward64(&ret, input_num);
-  return (int)ret;
-#else // _MSC_VER
-  return __builtin_ctzll(input_num);
-#endif // _MSC_VER
-}
-
-/* result might be undefined when input_num is zero */
-really_inline uint64_t clear_lowest_bit(uint64_t input_num) {
-  return input_num & (input_num-1);
-}
-
-/* result might be undefined when input_num is zero */
-really_inline int leading_zeroes(uint64_t input_num) {
-#ifdef _MSC_VER
-  unsigned long leading_zero = 0;
-  // Search the mask data from most significant bit (MSB) 
-  // to least significant bit (LSB) for a set bit (1).
-  if (_BitScanReverse64(&leading_zero, input_num))
-    return (int)(63 - leading_zero);
-  else
-    return 64;
-#else
-  return __builtin_clzll(input_num);
-#endif// _MSC_VER
-}
-
-really_inline bool add_overflow(uint64_t value1, uint64_t value2, uint64_t *result) {
-  *result = value1 + value2;
-  return *result < value1;
-}
-
-really_inline bool mul_overflow(uint64_t value1, uint64_t value2, uint64_t *result) {
-  *result = value1 * value2;
-  // TODO there must be a faster way
-  return value2 > 0 && value1 > std::numeric_limits<uint64_t>::max() / value2;
-}
-
-} // namespace fallback
-} // namespace simdjson
-
-#endif // SIMDJSON_FALLBACK_BITMANIPULATION_H
-/* end file src/fallback/bitmanipulation.h */
-#include <cmath>
-#include <limits>
 
 #ifdef JSON_TEST_NUMBERS // for unit testing
 void found_invalid_number(const uint8_t *buf);
@@ -6035,7 +6273,7 @@ void found_float(double result, const uint8_t *buf);
 #endif
 
 namespace simdjson {
-namespace fallback {
+namespace SIMDJSON_IMPLEMENTATION {
 static really_inline uint32_t parse_eight_digits_unrolled(const char *chars) {
   uint32_t result = 0;
   for (int i=0;i<8;i++) {
@@ -6047,9 +6285,16 @@ static really_inline uint32_t parse_eight_digits_unrolled(const uint8_t *chars) 
   return parse_eight_digits_unrolled((const char *)chars);
 }
 
-#define SWAR_NUMBER_PARSING
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 
+#define SWAR_NUMBER_PARSING
 /* begin file src/generic/stage2/numberparsing.h */
+#include <cmath>
+#include <limits>
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage2 {
 namespace numberparsing {
 
@@ -6524,206 +6769,23 @@ really_inline bool parse_number(const uint8_t *const src, W &writer) {
 
 } // namespace numberparsing
 } // namespace stage2
-/* end file src/generic/stage2/numberparsing.h */
-
-} // namespace fallback
-
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
+/* end file src/generic/stage2/numberparsing.h */
 
 #endif // SIMDJSON_FALLBACK_NUMBERPARSING_H
 /* end file src/generic/stage2/numberparsing.h */
-
-namespace simdjson {
-namespace fallback {
-
-/* begin file src/generic/stage2/logger.h */
-// This is for an internal-only stage 2 specific logger.
-// Set LOG_ENABLED = true to log what stage 2 is doing!
-namespace logger {
-  static constexpr const char * DASHES = "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
-
-  static constexpr const bool LOG_ENABLED = false;
-  static constexpr const int LOG_EVENT_LEN = 30;
-  static constexpr const int LOG_BUFFER_LEN = 20;
-  static constexpr const int LOG_DETAIL_LEN = 50;
-  static constexpr const int LOG_INDEX_LEN = 10;
-
-  static int log_depth; // Not threadsafe. Log only.
-
-  // Helper to turn unprintable or newline characters into spaces
-  static really_inline char printable_char(char c) {
-    if (c >= 0x20) {
-      return c;
-    } else {
-      return ' ';
-    }
-  }
-
-  // Print the header and set up log_start
-  static really_inline void log_start() {
-    if (LOG_ENABLED) {
-      log_depth = 0;
-      printf("\n");
-      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Tape#", LOG_DETAIL_LEN, "Detail", LOG_INDEX_LEN, "index");
-      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES, LOG_INDEX_LEN+2, DASHES);
-    }
-  }
-
-  static really_inline void log_string(const char *message) {
-    if (LOG_ENABLED) {
-      printf("%s\n", message);
-    }
-  }
-
-  // Logs a single line of 
-  template<typename S>
-  static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
-    if (LOG_ENABLED) {
-      printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
-      {
-        // Print the next N characters in the buffer.
-        printf("| ");
-        // Otherwise, print the characters starting from the buffer position.
-        // Print spaces for unprintable or newline characters.
-        for (int i=0;i<LOG_BUFFER_LEN;i++) {
-          printf("%c", printable_char(structurals.current()[i]));
-        }
-        printf(" ");
-      }
-      printf("|    %c ", printable_char(structurals.current_char()));
-      printf("|    %c ", printable_char(structurals.peek_next_char()));
-      printf("| %5u ", structurals.parser.structural_indexes[*(structurals.current_structural+1)]);
-      printf("| %5u ", structurals.next_tape_index());
-      printf("| %-*s ", LOG_DETAIL_LEN, detail);
-      printf("| %*u ", LOG_INDEX_LEN, *structurals.current_structural);
-      printf("|\n");
-    }
-  }
-} // namespace logger
-
-/* end file src/generic/stage2/logger.h */
-/* begin file src/generic/stage2/atomparsing.h */
-namespace stage2 {
-namespace atomparsing {
-
-namespace{
-// The string_to_uint32 is exclusively used to map literal strings to 32-bit values.
-// We use memcpy instead of a pointer cast to avoid undefined behaviors since we cannot
-// be certain that the character pointer will be properly aligned.
-// You might think that using memcpy makes this function expensive, but you'd be wrong.
-// All decent optimizing compilers (GCC, clang, Visual Studio) will compile string_to_uint32("false");
-// to the compile-time constant 1936482662.
-really_inline uint32_t string_to_uint32(const char* str) { uint32_t val; std::memcpy(&val, str, sizeof(uint32_t)); return val; }
-
-
-// Again in str4ncmp we use a memcpy to avoid undefined behavior. The memcpy may appear expensive.
-// Yet all decent optimizing compilers will compile memcpy to a single instruction, just about.
-WARN_UNUSED
-really_inline uint32_t str4ncmp(const uint8_t *src, const char* atom) {
-  uint32_t srcval; // we want to avoid unaligned 32-bit loads (undefined in C/C++)
-  static_assert(sizeof(uint32_t) <= SIMDJSON_PADDING, "SIMDJSON_PADDING must be larger than 4 bytes");
-  std::memcpy(&srcval, src, sizeof(uint32_t));
-  return srcval ^ string_to_uint32(atom);
-}
-} // anonymous namespace
-
-WARN_UNUSED
-really_inline bool is_valid_true_atom(const uint8_t *src) {
-  return (str4ncmp(src, "true") | is_not_structural_or_whitespace(src[4])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_true_atom(const uint8_t *src, size_t len) {
-  if (len > 4) { return is_valid_true_atom(src); }
-  else if (len == 4) { return !str4ncmp(src, "true"); }
-  else { return false; }
-}
-
-WARN_UNUSED
-really_inline bool is_valid_false_atom(const uint8_t *src) {
-  return (str4ncmp(src+1, "alse") | is_not_structural_or_whitespace(src[5])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_false_atom(const uint8_t *src, size_t len) {
-  if (len > 5) { return is_valid_false_atom(src); }
-  else if (len == 5) { return !str4ncmp(src+1, "alse"); }
-  else { return false; }
-}
-
-WARN_UNUSED
-really_inline bool is_valid_null_atom(const uint8_t *src) {
-  return (str4ncmp(src, "null") | is_not_structural_or_whitespace(src[4])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_null_atom(const uint8_t *src, size_t len) {
-  if (len > 4) { return is_valid_null_atom(src); }
-  else if (len == 4) { return !str4ncmp(src, "null"); }
-  else { return false; }
-}
-
-} // namespace atomparsing
-} // namespace stage2
-/* end file src/generic/stage2/atomparsing.h */
-/* begin file src/generic/stage2/structural_iterator.h */
-namespace stage2 {
-
-class structural_iterator {
-public:
-  const uint8_t* const buf;
-  uint32_t *current_structural;
-  dom_parser_implementation &parser;
-
-  // Start a structural 
-  really_inline structural_iterator(dom_parser_implementation &_parser, size_t start_structural_index)
-    : buf{_parser.buf},
-      current_structural{&_parser.structural_indexes[start_structural_index]},
-      parser{_parser} {
-  }
-  // Get the buffer position of the current structural character
-  really_inline const uint8_t* current() {
-    return &buf[*current_structural];
-  }
-  // Get the current structural character
-  really_inline char current_char() {
-    return buf[*current_structural];
-  }
-  // Get the next structural character without advancing
-  really_inline char peek_next_char() {
-    return buf[*(current_structural+1)];
-  }
-  really_inline char advance_char() {
-    current_structural++;
-    return buf[*current_structural];
-  }
-  really_inline size_t remaining_len() {
-    return parser.len - *current_structural;
-  }
-
-  really_inline bool past_end(uint32_t n_structural_indexes) {
-    return current_structural >= &parser.structural_indexes[n_structural_indexes];
-  }
-  really_inline bool at_end(uint32_t n_structural_indexes) {
-    return current_structural == &parser.structural_indexes[n_structural_indexes];
-  }
-  really_inline bool at_beginning() {
-    return current_structural == parser.structural_indexes.get();
-  }
-};
-
-} // namespace stage2
-/* end file src/generic/stage2/structural_iterator.h */
 /* begin file src/generic/stage2/structural_parser.h */
 // This file contains the common code every implementation uses for stage2
 // It is intended to be included multiple times and compiled multiple times
 // We assume the file in which it is include already includes
 // "simdjson/stage2.h" (this simplifies amalgation)
 
-namespace stage2 {
-namespace { // Make everything here private
-
 /* begin file src/generic/stage2/tape_writer.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
 struct tape_writer {
   /** The next place to write to tape */
   uint64_t *next_tape_loc;
@@ -6819,7 +6881,206 @@ really_inline void tape_writer::append2(uint64_t val, T val2, internal::tape_typ
 really_inline void tape_writer::write(uint64_t &tape_loc, uint64_t val, internal::tape_type t) noexcept {
   tape_loc = val | ((uint64_t(char(t))) << 56);
 }
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage2/tape_writer.h */
+/* begin file src/generic/stage2/logger.h */
+// This is for an internal-only stage 2 specific logger.
+// Set LOG_ENABLED = true to log what stage 2 is doing!
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace logger {
+  static constexpr const char * DASHES = "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+
+  static constexpr const bool LOG_ENABLED = false;
+  static constexpr const int LOG_EVENT_LEN = 30;
+  static constexpr const int LOG_BUFFER_LEN = 20;
+  static constexpr const int LOG_DETAIL_LEN = 50;
+  static constexpr const int LOG_INDEX_LEN = 10;
+
+  static int log_depth; // Not threadsafe. Log only.
+
+  // Helper to turn unprintable or newline characters into spaces
+  static really_inline char printable_char(char c) {
+    if (c >= 0x20) {
+      return c;
+    } else {
+      return ' ';
+    }
+  }
+
+  // Print the header and set up log_start
+  static really_inline void log_start() {
+    if (LOG_ENABLED) {
+      log_depth = 0;
+      printf("\n");
+      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Tape#", LOG_DETAIL_LEN, "Detail", LOG_INDEX_LEN, "index");
+      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES, LOG_INDEX_LEN+2, DASHES);
+    }
+  }
+
+  static really_inline void log_string(const char *message) {
+    if (LOG_ENABLED) {
+      printf("%s\n", message);
+    }
+  }
+
+  // Logs a single line of 
+  template<typename S>
+  static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
+    if (LOG_ENABLED) {
+      printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
+      {
+        // Print the next N characters in the buffer.
+        printf("| ");
+        // Otherwise, print the characters starting from the buffer position.
+        // Print spaces for unprintable or newline characters.
+        for (int i=0;i<LOG_BUFFER_LEN;i++) {
+          printf("%c", printable_char(structurals.current()[i]));
+        }
+        printf(" ");
+      }
+      printf("|    %c ", printable_char(structurals.current_char()));
+      printf("|    %c ", printable_char(structurals.peek_next_char()));
+      printf("| %5u ", structurals.parser.structural_indexes[*(structurals.current_structural+1)]);
+      printf("| %5u ", structurals.next_tape_index());
+      printf("| %-*s ", LOG_DETAIL_LEN, detail);
+      printf("| %*u ", LOG_INDEX_LEN, *structurals.current_structural);
+      printf("|\n");
+    }
+  }
+} // namespace logger
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/logger.h */
+/* begin file src/generic/stage2/atomparsing.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+namespace atomparsing {
+
+namespace{
+// The string_to_uint32 is exclusively used to map literal strings to 32-bit values.
+// We use memcpy instead of a pointer cast to avoid undefined behaviors since we cannot
+// be certain that the character pointer will be properly aligned.
+// You might think that using memcpy makes this function expensive, but you'd be wrong.
+// All decent optimizing compilers (GCC, clang, Visual Studio) will compile string_to_uint32("false");
+// to the compile-time constant 1936482662.
+really_inline uint32_t string_to_uint32(const char* str) { uint32_t val; std::memcpy(&val, str, sizeof(uint32_t)); return val; }
+
+
+// Again in str4ncmp we use a memcpy to avoid undefined behavior. The memcpy may appear expensive.
+// Yet all decent optimizing compilers will compile memcpy to a single instruction, just about.
+WARN_UNUSED
+really_inline uint32_t str4ncmp(const uint8_t *src, const char* atom) {
+  uint32_t srcval; // we want to avoid unaligned 32-bit loads (undefined in C/C++)
+  static_assert(sizeof(uint32_t) <= SIMDJSON_PADDING, "SIMDJSON_PADDING must be larger than 4 bytes");
+  std::memcpy(&srcval, src, sizeof(uint32_t));
+  return srcval ^ string_to_uint32(atom);
+}
+} // anonymous namespace
+
+WARN_UNUSED
+really_inline bool is_valid_true_atom(const uint8_t *src) {
+  return (str4ncmp(src, "true") | is_not_structural_or_whitespace(src[4])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_true_atom(const uint8_t *src, size_t len) {
+  if (len > 4) { return is_valid_true_atom(src); }
+  else if (len == 4) { return !str4ncmp(src, "true"); }
+  else { return false; }
+}
+
+WARN_UNUSED
+really_inline bool is_valid_false_atom(const uint8_t *src) {
+  return (str4ncmp(src+1, "alse") | is_not_structural_or_whitespace(src[5])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_false_atom(const uint8_t *src, size_t len) {
+  if (len > 5) { return is_valid_false_atom(src); }
+  else if (len == 5) { return !str4ncmp(src+1, "alse"); }
+  else { return false; }
+}
+
+WARN_UNUSED
+really_inline bool is_valid_null_atom(const uint8_t *src) {
+  return (str4ncmp(src, "null") | is_not_structural_or_whitespace(src[4])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_null_atom(const uint8_t *src, size_t len) {
+  if (len > 4) { return is_valid_null_atom(src); }
+  else if (len == 4) { return !str4ncmp(src, "null"); }
+  else { return false; }
+}
+
+} // namespace atomparsing
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/atomparsing.h */
+/* begin file src/generic/stage2/structural_iterator.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+class structural_iterator {
+public:
+  const uint8_t* const buf;
+  uint32_t *current_structural;
+  dom_parser_implementation &parser;
+
+  // Start a structural 
+  really_inline structural_iterator(dom_parser_implementation &_parser, size_t start_structural_index)
+    : buf{_parser.buf},
+      current_structural{&_parser.structural_indexes[start_structural_index]},
+      parser{_parser} {
+  }
+  // Get the buffer position of the current structural character
+  really_inline const uint8_t* current() {
+    return &buf[*current_structural];
+  }
+  // Get the current structural character
+  really_inline char current_char() {
+    return buf[*current_structural];
+  }
+  // Get the next structural character without advancing
+  really_inline char peek_next_char() {
+    return buf[*(current_structural+1)];
+  }
+  really_inline char advance_char() {
+    current_structural++;
+    return buf[*current_structural];
+  }
+  really_inline size_t remaining_len() {
+    return parser.len - *current_structural;
+  }
+
+  really_inline bool past_end(uint32_t n_structural_indexes) {
+    return current_structural >= &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_end(uint32_t n_structural_indexes) {
+    return current_structural == &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_beginning() {
+    return current_structural == parser.structural_indexes.get();
+  }
+};
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/structural_iterator.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+namespace { // Make everything here private
 
 #ifdef SIMDJSON_USE_COMPUTED_GOTO
 #define INIT_ADDRESSES() { &&array_begin, &&array_continue, &&error, &&finish, &&object_begin, &&object_continue }
@@ -7302,7 +7563,13 @@ WARN_UNUSED error_code dom_parser_implementation::stage2(dom::document &_doc) no
 WARN_UNUSED error_code dom_parser_implementation::stage2_next(dom::document &_doc) noexcept {
   return stage2::parse_structurals<true>(*this, _doc);
 }
-/* end file src/generic/stage2/tape_writer.h */
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/structural_iterator.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 
 WARN_UNUSED error_code dom_parser_implementation::parse(const uint8_t *_buf, size_t _len, dom::document &_doc) noexcept {
   error_code err = stage1(_buf, _len, false);
@@ -7310,161 +7577,21 @@ WARN_UNUSED error_code dom_parser_implementation::parse(const uint8_t *_buf, siz
   return stage2(_doc);
 }
 
-} // namespace fallback
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-/* end file src/generic/stage2/tape_writer.h */
+
+/* begin file src/fallback/end_implementation.h */
+#undef SIMDJSON_IMPLEMENTATION
+/* end file src/fallback/end_implementation.h */
+/* end file src/fallback/end_implementation.h */
 #endif
 #if SIMDJSON_IMPLEMENTATION_HASWELL
 /* begin file src/haswell/implementation.cpp */
+/* begin file src/haswell/begin_implementation.h */
+#define SIMDJSON_IMPLEMENTATION haswell
+#define SIMDJSON_TARGET_HASWELL SIMDJSON_TARGET_REGION("avx2,bmi,pclmul,lzcnt")
+
 /* haswell/implementation.h already included: #include "haswell/implementation.h" */
-/* begin file src/haswell/dom_parser_implementation.h */
-#ifndef SIMDJSON_HASWELL_DOM_PARSER_IMPLEMENTATION_H
-#define SIMDJSON_HASWELL_DOM_PARSER_IMPLEMENTATION_H
-
-/* isadetection.h already included: #include "isadetection.h" */
-
-namespace simdjson {
-namespace haswell {
-
-/* begin file src/generic/dom_parser_implementation.h */
-// expectation: sizeof(scope_descriptor) = 64/8.
-struct scope_descriptor {
-  uint32_t tape_index; // where, on the tape, does the scope ([,{) begins
-  uint32_t count; // how many elements in the scope
-}; // struct scope_descriptor
-
-#ifdef SIMDJSON_USE_COMPUTED_GOTO
-typedef void* ret_address_t;
-#else
-typedef char ret_address_t;
-#endif
-
-class dom_parser_implementation final : public internal::dom_parser_implementation {
-public:
-  /** Tape location of each open { or [ */
-  std::unique_ptr<scope_descriptor[]> containing_scope{};
-  /** Return address of each open { or [ */
-  std::unique_ptr<ret_address_t[]> ret_address{};
-  /** Buffer passed to stage 1 */
-  const uint8_t *buf{};
-  /** Length passed to stage 1 */
-  size_t len{0};
-  /** Document passed to stage 2 */
-  dom::document *doc{};
-  /** Error code (TODO remove, this is not even used, we just set it so the g++ optimizer doesn't get confused) */
-  error_code error{UNINITIALIZED};
-
-  really_inline dom_parser_implementation();
-  dom_parser_implementation(const dom_parser_implementation &) = delete;
-  dom_parser_implementation & operator=(const dom_parser_implementation &) = delete;
-
-  WARN_UNUSED error_code parse(const uint8_t *buf, size_t len, dom::document &doc) noexcept final;
-  WARN_UNUSED error_code stage1(const uint8_t *buf, size_t len, bool partial) noexcept final;
-  WARN_UNUSED error_code check_for_unclosed_array() noexcept;
-  WARN_UNUSED error_code stage2(dom::document &doc) noexcept final;
-  WARN_UNUSED error_code stage2_next(dom::document &doc) noexcept final;
-  WARN_UNUSED error_code set_capacity(size_t capacity) noexcept final;
-  WARN_UNUSED error_code set_max_depth(size_t max_depth) noexcept final;
-};
-
-/* begin file src/generic/stage1/allocate.h */
-namespace stage1 {
-namespace allocate {
-
-//
-// Allocates stage 1 internal state and outputs in the parser
-//
-really_inline error_code set_capacity(internal::dom_parser_implementation &parser, size_t capacity) {
-  size_t max_structures = ROUNDUP_N(capacity, 64) + 2 + 7;
-  parser.structural_indexes.reset( new (std::nothrow) uint32_t[max_structures] );
-  if (!parser.structural_indexes) { return MEMALLOC; }
-  parser.structural_indexes[0] = 0;
-  parser.n_structural_indexes = 0;
-  return SUCCESS;
-}
-
-} // namespace allocate
-} // namespace stage1
-/* end file src/generic/stage1/allocate.h */
-/* begin file src/generic/stage2/allocate.h */
-namespace stage2 {
-namespace allocate {
-
-//
-// Allocates stage 2 internal state and outputs in the parser
-//
-really_inline error_code set_max_depth(dom_parser_implementation &parser, size_t max_depth) {
-  parser.containing_scope.reset(new (std::nothrow) scope_descriptor[max_depth]);
-  parser.ret_address.reset(new (std::nothrow) ret_address_t[max_depth]);
-
-  if (!parser.ret_address || !parser.containing_scope) {
-    return MEMALLOC;
-  }
-  return SUCCESS;
-}
-
-} // namespace allocate
-} // namespace stage2
-/* end file src/generic/stage2/allocate.h */
-
-really_inline dom_parser_implementation::dom_parser_implementation() {}
-
-// Leaving these here so they can be inlined if so desired
-WARN_UNUSED error_code dom_parser_implementation::set_capacity(size_t capacity) noexcept {
-  error_code err = stage1::allocate::set_capacity(*this, capacity);
-  if (err) { _capacity = 0; return err; }
-  _capacity = capacity;
-  return SUCCESS;
-}
-
-WARN_UNUSED error_code dom_parser_implementation::set_max_depth(size_t max_depth) noexcept {
-  error_code err = stage2::allocate::set_max_depth(*this, max_depth);
-  if (err) { _max_depth = 0; return err; }
-  _max_depth = max_depth;
-  return SUCCESS;
-}
-/* end file src/generic/stage2/allocate.h */
-
-} // namespace haswell
-} // namespace simdjson
-
-#endif // SIMDJSON_HASWELL_DOM_PARSER_IMPLEMENTATION_H
-/* end file src/generic/stage2/allocate.h */
-
-TARGET_HASWELL
-
-namespace simdjson {
-namespace haswell {
-
-WARN_UNUSED error_code implementation::create_dom_parser_implementation(
-  size_t capacity,
-  size_t max_depth,
-  std::unique_ptr<internal::dom_parser_implementation>& dst
-) const noexcept {
-  dst.reset( new (std::nothrow) dom_parser_implementation() );
-  if (!dst) { return MEMALLOC; }
-  dst->set_capacity(capacity);
-  dst->set_max_depth(max_depth);
-  return SUCCESS;
-}
-
-} // namespace haswell
-} // namespace simdjson
-
-UNTARGET_REGION
-/* end file src/generic/stage2/allocate.h */
-/* begin file src/haswell/dom_parser_implementation.cpp */
-/* haswell/implementation.h already included: #include "haswell/implementation.h" */
-/* haswell/dom_parser_implementation.h already included: #include "haswell/dom_parser_implementation.h" */
-
-//
-// Stage 1
-//
-/* begin file src/haswell/bitmask.h */
-#ifndef SIMDJSON_HASWELL_BITMASK_H
-#define SIMDJSON_HASWELL_BITMASK_H
-
-
 /* begin file src/haswell/intrinsics.h */
 #ifndef SIMDJSON_HASWELL_INTRINSICS_H
 #define SIMDJSON_HASWELL_INTRINSICS_H
@@ -7508,58 +7635,25 @@ UNTARGET_REGION
 // has it as a macro.
 #ifndef _blsr_u64
 // we roll our own
-TARGET_HASWELL
-static really_inline uint64_t simdjson_blsr_u64(uint64_t n) {
+SIMDJSON_TARGET_HASWELL
+static really_inline uint64_t _blsr_u64(uint64_t n) {
   return (n - 1) & n;
 }
-UNTARGET_REGION
-#define _blsr_u64(a)      (simdjson_blsr_u64((a)))
+SIMDJSON_UNTARGET_REGION
 #endif //  _blsr_u64
-#endif
-
+#endif // SIMDJSON_CLANG_VISUAL_STUDIO
 
 #endif // SIMDJSON_HASWELL_INTRINSICS_H
 /* end file src/haswell/intrinsics.h */
 
-TARGET_HASWELL
-namespace simdjson {
-namespace haswell {
+SIMDJSON_TARGET_HASWELL
 
-//
-// Perform a "cumulative bitwise xor," flipping bits each time a 1 is encountered.
-//
-// For example, prefix_xor(00100100) == 00011100
-//
-really_inline uint64_t prefix_xor(const uint64_t bitmask) {
-  // There should be no such thing with a processor supporting avx2
-  // but not clmul.
-  __m128i all_ones = _mm_set1_epi8('\xFF');
-  __m128i result = _mm_clmulepi64_si128(_mm_set_epi64x(0ULL, bitmask), all_ones, 0);
-  return _mm_cvtsi128_si64(result);
-}
-
-} // namespace haswell
-
-} // namespace simdjson
-UNTARGET_REGION
-
-#endif // SIMDJSON_HASWELL_BITMASK_H
-/* end file src/haswell/intrinsics.h */
-/* begin file src/haswell/simd.h */
-#ifndef SIMDJSON_HASWELL_SIMD_H
-#define SIMDJSON_HASWELL_SIMD_H
-
-/* simdprune_tables.h already included: #include "simdprune_tables.h" */
 /* begin file src/haswell/bitmanipulation.h */
 #ifndef SIMDJSON_HASWELL_BITMANIPULATION_H
 #define SIMDJSON_HASWELL_BITMANIPULATION_H
 
-
-/* haswell/intrinsics.h already included: #include "haswell/intrinsics.h" */
-
-TARGET_HASWELL
 namespace simdjson {
-namespace haswell {
+namespace SIMDJSON_IMPLEMENTATION {
 
 // We sometimes call trailing_zero on inputs that are zero,
 // but the algorithms do not end up using the returned value.
@@ -7625,17 +7719,44 @@ really_inline bool mul_overflow(uint64_t value1, uint64_t value2,
 #endif
 }
 
-} // namespace haswell
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
 
 #endif // SIMDJSON_HASWELL_BITMANIPULATION_H
 /* end file src/haswell/bitmanipulation.h */
-/* haswell/intrinsics.h already included: #include "haswell/intrinsics.h" */
+/* begin file src/haswell/bitmask.h */
+#ifndef SIMDJSON_HASWELL_BITMASK_H
+#define SIMDJSON_HASWELL_BITMASK_H
 
-TARGET_HASWELL
 namespace simdjson {
-namespace haswell {
+namespace SIMDJSON_IMPLEMENTATION {
+
+//
+// Perform a "cumulative bitwise xor," flipping bits each time a 1 is encountered.
+//
+// For example, prefix_xor(00100100) == 00011100
+//
+really_inline uint64_t prefix_xor(const uint64_t bitmask) {
+  // There should be no such thing with a processor supporting avx2
+  // but not clmul.
+  __m128i all_ones = _mm_set1_epi8('\xFF');
+  __m128i result = _mm_clmulepi64_si128(_mm_set_epi64x(0ULL, bitmask), all_ones, 0);
+  return _mm_cvtsi128_si64(result);
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
+#endif // SIMDJSON_HASWELL_BITMASK_H
+/* end file src/haswell/bitmask.h */
+/* begin file src/haswell/simd.h */
+#ifndef SIMDJSON_HASWELL_SIMD_H
+#define SIMDJSON_HASWELL_SIMD_H
+
+/* simdprune_tables.h already included: #include "simdprune_tables.h" */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace simd {
 
   // Forward-declared so they can be used by splat and friends.
@@ -7979,17 +8100,309 @@ namespace simd {
 
 } // namespace simd
 
-} // namespace haswell
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
 
 #endif // SIMDJSON_HASWELL_SIMD_H
-/* end file src/haswell/bitmanipulation.h */
-/* haswell/bitmanipulation.h already included: #include "haswell/bitmanipulation.h" */
+/* end file src/haswell/simd.h */
 
-TARGET_HASWELL
+/* end file src/haswell/simd.h */
+/* begin file src/haswell/dom_parser_implementation.h */
+#ifndef SIMDJSON_HASWELL_DOM_PARSER_IMPLEMENTATION_H
+#define SIMDJSON_HASWELL_DOM_PARSER_IMPLEMENTATION_H
+
+/* begin file src/generic/dom_parser_implementation.h */
+/* isadetection.h already included: #include "isadetection.h" */
+
 namespace simdjson {
-namespace haswell {
+namespace SIMDJSON_IMPLEMENTATION {
+
+// expectation: sizeof(scope_descriptor) = 64/8.
+struct scope_descriptor {
+  uint32_t tape_index; // where, on the tape, does the scope ([,{) begins
+  uint32_t count; // how many elements in the scope
+}; // struct scope_descriptor
+
+#ifdef SIMDJSON_USE_COMPUTED_GOTO
+typedef void* ret_address_t;
+#else
+typedef char ret_address_t;
+#endif
+
+class dom_parser_implementation final : public internal::dom_parser_implementation {
+public:
+  /** Tape location of each open { or [ */
+  std::unique_ptr<scope_descriptor[]> containing_scope{};
+  /** Return address of each open { or [ */
+  std::unique_ptr<ret_address_t[]> ret_address{};
+  /** Buffer passed to stage 1 */
+  const uint8_t *buf{};
+  /** Length passed to stage 1 */
+  size_t len{0};
+  /** Document passed to stage 2 */
+  dom::document *doc{};
+  /** Error code (TODO remove, this is not even used, we just set it so the g++ optimizer doesn't get confused) */
+  error_code error{UNINITIALIZED};
+
+  really_inline dom_parser_implementation();
+  dom_parser_implementation(const dom_parser_implementation &) = delete;
+  dom_parser_implementation & operator=(const dom_parser_implementation &) = delete;
+
+  WARN_UNUSED error_code parse(const uint8_t *buf, size_t len, dom::document &doc) noexcept final;
+  WARN_UNUSED error_code stage1(const uint8_t *buf, size_t len, bool partial) noexcept final;
+  WARN_UNUSED error_code check_for_unclosed_array() noexcept;
+  WARN_UNUSED error_code stage2(dom::document &doc) noexcept final;
+  WARN_UNUSED error_code stage2_next(dom::document &doc) noexcept final;
+  WARN_UNUSED error_code set_capacity(size_t capacity) noexcept final;
+  WARN_UNUSED error_code set_max_depth(size_t max_depth) noexcept final;
+};
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
+/* begin file src/generic/stage1/allocate.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+namespace allocate {
+
+//
+// Allocates stage 1 internal state and outputs in the parser
+//
+really_inline error_code set_capacity(internal::dom_parser_implementation &parser, size_t capacity) {
+  size_t max_structures = ROUNDUP_N(capacity, 64) + 2 + 7;
+  parser.structural_indexes.reset( new (std::nothrow) uint32_t[max_structures] );
+  if (!parser.structural_indexes) { return MEMALLOC; }
+  parser.structural_indexes[0] = 0;
+  parser.n_structural_indexes = 0;
+  return SUCCESS;
+}
+
+} // namespace allocate
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/allocate.h */
+/* begin file src/generic/stage2/allocate.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+namespace allocate {
+
+//
+// Allocates stage 2 internal state and outputs in the parser
+//
+really_inline error_code set_max_depth(dom_parser_implementation &parser, size_t max_depth) {
+  parser.containing_scope.reset(new (std::nothrow) scope_descriptor[max_depth]);
+  parser.ret_address.reset(new (std::nothrow) ret_address_t[max_depth]);
+
+  if (!parser.ret_address || !parser.containing_scope) {
+    return MEMALLOC;
+  }
+  return SUCCESS;
+}
+
+} // namespace allocate
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/allocate.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+really_inline dom_parser_implementation::dom_parser_implementation() {}
+
+// Leaving these here so they can be inlined if so desired
+WARN_UNUSED error_code dom_parser_implementation::set_capacity(size_t capacity) noexcept {
+  error_code err = stage1::allocate::set_capacity(*this, capacity);
+  if (err) { _capacity = 0; return err; }
+  _capacity = capacity;
+  return SUCCESS;
+}
+
+WARN_UNUSED error_code dom_parser_implementation::set_max_depth(size_t max_depth) noexcept {
+  error_code err = stage2::allocate::set_max_depth(*this, max_depth);
+  if (err) { _max_depth = 0; return err; }
+  _max_depth = max_depth;
+  return SUCCESS;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/allocate.h */
+
+#endif // SIMDJSON_HASWELL_DOM_PARSER_IMPLEMENTATION_H
+/* end file src/generic/stage2/allocate.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+WARN_UNUSED error_code implementation::create_dom_parser_implementation(
+  size_t capacity,
+  size_t max_depth,
+  std::unique_ptr<internal::dom_parser_implementation>& dst
+) const noexcept {
+  dst.reset( new (std::nothrow) dom_parser_implementation() );
+  if (!dst) { return MEMALLOC; }
+  dst->set_capacity(capacity);
+  dst->set_max_depth(max_depth);
+  return SUCCESS;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
+/* begin file src/haswell/end_implementation.h */
+#undef SIMDJSON_IMPLEMENTATION
+SIMDJSON_UNTARGET_REGION
+/* end file src/haswell/end_implementation.h */
+
+/* end file src/haswell/end_implementation.h */
+/* begin file src/haswell/dom_parser_implementation.cpp */
+/* begin file src/haswell/begin_implementation.h */
+#define SIMDJSON_IMPLEMENTATION haswell
+#define SIMDJSON_TARGET_HASWELL SIMDJSON_TARGET_REGION("avx2,bmi,pclmul,lzcnt")
+
+/* haswell/implementation.h already included: #include "haswell/implementation.h" */
+/* haswell/intrinsics.h already included: #include "haswell/intrinsics.h" // Generally need to be included outside SIMDJSON_TARGET_REGION */
+
+SIMDJSON_TARGET_HASWELL
+
+/* haswell/bitmanipulation.h already included: #include "haswell/bitmanipulation.h" */
+/* haswell/bitmask.h already included: #include "haswell/bitmask.h" */
+/* haswell/simd.h already included: #include "haswell/simd.h" */
+
+/* end file src/haswell/begin_implementation.h */
+/* haswell/dom_parser_implementation.h already included: #include "haswell/dom_parser_implementation.h" */
+/* begin file src/generic/stage2/jsoncharutils.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+// return non-zero if not a structural or whitespace char
+// zero otherwise
+really_inline uint32_t is_not_structural_or_whitespace_or_null(uint8_t c) {
+  return structural_or_whitespace_or_null_negated[c];
+}
+
+// return non-zero if not a structural or whitespace char
+// zero otherwise
+really_inline uint32_t is_not_structural_or_whitespace(uint8_t c) {
+  return structural_or_whitespace_negated[c];
+}
+
+really_inline uint32_t is_structural_or_whitespace_or_null(uint8_t c) {
+  return structural_or_whitespace_or_null[c];
+}
+
+really_inline uint32_t is_structural_or_whitespace(uint8_t c) {
+  return structural_or_whitespace[c];
+}
+
+// returns a value with the high 16 bits set if not valid
+// otherwise returns the conversion of the 4 hex digits at src into the bottom
+// 16 bits of the 32-bit return register
+//
+// see
+// https://lemire.me/blog/2019/04/17/parsing-short-hexadecimal-strings-efficiently/
+static inline uint32_t hex_to_u32_nocheck(
+    const uint8_t *src) { // strictly speaking, static inline is a C-ism
+  uint32_t v1 = digit_to_val32[630 + src[0]];
+  uint32_t v2 = digit_to_val32[420 + src[1]];
+  uint32_t v3 = digit_to_val32[210 + src[2]];
+  uint32_t v4 = digit_to_val32[0 + src[3]];
+  return v1 | v2 | v3 | v4;
+}
+
+// given a code point cp, writes to c
+// the utf-8 code, outputting the length in
+// bytes, if the length is zero, the code point
+// is invalid
+//
+// This can possibly be made faster using pdep
+// and clz and table lookups, but JSON documents
+// have few escaped code points, and the following
+// function looks cheap.
+//
+// Note: we assume that surrogates are treated separately
+//
+really_inline size_t codepoint_to_utf8(uint32_t cp, uint8_t *c) {
+  if (cp <= 0x7F) {
+    c[0] = uint8_t(cp);
+    return 1; // ascii
+  }
+  if (cp <= 0x7FF) {
+    c[0] = uint8_t((cp >> 6) + 192);
+    c[1] = uint8_t((cp & 63) + 128);
+    return 2; // universal plane
+    //  Surrogates are treated elsewhere...
+    //} //else if (0xd800 <= cp && cp <= 0xdfff) {
+    //  return 0; // surrogates // could put assert here
+  } else if (cp <= 0xFFFF) {
+    c[0] = uint8_t((cp >> 12) + 224);
+    c[1] = uint8_t(((cp >> 6) & 63) + 128);
+    c[2] = uint8_t((cp & 63) + 128);
+    return 3;
+  } else if (cp <= 0x10FFFF) { // if you know you have a valid code point, this
+                               // is not needed
+    c[0] = uint8_t((cp >> 18) + 240);
+    c[1] = uint8_t(((cp >> 12) & 63) + 128);
+    c[2] = uint8_t(((cp >> 6) & 63) + 128);
+    c[3] = uint8_t((cp & 63) + 128);
+    return 4;
+  }
+  // will return 0 when the code point was too large.
+  return 0; // bad r
+}
+
+#ifdef SIMDJSON_IS_32BITS // _umul128 for x86, arm
+// this is a slow emulation routine for 32-bit
+//
+static really_inline uint64_t __emulu(uint32_t x, uint32_t y) {
+  return x * (uint64_t)y;
+}
+static really_inline uint64_t _umul128(uint64_t ab, uint64_t cd, uint64_t *hi) {
+  uint64_t ad = __emulu((uint32_t)(ab >> 32), (uint32_t)cd);
+  uint64_t bd = __emulu((uint32_t)ab, (uint32_t)cd);
+  uint64_t adbc = ad + __emulu((uint32_t)ab, (uint32_t)(cd >> 32));
+  uint64_t adbc_carry = !!(adbc < ad);
+  uint64_t lo = bd + (adbc << 32);
+  *hi = __emulu((uint32_t)(ab >> 32), (uint32_t)(cd >> 32)) + (adbc >> 32) +
+        (adbc_carry << 32) + !!(lo < bd);
+  return lo;
+}
+#endif
+
+really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
+  value128 answer;
+#if defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
+#ifdef _M_ARM64
+  // ARM64 has native support for 64-bit multiplications, no need to emultate
+  answer.high = __umulh(value1, value2);
+  answer.low = value1 * value2;
+#else
+  answer.low = _umul128(value1, value2, &answer.high); // _umul128 not available on ARM64
+#endif // _M_ARM64
+#else // defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
+  __uint128_t r = ((__uint128_t)value1) * value2;
+  answer.low = uint64_t(r);
+  answer.high = uint64_t(r >> 64);
+#endif
+  return answer;
+}
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/jsoncharutils.h */
+
+//
+// Stage 1
+//
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 
 using namespace simd;
 
@@ -8046,520 +8459,12 @@ really_inline simd8<bool> must_be_2_3_continuation(const simd8<uint8_t> prev2, c
   return simd8<int8_t>(is_third_byte | is_fourth_byte) > int8_t(0);
 }
 
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 
-/* begin file src/generic/stage1/buf_block_reader.h */
-// Walks through a buffer in block-sized increments, loading the last part with spaces
-template<size_t STEP_SIZE>
-struct buf_block_reader {
-public:
-  really_inline buf_block_reader(const uint8_t *_buf, size_t _len);
-  really_inline size_t block_index();
-  really_inline bool has_full_block() const;
-  really_inline const uint8_t *full_block() const;
-  /**
-   * Get the last block, padded with spaces.
-   *
-   * There will always be a last block, with at least 1 byte, unless len == 0 (in which case this
-   * function fills the buffer with spaces and returns 0. In particular, if len == STEP_SIZE there
-   * will be 0 full_blocks and 1 remainder block with STEP_SIZE bytes and no spaces for padding.
-   *
-   * @return the number of effective characters in the last block.
-   */
-  really_inline size_t get_remainder(uint8_t *dst) const;
-  really_inline void advance();
-private:
-  const uint8_t *buf;
-  const size_t len;
-  const size_t lenminusstep;
-  size_t idx;
-};
-
-// Routines to print masks and text for debugging bitmask operations
-UNUSED static char * format_input_text_64(const uint8_t *text) {
-  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
-  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
-    buf[i] = int8_t(text[i]) < ' ' ? '_' : int8_t(text[i]);
-  }
-  buf[sizeof(simd8x64<uint8_t>)] = '\0';
-  return buf;
-}
-
-// Routines to print masks and text for debugging bitmask operations
-UNUSED static char * format_input_text(const simd8x64<uint8_t>& in) {
-  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
-  in.store((uint8_t*)buf);
-  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
-    if (buf[i] < ' ') { buf[i] = '_'; }
-  }
-  buf[sizeof(simd8x64<uint8_t>)] = '\0';
-  return buf;
-}
-
-UNUSED static char * format_mask(uint64_t mask) {
-  static char *buf = (char*)malloc(64 + 1);
-  for (size_t i=0; i<64; i++) {
-    buf[i] = (mask & (size_t(1) << i)) ? 'X' : ' ';
-  }
-  buf[64] = '\0';
-  return buf;
-}
-
-template<size_t STEP_SIZE>
-really_inline buf_block_reader<STEP_SIZE>::buf_block_reader(const uint8_t *_buf, size_t _len) : buf{_buf}, len{_len}, lenminusstep{len < STEP_SIZE ? 0 : len - STEP_SIZE}, idx{0} {}
-
-template<size_t STEP_SIZE>
-really_inline size_t buf_block_reader<STEP_SIZE>::block_index() { return idx; }
-
-template<size_t STEP_SIZE>
-really_inline bool buf_block_reader<STEP_SIZE>::has_full_block() const {
-  return idx < lenminusstep;
-}
-
-template<size_t STEP_SIZE>
-really_inline const uint8_t *buf_block_reader<STEP_SIZE>::full_block() const {
-  return &buf[idx];
-}
-
-template<size_t STEP_SIZE>
-really_inline size_t buf_block_reader<STEP_SIZE>::get_remainder(uint8_t *dst) const {
-  memset(dst, 0x20, STEP_SIZE); // memset STEP_SIZE because it's more efficient to write out 8 or 16 bytes at once.
-  memcpy(dst, buf + idx, len - idx);
-  return len - idx;
-}
-
-template<size_t STEP_SIZE>
-really_inline void buf_block_reader<STEP_SIZE>::advance() {
-  idx += STEP_SIZE;
-}
-/* end file src/generic/stage1/buf_block_reader.h */
-/* begin file src/generic/stage1/json_string_scanner.h */
-namespace stage1 {
-
-struct json_string_block {
-  // Escaped characters (characters following an escape() character)
-  really_inline uint64_t escaped() const { return _escaped; }
-  // Escape characters (backslashes that are not escaped--i.e. in \\, includes only the first \)
-  really_inline uint64_t escape() const { return _backslash & ~_escaped; }
-  // Real (non-backslashed) quotes
-  really_inline uint64_t quote() const { return _quote; }
-  // Start quotes of strings
-  really_inline uint64_t string_end() const { return _quote & _in_string; }
-  // End quotes of strings
-  really_inline uint64_t string_start() const { return _quote & ~_in_string; }
-  // Only characters inside the string (not including the quotes)
-  really_inline uint64_t string_content() const { return _in_string & ~_quote; }
-  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
-  really_inline uint64_t non_quote_inside_string(uint64_t mask) const { return mask & _in_string; }
-  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
-  really_inline uint64_t non_quote_outside_string(uint64_t mask) const { return mask & ~_in_string; }
-  // Tail of string (everything except the start quote)
-  really_inline uint64_t string_tail() const { return _in_string ^ _quote; }
-
-  // backslash characters
-  uint64_t _backslash;
-  // escaped characters (backslashed--does not include the hex characters after \u)
-  uint64_t _escaped;
-  // real quotes (non-backslashed ones)
-  uint64_t _quote;
-  // string characters (includes start quote but not end quote)
-  uint64_t _in_string;
-};
-
-// Scans blocks for string characters, storing the state necessary to do so
-class json_string_scanner {
-public:
-  really_inline json_string_block next(const simd::simd8x64<uint8_t>& in);
-  really_inline error_code finish(bool streaming);
-
-private:
-  // Intended to be defined by the implementation
-  really_inline uint64_t find_escaped(uint64_t escape);
-  really_inline uint64_t find_escaped_branchless(uint64_t escape);
-
-  // Whether the last iteration was still inside a string (all 1's = true, all 0's = false).
-  uint64_t prev_in_string = 0ULL;
-  // Whether the first character of the next iteration is escaped.
-  uint64_t prev_escaped = 0ULL;
-};
-
-//
-// Finds escaped characters (characters following \).
-//
-// Handles runs of backslashes like \\\" and \\\\" correctly (yielding 0101 and 01010, respectively).
-//
-// Does this by:
-// - Shift the escape mask to get potentially escaped characters (characters after backslashes).
-// - Mask escaped sequences that start on *even* bits with 1010101010 (odd bits are escaped, even bits are not)
-// - Mask escaped sequences that start on *odd* bits with 0101010101 (even bits are escaped, odd bits are not)
-//
-// To distinguish between escaped sequences starting on even/odd bits, it finds the start of all
-// escape sequences, filters out the ones that start on even bits, and adds that to the mask of
-// escape sequences. This causes the addition to clear out the sequences starting on odd bits (since
-// the start bit causes a carry), and leaves even-bit sequences alone.
-//
-// Example:
-//
-// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
-// escape         |  xxx |  xx xxx  xxx  xx xx  | Removed overflow backslash; will | it into follows_escape
-// odd_starts     |  x   |  x       x       x   | escape & ~even_bits & ~follows_escape
-// even_seq       |     c|    cxxx     c xx   c | c = carry bit -- will be masked out later
-// invert_mask    |      |     cxxx     c xx   c| even_seq << 1
-// follows_escape |   xx | x xx xxx  xxx  xx xx | Includes overflow bit
-// escaped        |   x  | x x  x x  x x  x  x  |
-// desired        |   x  | x x  x x  x x  x  x  |
-// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
-//
-really_inline uint64_t json_string_scanner::find_escaped_branchless(uint64_t backslash) {
-  // If there was overflow, pretend the first character isn't a backslash
-  backslash &= ~prev_escaped;
-  uint64_t follows_escape = backslash << 1 | prev_escaped;
-
-  // Get sequences starting on even bits by clearing out the odd series using +
-  const uint64_t even_bits = 0x5555555555555555ULL;
-  uint64_t odd_sequence_starts = backslash & ~even_bits & ~follows_escape;
-  uint64_t sequences_starting_on_even_bits;
-  prev_escaped = add_overflow(odd_sequence_starts, backslash, &sequences_starting_on_even_bits);
-  uint64_t invert_mask = sequences_starting_on_even_bits << 1; // The mask we want to return is the *escaped* bits, not escapes.
-
-  // Mask every other backslashed character as an escaped character
-  // Flip the mask for sequences that start on even bits, to correct them
-  return (even_bits ^ invert_mask) & follows_escape;
-}
-
-//
-// Return a mask of all string characters plus end quotes.
-//
-// prev_escaped is overflow saying whether the next character is escaped.
-// prev_in_string is overflow saying whether we're still in a string.
-//
-// Backslash sequences outside of quotes will be detected in stage 2.
-//
-really_inline json_string_block json_string_scanner::next(const simd::simd8x64<uint8_t>& in) {
-  const uint64_t backslash = in.eq('\\');
-  const uint64_t escaped = find_escaped(backslash);
-  const uint64_t quote = in.eq('"') & ~escaped;
-
-  //
-  // prefix_xor flips on bits inside the string (and flips off the end quote).
-  //
-  // Then we xor with prev_in_string: if we were in a string already, its effect is flipped
-  // (characters inside strings are outside, and characters outside strings are inside).
-  //
-  const uint64_t in_string = prefix_xor(quote) ^ prev_in_string;
-
-  //
-  // Check if we're still in a string at the end of the box so the next block will know
-  //
-  // right shift of a signed value expected to be well-defined and standard
-  // compliant as of C++20, John Regher from Utah U. says this is fine code
-  //
-  prev_in_string = uint64_t(static_cast<int64_t>(in_string) >> 63);
-
-  // Use ^ to turn the beginning quote off, and the end quote on.
-  return {
-    backslash,
-    escaped,
-    quote,
-    in_string
-  };
-}
-
-really_inline error_code json_string_scanner::finish(bool streaming) {
-  if (prev_in_string and (not streaming)) {
-    return UNCLOSED_STRING;
-  }
-  return SUCCESS;
-}
-
-} // namespace stage1
-/* end file src/generic/stage1/json_string_scanner.h */
-/* begin file src/generic/stage1/json_scanner.h */
-namespace stage1 {
-
-/**
- * A block of scanned json, with information on operators and scalars.
- */
-struct json_block {
-public:
-  /** The start of structurals */
-  really_inline uint64_t structural_start() { return potential_structural_start() & ~_string.string_tail(); }
-  /** All JSON whitespace (i.e. not in a string) */
-  really_inline uint64_t whitespace() { return non_quote_outside_string(_characters.whitespace()); }
-
-  // Helpers
-
-  /** Whether the given characters are inside a string (only works on non-quotes) */
-  really_inline uint64_t non_quote_inside_string(uint64_t mask) { return _string.non_quote_inside_string(mask); }
-  /** Whether the given characters are outside a string (only works on non-quotes) */
-  really_inline uint64_t non_quote_outside_string(uint64_t mask) { return _string.non_quote_outside_string(mask); }
-
-  // string and escape characters
-  json_string_block _string;
-  // whitespace, operators, scalars
-  json_character_block _characters;
-  // whether the previous character was a scalar
-  uint64_t _follows_potential_scalar;
-private:
-  // Potential structurals (i.e. disregarding strings)
-
-  /** operators plus scalar starts like 123, true and "abc" */
-  really_inline uint64_t potential_structural_start() { return _characters.op() | potential_scalar_start(); }
-  /** the start of non-operator runs, like 123, true and "abc" */
-  really_inline uint64_t potential_scalar_start() { return _characters.scalar() & ~follows_potential_scalar(); }
-  /** whether the given character is immediately after a non-operator like 123, true or " */
-  really_inline uint64_t follows_potential_scalar() { return _follows_potential_scalar; }
-};
-
-/**
- * Scans JSON for important bits: operators, strings, and scalars.
- *
- * The scanner starts by calculating two distinct things:
- * - string characters (taking \" into account)
- * - operators ([]{},:) and scalars (runs of non-operators like 123, true and "abc")
- *
- * To minimize data dependency (a key component of the scanner's speed), it finds these in parallel:
- * in particular, the operator/scalar bit will find plenty of things that are actually part of
- * strings. When we're done, json_block will fuse the two together by masking out tokens that are
- * part of a string.
- */
-class json_scanner {
-public:
-  json_scanner() {}
-  really_inline json_block next(const simd::simd8x64<uint8_t>& in);
-  really_inline error_code finish(bool streaming);
-
-private:
-  // Whether the last character of the previous iteration is part of a scalar token
-  // (anything except whitespace or an operator).
-  uint64_t prev_scalar = 0ULL;
-  json_string_scanner string_scanner{};
-};
-
-
-//
-// Check if the current character immediately follows a matching character.
-//
-// For example, this checks for quotes with backslashes in front of them:
-//
-//     const uint64_t backslashed_quote = in.eq('"') & immediately_follows(in.eq('\'), prev_backslash);
-//
-really_inline uint64_t follows(const uint64_t match, uint64_t &overflow) {
-  const uint64_t result = match << 1 | overflow;
-  overflow = match >> 63;
-  return result;
-}
-
-//
-// Check if the current character follows a matching character, with possible "filler" between.
-// For example, this checks for empty curly braces, e.g.
-//
-//     in.eq('}') & follows(in.eq('['), in.eq(' '), prev_empty_array) // { <whitespace>* }
-//
-really_inline uint64_t follows(const uint64_t match, const uint64_t filler, uint64_t &overflow) {
-  uint64_t follows_match = follows(match, overflow);
-  uint64_t result;
-  overflow |= uint64_t(add_overflow(follows_match, filler, &result));
-  return result;
-}
-
-really_inline json_block json_scanner::next(const simd::simd8x64<uint8_t>& in) {
-  json_string_block strings = string_scanner.next(in);
-  json_character_block characters = json_character_block::classify(in);
-  uint64_t follows_scalar = follows(characters.scalar(), prev_scalar);
-  return {
-    strings,
-    characters,
-    follows_scalar
-  };
-}
-
-really_inline error_code json_scanner::finish(bool streaming) {
-  return string_scanner.finish(streaming);
-}
-
-} // namespace stage1
-/* end file src/generic/stage1/json_scanner.h */
-
-namespace stage1 {
-really_inline uint64_t json_string_scanner::find_escaped(uint64_t backslash) {
-  if (!backslash) { uint64_t escaped = prev_escaped; prev_escaped = 0; return escaped; }
-  return find_escaped_branchless(backslash);
-}
-}
-
-/* begin file src/generic/stage1/json_minifier.h */
-// This file contains the common code every implementation uses in stage1
-// It is intended to be included multiple times and compiled multiple times
-// We assume the file in which it is included already includes
-// "simdjson/stage1.h" (this simplifies amalgation)
-
-namespace stage1 {
-
-class json_minifier {
-public:
-  template<size_t STEP_SIZE>
-  static error_code minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept;
-
-private:
-  really_inline json_minifier(uint8_t *_dst)
-  : dst{_dst}
-  {}
-  template<size_t STEP_SIZE>
-  really_inline void step(const uint8_t *block_buf, buf_block_reader<STEP_SIZE> &reader) noexcept;
-  really_inline void next(const simd::simd8x64<uint8_t>& in, json_block block);
-  really_inline error_code finish(uint8_t *dst_start, size_t &dst_len);
-  json_scanner scanner{};
-  uint8_t *dst;
-};
-
-really_inline void json_minifier::next(const simd::simd8x64<uint8_t>& in, json_block block) {
-  uint64_t mask = block.whitespace();
-  in.compress(mask, dst);
-  dst += 64 - count_ones(mask);
-}
-
-really_inline error_code json_minifier::finish(uint8_t *dst_start, size_t &dst_len) {
-  *dst = '\0';
-  error_code error = scanner.finish(false);
-  if (error) { dst_len = 0; return error; }
-  dst_len = dst - dst_start;
-  return SUCCESS;
-}
-
-template<>
-really_inline void json_minifier::step<128>(const uint8_t *block_buf, buf_block_reader<128> &reader) noexcept {
-  simd::simd8x64<uint8_t> in_1(block_buf);
-  simd::simd8x64<uint8_t> in_2(block_buf+64);
-  json_block block_1 = scanner.next(in_1);
-  json_block block_2 = scanner.next(in_2);
-  this->next(in_1, block_1);
-  this->next(in_2, block_2);
-  reader.advance();
-}
-
-template<>
-really_inline void json_minifier::step<64>(const uint8_t *block_buf, buf_block_reader<64> &reader) noexcept {
-  simd::simd8x64<uint8_t> in_1(block_buf);
-  json_block block_1 = scanner.next(in_1);
-  this->next(block_buf, block_1);
-  reader.advance();
-}
-
-template<size_t STEP_SIZE>
-error_code json_minifier::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept {
-  buf_block_reader<STEP_SIZE> reader(buf, len);
-  json_minifier minifier(dst);
-
-  // Index the first n-1 blocks
-  while (reader.has_full_block()) {
-    minifier.step<STEP_SIZE>(reader.full_block(), reader);
-  }
-
-  // Index the last (remainder) block, padded with spaces
-  uint8_t block[STEP_SIZE];
-  if (likely(reader.get_remainder(block)) > 0) {
-    minifier.step<STEP_SIZE>(block, reader);
-  }
-
-  return minifier.finish(dst, dst_len);
-}
-
-} // namespace stage1
-/* end file src/generic/stage1/json_minifier.h */
-WARN_UNUSED error_code implementation::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) const noexcept {
-  return haswell::stage1::json_minifier::minify<128>(buf, len, dst, dst_len);
-}
-
-/* begin file src/generic/stage1/find_next_document_index.h */
-/**
-  * This algorithm is used to quickly identify the last structural position that
-  * makes up a complete document.
-  *
-  * It does this by going backwards and finding the last *document boundary* (a
-  * place where one value follows another without a comma between them). If the
-  * last document (the characters after the boundary) has an equal number of
-  * start and end brackets, it is considered complete.
-  *
-  * Simply put, we iterate over the structural characters, starting from
-  * the end. We consider that we found the end of a JSON document when the
-  * first element of the pair is NOT one of these characters: '{' '[' ';' ','
-  * and when the second element is NOT one of these characters: '}' '}' ';' ','.
-  *
-  * This simple comparison works most of the time, but it does not cover cases
-  * where the batch's structural indexes contain a perfect amount of documents.
-  * In such a case, we do not have access to the structural index which follows
-  * the last document, therefore, we do not have access to the second element in
-  * the pair, and that means we cannot identify the last document. To fix this
-  * issue, we keep a count of the open and closed curly/square braces we found
-  * while searching for the pair. When we find a pair AND the count of open and
-  * closed curly/square braces is the same, we know that we just passed a
-  * complete document, therefore the last json buffer location is the end of the
-  * batch.
-  */
-really_inline uint32_t find_next_document_index(dom_parser_implementation &parser) {
-  // TODO don't count separately, just figure out depth
-  auto arr_cnt = 0;
-  auto obj_cnt = 0;
-  for (auto i = parser.n_structural_indexes - 1; i > 0; i--) {
-    auto idxb = parser.structural_indexes[i];
-    switch (parser.buf[idxb]) {
-    case ':':
-    case ',':
-      continue;
-    case '}':
-      obj_cnt--;
-      continue;
-    case ']':
-      arr_cnt--;
-      continue;
-    case '{':
-      obj_cnt++;
-      break;
-    case '[':
-      arr_cnt++;
-      break;
-    }
-    auto idxa = parser.structural_indexes[i - 1];
-    switch (parser.buf[idxa]) {
-    case '{':
-    case '[':
-    case ':':
-    case ',':
-      continue;
-    }
-    // Last document is complete, so the next document will appear after!
-    if (!arr_cnt && !obj_cnt) {
-      return parser.n_structural_indexes;
-    }
-    // Last document is incomplete; mark the document at i + 1 as the next one
-    return i;
-  }
-  return 0;
-}
-
-// Skip the last character if it is partial
-really_inline size_t trim_partial_utf8(const uint8_t *buf, size_t len) {
-  if (unlikely(len < 3)) {
-    switch (len) {
-      case 2:
-        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
-        if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 2 bytes left
-        return len;
-      case 1:
-        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
-        return len;
-      case 0:
-        return len;
-    }
-  }
-  if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
-  if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 1 byte left
-  if (buf[len-3] >= 0b11110000) { return len-3; } // 4-byte characters with only 3 bytes left
-  return len;
-}
-/* end file src/generic/stage1/find_next_document_index.h */
 /* begin file src/generic/stage1/utf8_lookup4_algorithm.h */
-using namespace simd;
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 
 namespace utf8_validation {
 
@@ -8734,9 +8639,12 @@ using namespace simd;
     }
 
   }; // struct utf8_checker
-}
+} // namespace utf8_validation
 
 using utf8_validation::utf8_checker;
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage1/utf8_lookup4_algorithm.h */
 /* begin file src/generic/stage1/json_structural_indexer.h */
 // This file contains the common code every implementation uses in stage1
@@ -8744,6 +8652,532 @@ using utf8_validation::utf8_checker;
 // We assume the file in which it is included already includes
 // "simdjson/stage1.h" (this simplifies amalgation)
 
+/* begin file src/generic/stage1/buf_block_reader.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+// Walks through a buffer in block-sized increments, loading the last part with spaces
+template<size_t STEP_SIZE>
+struct buf_block_reader {
+public:
+  really_inline buf_block_reader(const uint8_t *_buf, size_t _len);
+  really_inline size_t block_index();
+  really_inline bool has_full_block() const;
+  really_inline const uint8_t *full_block() const;
+  /**
+   * Get the last block, padded with spaces.
+   *
+   * There will always be a last block, with at least 1 byte, unless len == 0 (in which case this
+   * function fills the buffer with spaces and returns 0. In particular, if len == STEP_SIZE there
+   * will be 0 full_blocks and 1 remainder block with STEP_SIZE bytes and no spaces for padding.
+   *
+   * @return the number of effective characters in the last block.
+   */
+  really_inline size_t get_remainder(uint8_t *dst) const;
+  really_inline void advance();
+private:
+  const uint8_t *buf;
+  const size_t len;
+  const size_t lenminusstep;
+  size_t idx;
+};
+
+// Routines to print masks and text for debugging bitmask operations
+UNUSED static char * format_input_text_64(const uint8_t *text) {
+  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
+  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
+    buf[i] = int8_t(text[i]) < ' ' ? '_' : int8_t(text[i]);
+  }
+  buf[sizeof(simd8x64<uint8_t>)] = '\0';
+  return buf;
+}
+
+// Routines to print masks and text for debugging bitmask operations
+UNUSED static char * format_input_text(const simd8x64<uint8_t>& in) {
+  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
+  in.store((uint8_t*)buf);
+  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
+    if (buf[i] < ' ') { buf[i] = '_'; }
+  }
+  buf[sizeof(simd8x64<uint8_t>)] = '\0';
+  return buf;
+}
+
+UNUSED static char * format_mask(uint64_t mask) {
+  static char *buf = (char*)malloc(64 + 1);
+  for (size_t i=0; i<64; i++) {
+    buf[i] = (mask & (size_t(1) << i)) ? 'X' : ' ';
+  }
+  buf[64] = '\0';
+  return buf;
+}
+
+template<size_t STEP_SIZE>
+really_inline buf_block_reader<STEP_SIZE>::buf_block_reader(const uint8_t *_buf, size_t _len) : buf{_buf}, len{_len}, lenminusstep{len < STEP_SIZE ? 0 : len - STEP_SIZE}, idx{0} {}
+
+template<size_t STEP_SIZE>
+really_inline size_t buf_block_reader<STEP_SIZE>::block_index() { return idx; }
+
+template<size_t STEP_SIZE>
+really_inline bool buf_block_reader<STEP_SIZE>::has_full_block() const {
+  return idx < lenminusstep;
+}
+
+template<size_t STEP_SIZE>
+really_inline const uint8_t *buf_block_reader<STEP_SIZE>::full_block() const {
+  return &buf[idx];
+}
+
+template<size_t STEP_SIZE>
+really_inline size_t buf_block_reader<STEP_SIZE>::get_remainder(uint8_t *dst) const {
+  memset(dst, 0x20, STEP_SIZE); // memset STEP_SIZE because it's more efficient to write out 8 or 16 bytes at once.
+  memcpy(dst, buf + idx, len - idx);
+  return len - idx;
+}
+
+template<size_t STEP_SIZE>
+really_inline void buf_block_reader<STEP_SIZE>::advance() {
+  idx += STEP_SIZE;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/buf_block_reader.h */
+/* begin file src/generic/stage1/json_string_scanner.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+
+struct json_string_block {
+  // Escaped characters (characters following an escape() character)
+  really_inline uint64_t escaped() const { return _escaped; }
+  // Escape characters (backslashes that are not escaped--i.e. in \\, includes only the first \)
+  really_inline uint64_t escape() const { return _backslash & ~_escaped; }
+  // Real (non-backslashed) quotes
+  really_inline uint64_t quote() const { return _quote; }
+  // Start quotes of strings
+  really_inline uint64_t string_end() const { return _quote & _in_string; }
+  // End quotes of strings
+  really_inline uint64_t string_start() const { return _quote & ~_in_string; }
+  // Only characters inside the string (not including the quotes)
+  really_inline uint64_t string_content() const { return _in_string & ~_quote; }
+  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
+  really_inline uint64_t non_quote_inside_string(uint64_t mask) const { return mask & _in_string; }
+  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
+  really_inline uint64_t non_quote_outside_string(uint64_t mask) const { return mask & ~_in_string; }
+  // Tail of string (everything except the start quote)
+  really_inline uint64_t string_tail() const { return _in_string ^ _quote; }
+
+  // backslash characters
+  uint64_t _backslash;
+  // escaped characters (backslashed--does not include the hex characters after \u)
+  uint64_t _escaped;
+  // real quotes (non-backslashed ones)
+  uint64_t _quote;
+  // string characters (includes start quote but not end quote)
+  uint64_t _in_string;
+};
+
+// Scans blocks for string characters, storing the state necessary to do so
+class json_string_scanner {
+public:
+  really_inline json_string_block next(const simd::simd8x64<uint8_t>& in);
+  really_inline error_code finish(bool streaming);
+
+private:
+  // Intended to be defined by the implementation
+  really_inline uint64_t find_escaped(uint64_t escape);
+  really_inline uint64_t find_escaped_branchless(uint64_t escape);
+
+  // Whether the last iteration was still inside a string (all 1's = true, all 0's = false).
+  uint64_t prev_in_string = 0ULL;
+  // Whether the first character of the next iteration is escaped.
+  uint64_t prev_escaped = 0ULL;
+};
+
+//
+// Finds escaped characters (characters following \).
+//
+// Handles runs of backslashes like \\\" and \\\\" correctly (yielding 0101 and 01010, respectively).
+//
+// Does this by:
+// - Shift the escape mask to get potentially escaped characters (characters after backslashes).
+// - Mask escaped sequences that start on *even* bits with 1010101010 (odd bits are escaped, even bits are not)
+// - Mask escaped sequences that start on *odd* bits with 0101010101 (even bits are escaped, odd bits are not)
+//
+// To distinguish between escaped sequences starting on even/odd bits, it finds the start of all
+// escape sequences, filters out the ones that start on even bits, and adds that to the mask of
+// escape sequences. This causes the addition to clear out the sequences starting on odd bits (since
+// the start bit causes a carry), and leaves even-bit sequences alone.
+//
+// Example:
+//
+// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
+// escape         |  xxx |  xx xxx  xxx  xx xx  | Removed overflow backslash; will | it into follows_escape
+// odd_starts     |  x   |  x       x       x   | escape & ~even_bits & ~follows_escape
+// even_seq       |     c|    cxxx     c xx   c | c = carry bit -- will be masked out later
+// invert_mask    |      |     cxxx     c xx   c| even_seq << 1
+// follows_escape |   xx | x xx xxx  xxx  xx xx | Includes overflow bit
+// escaped        |   x  | x x  x x  x x  x  x  |
+// desired        |   x  | x x  x x  x x  x  x  |
+// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
+//
+really_inline uint64_t json_string_scanner::find_escaped_branchless(uint64_t backslash) {
+  // If there was overflow, pretend the first character isn't a backslash
+  backslash &= ~prev_escaped;
+  uint64_t follows_escape = backslash << 1 | prev_escaped;
+
+  // Get sequences starting on even bits by clearing out the odd series using +
+  const uint64_t even_bits = 0x5555555555555555ULL;
+  uint64_t odd_sequence_starts = backslash & ~even_bits & ~follows_escape;
+  uint64_t sequences_starting_on_even_bits;
+  prev_escaped = add_overflow(odd_sequence_starts, backslash, &sequences_starting_on_even_bits);
+  uint64_t invert_mask = sequences_starting_on_even_bits << 1; // The mask we want to return is the *escaped* bits, not escapes.
+
+  // Mask every other backslashed character as an escaped character
+  // Flip the mask for sequences that start on even bits, to correct them
+  return (even_bits ^ invert_mask) & follows_escape;
+}
+
+//
+// Return a mask of all string characters plus end quotes.
+//
+// prev_escaped is overflow saying whether the next character is escaped.
+// prev_in_string is overflow saying whether we're still in a string.
+//
+// Backslash sequences outside of quotes will be detected in stage 2.
+//
+really_inline json_string_block json_string_scanner::next(const simd::simd8x64<uint8_t>& in) {
+  const uint64_t backslash = in.eq('\\');
+  const uint64_t escaped = find_escaped(backslash);
+  const uint64_t quote = in.eq('"') & ~escaped;
+
+  //
+  // prefix_xor flips on bits inside the string (and flips off the end quote).
+  //
+  // Then we xor with prev_in_string: if we were in a string already, its effect is flipped
+  // (characters inside strings are outside, and characters outside strings are inside).
+  //
+  const uint64_t in_string = prefix_xor(quote) ^ prev_in_string;
+
+  //
+  // Check if we're still in a string at the end of the box so the next block will know
+  //
+  // right shift of a signed value expected to be well-defined and standard
+  // compliant as of C++20, John Regher from Utah U. says this is fine code
+  //
+  prev_in_string = uint64_t(static_cast<int64_t>(in_string) >> 63);
+
+  // Use ^ to turn the beginning quote off, and the end quote on.
+  return {
+    backslash,
+    escaped,
+    quote,
+    in_string
+  };
+}
+
+really_inline error_code json_string_scanner::finish(bool streaming) {
+  if (prev_in_string and (not streaming)) {
+    return UNCLOSED_STRING;
+  }
+  return SUCCESS;
+}
+
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/json_string_scanner.h */
+/* begin file src/generic/stage1/json_scanner.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+
+/**
+ * A block of scanned json, with information on operators and scalars.
+ */
+struct json_block {
+public:
+  /** The start of structurals */
+  really_inline uint64_t structural_start() { return potential_structural_start() & ~_string.string_tail(); }
+  /** All JSON whitespace (i.e. not in a string) */
+  really_inline uint64_t whitespace() { return non_quote_outside_string(_characters.whitespace()); }
+
+  // Helpers
+
+  /** Whether the given characters are inside a string (only works on non-quotes) */
+  really_inline uint64_t non_quote_inside_string(uint64_t mask) { return _string.non_quote_inside_string(mask); }
+  /** Whether the given characters are outside a string (only works on non-quotes) */
+  really_inline uint64_t non_quote_outside_string(uint64_t mask) { return _string.non_quote_outside_string(mask); }
+
+  // string and escape characters
+  json_string_block _string;
+  // whitespace, operators, scalars
+  json_character_block _characters;
+  // whether the previous character was a scalar
+  uint64_t _follows_potential_scalar;
+private:
+  // Potential structurals (i.e. disregarding strings)
+
+  /** operators plus scalar starts like 123, true and "abc" */
+  really_inline uint64_t potential_structural_start() { return _characters.op() | potential_scalar_start(); }
+  /** the start of non-operator runs, like 123, true and "abc" */
+  really_inline uint64_t potential_scalar_start() { return _characters.scalar() & ~follows_potential_scalar(); }
+  /** whether the given character is immediately after a non-operator like 123, true or " */
+  really_inline uint64_t follows_potential_scalar() { return _follows_potential_scalar; }
+};
+
+/**
+ * Scans JSON for important bits: operators, strings, and scalars.
+ *
+ * The scanner starts by calculating two distinct things:
+ * - string characters (taking \" into account)
+ * - operators ([]{},:) and scalars (runs of non-operators like 123, true and "abc")
+ *
+ * To minimize data dependency (a key component of the scanner's speed), it finds these in parallel:
+ * in particular, the operator/scalar bit will find plenty of things that are actually part of
+ * strings. When we're done, json_block will fuse the two together by masking out tokens that are
+ * part of a string.
+ */
+class json_scanner {
+public:
+  json_scanner() {}
+  really_inline json_block next(const simd::simd8x64<uint8_t>& in);
+  really_inline error_code finish(bool streaming);
+
+private:
+  // Whether the last character of the previous iteration is part of a scalar token
+  // (anything except whitespace or an operator).
+  uint64_t prev_scalar = 0ULL;
+  json_string_scanner string_scanner{};
+};
+
+
+//
+// Check if the current character immediately follows a matching character.
+//
+// For example, this checks for quotes with backslashes in front of them:
+//
+//     const uint64_t backslashed_quote = in.eq('"') & immediately_follows(in.eq('\'), prev_backslash);
+//
+really_inline uint64_t follows(const uint64_t match, uint64_t &overflow) {
+  const uint64_t result = match << 1 | overflow;
+  overflow = match >> 63;
+  return result;
+}
+
+//
+// Check if the current character follows a matching character, with possible "filler" between.
+// For example, this checks for empty curly braces, e.g.
+//
+//     in.eq('}') & follows(in.eq('['), in.eq(' '), prev_empty_array) // { <whitespace>* }
+//
+really_inline uint64_t follows(const uint64_t match, const uint64_t filler, uint64_t &overflow) {
+  uint64_t follows_match = follows(match, overflow);
+  uint64_t result;
+  overflow |= uint64_t(add_overflow(follows_match, filler, &result));
+  return result;
+}
+
+really_inline json_block json_scanner::next(const simd::simd8x64<uint8_t>& in) {
+  json_string_block strings = string_scanner.next(in);
+  json_character_block characters = json_character_block::classify(in);
+  uint64_t follows_scalar = follows(characters.scalar(), prev_scalar);
+  return {
+    strings,
+    characters,
+    follows_scalar
+  };
+}
+
+really_inline error_code json_scanner::finish(bool streaming) {
+  return string_scanner.finish(streaming);
+}
+
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/json_scanner.h */
+/* begin file src/generic/stage1/json_minifier.h */
+// This file contains the common code every implementation uses in stage1
+// It is intended to be included multiple times and compiled multiple times
+// We assume the file in which it is included already includes
+// "simdjson/stage1.h" (this simplifies amalgation)
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+
+class json_minifier {
+public:
+  template<size_t STEP_SIZE>
+  static error_code minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept;
+
+private:
+  really_inline json_minifier(uint8_t *_dst)
+  : dst{_dst}
+  {}
+  template<size_t STEP_SIZE>
+  really_inline void step(const uint8_t *block_buf, buf_block_reader<STEP_SIZE> &reader) noexcept;
+  really_inline void next(const simd::simd8x64<uint8_t>& in, json_block block);
+  really_inline error_code finish(uint8_t *dst_start, size_t &dst_len);
+  json_scanner scanner{};
+  uint8_t *dst;
+};
+
+really_inline void json_minifier::next(const simd::simd8x64<uint8_t>& in, json_block block) {
+  uint64_t mask = block.whitespace();
+  in.compress(mask, dst);
+  dst += 64 - count_ones(mask);
+}
+
+really_inline error_code json_minifier::finish(uint8_t *dst_start, size_t &dst_len) {
+  *dst = '\0';
+  error_code error = scanner.finish(false);
+  if (error) { dst_len = 0; return error; }
+  dst_len = dst - dst_start;
+  return SUCCESS;
+}
+
+template<>
+really_inline void json_minifier::step<128>(const uint8_t *block_buf, buf_block_reader<128> &reader) noexcept {
+  simd::simd8x64<uint8_t> in_1(block_buf);
+  simd::simd8x64<uint8_t> in_2(block_buf+64);
+  json_block block_1 = scanner.next(in_1);
+  json_block block_2 = scanner.next(in_2);
+  this->next(in_1, block_1);
+  this->next(in_2, block_2);
+  reader.advance();
+}
+
+template<>
+really_inline void json_minifier::step<64>(const uint8_t *block_buf, buf_block_reader<64> &reader) noexcept {
+  simd::simd8x64<uint8_t> in_1(block_buf);
+  json_block block_1 = scanner.next(in_1);
+  this->next(block_buf, block_1);
+  reader.advance();
+}
+
+template<size_t STEP_SIZE>
+error_code json_minifier::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept {
+  buf_block_reader<STEP_SIZE> reader(buf, len);
+  json_minifier minifier(dst);
+
+  // Index the first n-1 blocks
+  while (reader.has_full_block()) {
+    minifier.step<STEP_SIZE>(reader.full_block(), reader);
+  }
+
+  // Index the last (remainder) block, padded with spaces
+  uint8_t block[STEP_SIZE];
+  if (likely(reader.get_remainder(block)) > 0) {
+    minifier.step<STEP_SIZE>(block, reader);
+  }
+
+  return minifier.finish(dst, dst_len);
+}
+
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/json_minifier.h */
+/* begin file src/generic/stage1/find_next_document_index.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+/**
+  * This algorithm is used to quickly identify the last structural position that
+  * makes up a complete document.
+  *
+  * It does this by going backwards and finding the last *document boundary* (a
+  * place where one value follows another without a comma between them). If the
+  * last document (the characters after the boundary) has an equal number of
+  * start and end brackets, it is considered complete.
+  *
+  * Simply put, we iterate over the structural characters, starting from
+  * the end. We consider that we found the end of a JSON document when the
+  * first element of the pair is NOT one of these characters: '{' '[' ';' ','
+  * and when the second element is NOT one of these characters: '}' '}' ';' ','.
+  *
+  * This simple comparison works most of the time, but it does not cover cases
+  * where the batch's structural indexes contain a perfect amount of documents.
+  * In such a case, we do not have access to the structural index which follows
+  * the last document, therefore, we do not have access to the second element in
+  * the pair, and that means we cannot identify the last document. To fix this
+  * issue, we keep a count of the open and closed curly/square braces we found
+  * while searching for the pair. When we find a pair AND the count of open and
+  * closed curly/square braces is the same, we know that we just passed a
+  * complete document, therefore the last json buffer location is the end of the
+  * batch.
+  */
+really_inline uint32_t find_next_document_index(dom_parser_implementation &parser) {
+  // TODO don't count separately, just figure out depth
+  auto arr_cnt = 0;
+  auto obj_cnt = 0;
+  for (auto i = parser.n_structural_indexes - 1; i > 0; i--) {
+    auto idxb = parser.structural_indexes[i];
+    switch (parser.buf[idxb]) {
+    case ':':
+    case ',':
+      continue;
+    case '}':
+      obj_cnt--;
+      continue;
+    case ']':
+      arr_cnt--;
+      continue;
+    case '{':
+      obj_cnt++;
+      break;
+    case '[':
+      arr_cnt++;
+      break;
+    }
+    auto idxa = parser.structural_indexes[i - 1];
+    switch (parser.buf[idxa]) {
+    case '{':
+    case '[':
+    case ':':
+    case ',':
+      continue;
+    }
+    // Last document is complete, so the next document will appear after!
+    if (!arr_cnt && !obj_cnt) {
+      return parser.n_structural_indexes;
+    }
+    // Last document is incomplete; mark the document at i + 1 as the next one
+    return i;
+  }
+  return 0;
+}
+
+// Skip the last character if it is partial
+really_inline size_t trim_partial_utf8(const uint8_t *buf, size_t len) {
+  if (unlikely(len < 3)) {
+    switch (len) {
+      case 2:
+        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
+        if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 2 bytes left
+        return len;
+      case 1:
+        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
+        return len;
+      case 0:
+        return len;
+    }
+  }
+  if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
+  if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 1 byte left
+  if (buf[len-3] >= 0b11110000) { return len-3; } // 4-byte characters with only 3 bytes left
+  return len;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/find_next_document_index.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage1 {
 
 class bit_indexer {
@@ -8937,14 +9371,14 @@ really_inline error_code json_structural_indexer::finish(dom_parser_implementati
 }
 
 } // namespace stage1
-/* end file src/generic/stage1/json_structural_indexer.h */
-WARN_UNUSED error_code dom_parser_implementation::stage1(const uint8_t *_buf, size_t _len, bool streaming) noexcept {
-  this->buf = _buf;
-  this->len = _len;
-  return haswell::stage1::json_structural_indexer::index<128>(_buf, _len, *this, streaming);
-}
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/find_next_document_index.h */
 /* begin file src/generic/stage1/utf8_validator.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage1 {
+
 /**
  * Validates that the string is actual UTF-8.
  */
@@ -8970,13 +9404,9 @@ bool generic_validate_utf8(const char * input, size_t length) {
 }
 
 } // namespace stage1
-/* end file src/generic/stage1/utf8_validator.h */
-WARN_UNUSED bool implementation::validate_utf8(const char *buf, size_t len) const noexcept {
-  return simdjson::haswell::stage1::generic_validate_utf8(buf,len);
-}
-} // namespace haswell
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
+/* end file src/generic/stage1/utf8_validator.h */
 
 //
 // Stage 2
@@ -8985,14 +9415,11 @@ UNTARGET_REGION
 #ifndef SIMDJSON_HASWELL_STRINGPARSING_H
 #define SIMDJSON_HASWELL_STRINGPARSING_H
 
-/* jsoncharutils.h already included: #include "jsoncharutils.h" */
 /* haswell/simd.h already included: #include "haswell/simd.h" */
-/* haswell/intrinsics.h already included: #include "haswell/intrinsics.h" */
 /* haswell/bitmanipulation.h already included: #include "haswell/bitmanipulation.h" */
 
-TARGET_HASWELL
 namespace simdjson {
-namespace haswell {
+namespace SIMDJSON_IMPLEMENTATION {
 
 using namespace simd;
 
@@ -9024,12 +9451,15 @@ really_inline backslash_and_quote backslash_and_quote::copy_and_find(const uint8
   };
 }
 
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
 /* begin file src/generic/stage2/stringparsing.h */
 // This file contains the common code every implementation uses
 // It is intended to be included multiple times and compiled multiple times
-// We assume the file in which it is include already includes
-// "stringparsing.h" (this simplifies amalgation)
 
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage2 {
 namespace stringparsing {
 
@@ -9148,11 +9578,9 @@ WARN_UNUSED really_inline uint8_t *parse_string(const uint8_t *src, uint8_t *dst
 
 } // namespace stringparsing
 } // namespace stage2
-/* end file src/generic/stage2/stringparsing.h */
-
-} // namespace haswell
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
+/* end file src/generic/stage2/stringparsing.h */
 
 #endif // SIMDJSON_HASWELL_STRINGPARSING_H
 /* end file src/generic/stage2/stringparsing.h */
@@ -9160,23 +9588,9 @@ UNTARGET_REGION
 #ifndef SIMDJSON_HASWELL_NUMBERPARSING_H
 #define SIMDJSON_HASWELL_NUMBERPARSING_H
 
-
-/* jsoncharutils.h already included: #include "jsoncharutils.h" */
-/* haswell/intrinsics.h already included: #include "haswell/intrinsics.h" */
-/* haswell/bitmanipulation.h already included: #include "haswell/bitmanipulation.h" */
-#include <cmath>
-#include <limits>
-
-#ifdef JSON_TEST_NUMBERS // for unit testing
-void found_invalid_number(const uint8_t *buf);
-void found_integer(int64_t result, const uint8_t *buf);
-void found_unsigned_integer(uint64_t result, const uint8_t *buf);
-void found_float(double result, const uint8_t *buf);
-#endif
-
-TARGET_HASWELL
 namespace simdjson {
-namespace haswell {
+namespace SIMDJSON_IMPLEMENTATION {
+
 static really_inline uint32_t parse_eight_digits_unrolled(const uint8_t *chars) {
   // this actually computes *16* values so we are being wasteful.
   const __m128i ascii0 = _mm_set1_epi8('0');
@@ -9195,9 +9609,17 @@ static really_inline uint32_t parse_eight_digits_unrolled(const uint8_t *chars) 
       t4); // only captures the sum of the first 8 digits, drop the rest
 }
 
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
 #define SWAR_NUMBER_PARSING
 
 /* begin file src/generic/stage2/numberparsing.h */
+#include <cmath>
+#include <limits>
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage2 {
 namespace numberparsing {
 
@@ -9672,208 +10094,23 @@ really_inline bool parse_number(const uint8_t *const src, W &writer) {
 
 } // namespace numberparsing
 } // namespace stage2
-/* end file src/generic/stage2/numberparsing.h */
-
-} // namespace haswell
-
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
+/* end file src/generic/stage2/numberparsing.h */
 
 #endif // SIMDJSON_HASWELL_NUMBERPARSING_H
 /* end file src/generic/stage2/numberparsing.h */
-
-TARGET_HASWELL
-namespace simdjson {
-namespace haswell {
-
-/* begin file src/generic/stage2/logger.h */
-// This is for an internal-only stage 2 specific logger.
-// Set LOG_ENABLED = true to log what stage 2 is doing!
-namespace logger {
-  static constexpr const char * DASHES = "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
-
-  static constexpr const bool LOG_ENABLED = false;
-  static constexpr const int LOG_EVENT_LEN = 30;
-  static constexpr const int LOG_BUFFER_LEN = 20;
-  static constexpr const int LOG_DETAIL_LEN = 50;
-  static constexpr const int LOG_INDEX_LEN = 10;
-
-  static int log_depth; // Not threadsafe. Log only.
-
-  // Helper to turn unprintable or newline characters into spaces
-  static really_inline char printable_char(char c) {
-    if (c >= 0x20) {
-      return c;
-    } else {
-      return ' ';
-    }
-  }
-
-  // Print the header and set up log_start
-  static really_inline void log_start() {
-    if (LOG_ENABLED) {
-      log_depth = 0;
-      printf("\n");
-      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Tape#", LOG_DETAIL_LEN, "Detail", LOG_INDEX_LEN, "index");
-      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES, LOG_INDEX_LEN+2, DASHES);
-    }
-  }
-
-  static really_inline void log_string(const char *message) {
-    if (LOG_ENABLED) {
-      printf("%s\n", message);
-    }
-  }
-
-  // Logs a single line of 
-  template<typename S>
-  static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
-    if (LOG_ENABLED) {
-      printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
-      {
-        // Print the next N characters in the buffer.
-        printf("| ");
-        // Otherwise, print the characters starting from the buffer position.
-        // Print spaces for unprintable or newline characters.
-        for (int i=0;i<LOG_BUFFER_LEN;i++) {
-          printf("%c", printable_char(structurals.current()[i]));
-        }
-        printf(" ");
-      }
-      printf("|    %c ", printable_char(structurals.current_char()));
-      printf("|    %c ", printable_char(structurals.peek_next_char()));
-      printf("| %5u ", structurals.parser.structural_indexes[*(structurals.current_structural+1)]);
-      printf("| %5u ", structurals.next_tape_index());
-      printf("| %-*s ", LOG_DETAIL_LEN, detail);
-      printf("| %*u ", LOG_INDEX_LEN, *structurals.current_structural);
-      printf("|\n");
-    }
-  }
-} // namespace logger
-
-/* end file src/generic/stage2/logger.h */
-/* begin file src/generic/stage2/atomparsing.h */
-namespace stage2 {
-namespace atomparsing {
-
-namespace{
-// The string_to_uint32 is exclusively used to map literal strings to 32-bit values.
-// We use memcpy instead of a pointer cast to avoid undefined behaviors since we cannot
-// be certain that the character pointer will be properly aligned.
-// You might think that using memcpy makes this function expensive, but you'd be wrong.
-// All decent optimizing compilers (GCC, clang, Visual Studio) will compile string_to_uint32("false");
-// to the compile-time constant 1936482662.
-really_inline uint32_t string_to_uint32(const char* str) { uint32_t val; std::memcpy(&val, str, sizeof(uint32_t)); return val; }
-
-
-// Again in str4ncmp we use a memcpy to avoid undefined behavior. The memcpy may appear expensive.
-// Yet all decent optimizing compilers will compile memcpy to a single instruction, just about.
-WARN_UNUSED
-really_inline uint32_t str4ncmp(const uint8_t *src, const char* atom) {
-  uint32_t srcval; // we want to avoid unaligned 32-bit loads (undefined in C/C++)
-  static_assert(sizeof(uint32_t) <= SIMDJSON_PADDING, "SIMDJSON_PADDING must be larger than 4 bytes");
-  std::memcpy(&srcval, src, sizeof(uint32_t));
-  return srcval ^ string_to_uint32(atom);
-}
-} // anonymous namespace
-
-WARN_UNUSED
-really_inline bool is_valid_true_atom(const uint8_t *src) {
-  return (str4ncmp(src, "true") | is_not_structural_or_whitespace(src[4])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_true_atom(const uint8_t *src, size_t len) {
-  if (len > 4) { return is_valid_true_atom(src); }
-  else if (len == 4) { return !str4ncmp(src, "true"); }
-  else { return false; }
-}
-
-WARN_UNUSED
-really_inline bool is_valid_false_atom(const uint8_t *src) {
-  return (str4ncmp(src+1, "alse") | is_not_structural_or_whitespace(src[5])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_false_atom(const uint8_t *src, size_t len) {
-  if (len > 5) { return is_valid_false_atom(src); }
-  else if (len == 5) { return !str4ncmp(src+1, "alse"); }
-  else { return false; }
-}
-
-WARN_UNUSED
-really_inline bool is_valid_null_atom(const uint8_t *src) {
-  return (str4ncmp(src, "null") | is_not_structural_or_whitespace(src[4])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_null_atom(const uint8_t *src, size_t len) {
-  if (len > 4) { return is_valid_null_atom(src); }
-  else if (len == 4) { return !str4ncmp(src, "null"); }
-  else { return false; }
-}
-
-} // namespace atomparsing
-} // namespace stage2
-/* end file src/generic/stage2/atomparsing.h */
-/* begin file src/generic/stage2/structural_iterator.h */
-namespace stage2 {
-
-class structural_iterator {
-public:
-  const uint8_t* const buf;
-  uint32_t *current_structural;
-  dom_parser_implementation &parser;
-
-  // Start a structural 
-  really_inline structural_iterator(dom_parser_implementation &_parser, size_t start_structural_index)
-    : buf{_parser.buf},
-      current_structural{&_parser.structural_indexes[start_structural_index]},
-      parser{_parser} {
-  }
-  // Get the buffer position of the current structural character
-  really_inline const uint8_t* current() {
-    return &buf[*current_structural];
-  }
-  // Get the current structural character
-  really_inline char current_char() {
-    return buf[*current_structural];
-  }
-  // Get the next structural character without advancing
-  really_inline char peek_next_char() {
-    return buf[*(current_structural+1)];
-  }
-  really_inline char advance_char() {
-    current_structural++;
-    return buf[*current_structural];
-  }
-  really_inline size_t remaining_len() {
-    return parser.len - *current_structural;
-  }
-
-  really_inline bool past_end(uint32_t n_structural_indexes) {
-    return current_structural >= &parser.structural_indexes[n_structural_indexes];
-  }
-  really_inline bool at_end(uint32_t n_structural_indexes) {
-    return current_structural == &parser.structural_indexes[n_structural_indexes];
-  }
-  really_inline bool at_beginning() {
-    return current_structural == parser.structural_indexes.get();
-  }
-};
-
-} // namespace stage2
-/* end file src/generic/stage2/structural_iterator.h */
 /* begin file src/generic/stage2/structural_parser.h */
 // This file contains the common code every implementation uses for stage2
 // It is intended to be included multiple times and compiled multiple times
 // We assume the file in which it is include already includes
 // "simdjson/stage2.h" (this simplifies amalgation)
 
-namespace stage2 {
-namespace { // Make everything here private
-
 /* begin file src/generic/stage2/tape_writer.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
 struct tape_writer {
   /** The next place to write to tape */
   uint64_t *next_tape_loc;
@@ -9969,7 +10206,206 @@ really_inline void tape_writer::append2(uint64_t val, T val2, internal::tape_typ
 really_inline void tape_writer::write(uint64_t &tape_loc, uint64_t val, internal::tape_type t) noexcept {
   tape_loc = val | ((uint64_t(char(t))) << 56);
 }
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage2/tape_writer.h */
+/* begin file src/generic/stage2/logger.h */
+// This is for an internal-only stage 2 specific logger.
+// Set LOG_ENABLED = true to log what stage 2 is doing!
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace logger {
+  static constexpr const char * DASHES = "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+
+  static constexpr const bool LOG_ENABLED = false;
+  static constexpr const int LOG_EVENT_LEN = 30;
+  static constexpr const int LOG_BUFFER_LEN = 20;
+  static constexpr const int LOG_DETAIL_LEN = 50;
+  static constexpr const int LOG_INDEX_LEN = 10;
+
+  static int log_depth; // Not threadsafe. Log only.
+
+  // Helper to turn unprintable or newline characters into spaces
+  static really_inline char printable_char(char c) {
+    if (c >= 0x20) {
+      return c;
+    } else {
+      return ' ';
+    }
+  }
+
+  // Print the header and set up log_start
+  static really_inline void log_start() {
+    if (LOG_ENABLED) {
+      log_depth = 0;
+      printf("\n");
+      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Tape#", LOG_DETAIL_LEN, "Detail", LOG_INDEX_LEN, "index");
+      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES, LOG_INDEX_LEN+2, DASHES);
+    }
+  }
+
+  static really_inline void log_string(const char *message) {
+    if (LOG_ENABLED) {
+      printf("%s\n", message);
+    }
+  }
+
+  // Logs a single line of 
+  template<typename S>
+  static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
+    if (LOG_ENABLED) {
+      printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
+      {
+        // Print the next N characters in the buffer.
+        printf("| ");
+        // Otherwise, print the characters starting from the buffer position.
+        // Print spaces for unprintable or newline characters.
+        for (int i=0;i<LOG_BUFFER_LEN;i++) {
+          printf("%c", printable_char(structurals.current()[i]));
+        }
+        printf(" ");
+      }
+      printf("|    %c ", printable_char(structurals.current_char()));
+      printf("|    %c ", printable_char(structurals.peek_next_char()));
+      printf("| %5u ", structurals.parser.structural_indexes[*(structurals.current_structural+1)]);
+      printf("| %5u ", structurals.next_tape_index());
+      printf("| %-*s ", LOG_DETAIL_LEN, detail);
+      printf("| %*u ", LOG_INDEX_LEN, *structurals.current_structural);
+      printf("|\n");
+    }
+  }
+} // namespace logger
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/logger.h */
+/* begin file src/generic/stage2/atomparsing.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+namespace atomparsing {
+
+namespace{
+// The string_to_uint32 is exclusively used to map literal strings to 32-bit values.
+// We use memcpy instead of a pointer cast to avoid undefined behaviors since we cannot
+// be certain that the character pointer will be properly aligned.
+// You might think that using memcpy makes this function expensive, but you'd be wrong.
+// All decent optimizing compilers (GCC, clang, Visual Studio) will compile string_to_uint32("false");
+// to the compile-time constant 1936482662.
+really_inline uint32_t string_to_uint32(const char* str) { uint32_t val; std::memcpy(&val, str, sizeof(uint32_t)); return val; }
+
+
+// Again in str4ncmp we use a memcpy to avoid undefined behavior. The memcpy may appear expensive.
+// Yet all decent optimizing compilers will compile memcpy to a single instruction, just about.
+WARN_UNUSED
+really_inline uint32_t str4ncmp(const uint8_t *src, const char* atom) {
+  uint32_t srcval; // we want to avoid unaligned 32-bit loads (undefined in C/C++)
+  static_assert(sizeof(uint32_t) <= SIMDJSON_PADDING, "SIMDJSON_PADDING must be larger than 4 bytes");
+  std::memcpy(&srcval, src, sizeof(uint32_t));
+  return srcval ^ string_to_uint32(atom);
+}
+} // anonymous namespace
+
+WARN_UNUSED
+really_inline bool is_valid_true_atom(const uint8_t *src) {
+  return (str4ncmp(src, "true") | is_not_structural_or_whitespace(src[4])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_true_atom(const uint8_t *src, size_t len) {
+  if (len > 4) { return is_valid_true_atom(src); }
+  else if (len == 4) { return !str4ncmp(src, "true"); }
+  else { return false; }
+}
+
+WARN_UNUSED
+really_inline bool is_valid_false_atom(const uint8_t *src) {
+  return (str4ncmp(src+1, "alse") | is_not_structural_or_whitespace(src[5])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_false_atom(const uint8_t *src, size_t len) {
+  if (len > 5) { return is_valid_false_atom(src); }
+  else if (len == 5) { return !str4ncmp(src+1, "alse"); }
+  else { return false; }
+}
+
+WARN_UNUSED
+really_inline bool is_valid_null_atom(const uint8_t *src) {
+  return (str4ncmp(src, "null") | is_not_structural_or_whitespace(src[4])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_null_atom(const uint8_t *src, size_t len) {
+  if (len > 4) { return is_valid_null_atom(src); }
+  else if (len == 4) { return !str4ncmp(src, "null"); }
+  else { return false; }
+}
+
+} // namespace atomparsing
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/atomparsing.h */
+/* begin file src/generic/stage2/structural_iterator.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+class structural_iterator {
+public:
+  const uint8_t* const buf;
+  uint32_t *current_structural;
+  dom_parser_implementation &parser;
+
+  // Start a structural 
+  really_inline structural_iterator(dom_parser_implementation &_parser, size_t start_structural_index)
+    : buf{_parser.buf},
+      current_structural{&_parser.structural_indexes[start_structural_index]},
+      parser{_parser} {
+  }
+  // Get the buffer position of the current structural character
+  really_inline const uint8_t* current() {
+    return &buf[*current_structural];
+  }
+  // Get the current structural character
+  really_inline char current_char() {
+    return buf[*current_structural];
+  }
+  // Get the next structural character without advancing
+  really_inline char peek_next_char() {
+    return buf[*(current_structural+1)];
+  }
+  really_inline char advance_char() {
+    current_structural++;
+    return buf[*current_structural];
+  }
+  really_inline size_t remaining_len() {
+    return parser.len - *current_structural;
+  }
+
+  really_inline bool past_end(uint32_t n_structural_indexes) {
+    return current_structural >= &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_end(uint32_t n_structural_indexes) {
+    return current_structural == &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_beginning() {
+    return current_structural == parser.structural_indexes.get();
+  }
+};
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/structural_iterator.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+namespace { // Make everything here private
 
 #ifdef SIMDJSON_USE_COMPUTED_GOTO
 #define INIT_ADDRESSES() { &&array_begin, &&array_continue, &&error, &&finish, &&object_begin, &&object_continue }
@@ -10452,7 +10888,39 @@ WARN_UNUSED error_code dom_parser_implementation::stage2(dom::document &_doc) no
 WARN_UNUSED error_code dom_parser_implementation::stage2_next(dom::document &_doc) noexcept {
   return stage2::parse_structurals<true>(*this, _doc);
 }
-/* end file src/generic/stage2/tape_writer.h */
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/structural_iterator.h */
+
+//
+// Implementation-specific overrides
+//
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+namespace stage1 {
+
+really_inline uint64_t json_string_scanner::find_escaped(uint64_t backslash) {
+  if (!backslash) { uint64_t escaped = prev_escaped; prev_escaped = 0; return escaped; }
+  return find_escaped_branchless(backslash);
+}
+
+} // namespace stage1
+
+WARN_UNUSED error_code implementation::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) const noexcept {
+  return haswell::stage1::json_minifier::minify<128>(buf, len, dst, dst_len);
+}
+
+WARN_UNUSED error_code dom_parser_implementation::stage1(const uint8_t *_buf, size_t _len, bool streaming) noexcept {
+  this->buf = _buf;
+  this->len = _len;
+  return haswell::stage1::json_structural_indexer::index<128>(_buf, _len, *this, streaming);
+}
+
+WARN_UNUSED bool implementation::validate_utf8(const char *buf, size_t len) const noexcept {
+  return simdjson::haswell::stage1::generic_validate_utf8(buf,len);
+}
 
 WARN_UNUSED error_code dom_parser_implementation::parse(const uint8_t *_buf, size_t _len, dom::document &_doc) noexcept {
   error_code err = stage1(_buf, _len, false);
@@ -10460,160 +10928,20 @@ WARN_UNUSED error_code dom_parser_implementation::parse(const uint8_t *_buf, siz
   return stage2(_doc);
 }
 
-} // namespace haswell
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
-/* end file src/generic/stage2/tape_writer.h */
+
+/* begin file src/haswell/end_implementation.h */
+#undef SIMDJSON_IMPLEMENTATION
+SIMDJSON_UNTARGET_REGION
+/* end file src/haswell/end_implementation.h */
+/* end file src/haswell/end_implementation.h */
 #endif
 #if SIMDJSON_IMPLEMENTATION_WESTMERE
 /* begin file src/westmere/implementation.cpp */
-/* westmere/implementation.h already included: #include "westmere/implementation.h" */
-/* begin file src/westmere/dom_parser_implementation.h */
-#ifndef SIMDJSON_WESTMERE_DOM_PARSER_IMPLEMENTATION_H
-#define SIMDJSON_WESTMERE_DOM_PARSER_IMPLEMENTATION_H
-
-/* isadetection.h already included: #include "isadetection.h" */
-
-namespace simdjson {
-namespace westmere {
-
-/* begin file src/generic/dom_parser_implementation.h */
-// expectation: sizeof(scope_descriptor) = 64/8.
-struct scope_descriptor {
-  uint32_t tape_index; // where, on the tape, does the scope ([,{) begins
-  uint32_t count; // how many elements in the scope
-}; // struct scope_descriptor
-
-#ifdef SIMDJSON_USE_COMPUTED_GOTO
-typedef void* ret_address_t;
-#else
-typedef char ret_address_t;
-#endif
-
-class dom_parser_implementation final : public internal::dom_parser_implementation {
-public:
-  /** Tape location of each open { or [ */
-  std::unique_ptr<scope_descriptor[]> containing_scope{};
-  /** Return address of each open { or [ */
-  std::unique_ptr<ret_address_t[]> ret_address{};
-  /** Buffer passed to stage 1 */
-  const uint8_t *buf{};
-  /** Length passed to stage 1 */
-  size_t len{0};
-  /** Document passed to stage 2 */
-  dom::document *doc{};
-  /** Error code (TODO remove, this is not even used, we just set it so the g++ optimizer doesn't get confused) */
-  error_code error{UNINITIALIZED};
-
-  really_inline dom_parser_implementation();
-  dom_parser_implementation(const dom_parser_implementation &) = delete;
-  dom_parser_implementation & operator=(const dom_parser_implementation &) = delete;
-
-  WARN_UNUSED error_code parse(const uint8_t *buf, size_t len, dom::document &doc) noexcept final;
-  WARN_UNUSED error_code stage1(const uint8_t *buf, size_t len, bool partial) noexcept final;
-  WARN_UNUSED error_code check_for_unclosed_array() noexcept;
-  WARN_UNUSED error_code stage2(dom::document &doc) noexcept final;
-  WARN_UNUSED error_code stage2_next(dom::document &doc) noexcept final;
-  WARN_UNUSED error_code set_capacity(size_t capacity) noexcept final;
-  WARN_UNUSED error_code set_max_depth(size_t max_depth) noexcept final;
-};
-
-/* begin file src/generic/stage1/allocate.h */
-namespace stage1 {
-namespace allocate {
-
-//
-// Allocates stage 1 internal state and outputs in the parser
-//
-really_inline error_code set_capacity(internal::dom_parser_implementation &parser, size_t capacity) {
-  size_t max_structures = ROUNDUP_N(capacity, 64) + 2 + 7;
-  parser.structural_indexes.reset( new (std::nothrow) uint32_t[max_structures] );
-  if (!parser.structural_indexes) { return MEMALLOC; }
-  parser.structural_indexes[0] = 0;
-  parser.n_structural_indexes = 0;
-  return SUCCESS;
-}
-
-} // namespace allocate
-} // namespace stage1
-/* end file src/generic/stage1/allocate.h */
-/* begin file src/generic/stage2/allocate.h */
-namespace stage2 {
-namespace allocate {
-
-//
-// Allocates stage 2 internal state and outputs in the parser
-//
-really_inline error_code set_max_depth(dom_parser_implementation &parser, size_t max_depth) {
-  parser.containing_scope.reset(new (std::nothrow) scope_descriptor[max_depth]);
-  parser.ret_address.reset(new (std::nothrow) ret_address_t[max_depth]);
-
-  if (!parser.ret_address || !parser.containing_scope) {
-    return MEMALLOC;
-  }
-  return SUCCESS;
-}
-
-} // namespace allocate
-} // namespace stage2
-/* end file src/generic/stage2/allocate.h */
-
-really_inline dom_parser_implementation::dom_parser_implementation() {}
-
-// Leaving these here so they can be inlined if so desired
-WARN_UNUSED error_code dom_parser_implementation::set_capacity(size_t capacity) noexcept {
-  error_code err = stage1::allocate::set_capacity(*this, capacity);
-  if (err) { _capacity = 0; return err; }
-  _capacity = capacity;
-  return SUCCESS;
-}
-
-WARN_UNUSED error_code dom_parser_implementation::set_max_depth(size_t max_depth) noexcept {
-  error_code err = stage2::allocate::set_max_depth(*this, max_depth);
-  if (err) { _max_depth = 0; return err; }
-  _max_depth = max_depth;
-  return SUCCESS;
-}
-/* end file src/generic/stage2/allocate.h */
-
-} // namespace westmere
-} // namespace simdjson
-
-#endif // SIMDJSON_WESTMERE_DOM_PARSER_IMPLEMENTATION_H
-/* end file src/generic/stage2/allocate.h */
-
-TARGET_HASWELL
-
-namespace simdjson {
-namespace westmere {
-
-WARN_UNUSED error_code implementation::create_dom_parser_implementation(
-  size_t capacity,
-  size_t max_depth,
-  std::unique_ptr<internal::dom_parser_implementation>& dst
-) const noexcept {
-  dst.reset( new (std::nothrow) dom_parser_implementation() );
-  if (!dst) { return MEMALLOC; }
-  dst->set_capacity(capacity);
-  dst->set_max_depth(max_depth);
-  return SUCCESS;
-}
-
-} // namespace westmere
-} // namespace simdjson
-
-UNTARGET_REGION
-/* end file src/generic/stage2/allocate.h */
-/* begin file src/westmere/dom_parser_implementation.cpp */
-/* westmere/implementation.h already included: #include "westmere/implementation.h" */
-/* westmere/dom_parser_implementation.h already included: #include "westmere/dom_parser_implementation.h" */
-
-//
-// Stage 1
-//
-/* begin file src/westmere/bitmask.h */
-#ifndef SIMDJSON_WESTMERE_BITMASK_H
-#define SIMDJSON_WESTMERE_BITMASK_H
+/* begin file src/westmere/begin_implementation.h */
+#define SIMDJSON_IMPLEMENTATION westmere
+#define SIMDJSON_TARGET_WESTMERE SIMDJSON_TARGET_REGION("sse4.2,pclmul")
 
 /* begin file src/westmere/intrinsics.h */
 #ifndef SIMDJSON_WESTMERE_INTRINSICS_H
@@ -10644,45 +10972,16 @@ UNTARGET_REGION
 
 #endif // SIMDJSON_WESTMERE_INTRINSICS_H
 /* end file src/westmere/intrinsics.h */
+/* westmere/implementation.h already included: #include "westmere/implementation.h" */
 
-TARGET_WESTMERE
-namespace simdjson {
-namespace westmere {
+SIMDJSON_TARGET_WESTMERE
 
-//
-// Perform a "cumulative bitwise xor," flipping bits each time a 1 is encountered.
-//
-// For example, prefix_xor(00100100) == 00011100
-//
-really_inline uint64_t prefix_xor(const uint64_t bitmask) {
-  // There should be no such thing with a processing supporting avx2
-  // but not clmul.
-  __m128i all_ones = _mm_set1_epi8('\xFF');
-  __m128i result = _mm_clmulepi64_si128(_mm_set_epi64x(0ULL, bitmask), all_ones, 0);
-  return _mm_cvtsi128_si64(result);
-}
-
-} // namespace westmere
-
-} // namespace simdjson
-UNTARGET_REGION
-
-#endif // SIMDJSON_WESTMERE_BITMASK_H
-/* end file src/westmere/intrinsics.h */
-/* begin file src/westmere/simd.h */
-#ifndef SIMDJSON_WESTMERE_SIMD_H
-#define SIMDJSON_WESTMERE_SIMD_H
-
-/* simdprune_tables.h already included: #include "simdprune_tables.h" */
 /* begin file src/westmere/bitmanipulation.h */
 #ifndef SIMDJSON_WESTMERE_BITMANIPULATION_H
 #define SIMDJSON_WESTMERE_BITMANIPULATION_H
 
-/* westmere/intrinsics.h already included: #include "westmere/intrinsics.h" */
-
-TARGET_WESTMERE
 namespace simdjson {
-namespace westmere {
+namespace SIMDJSON_IMPLEMENTATION {
 
 // We sometimes call trailing_zero on inputs that are zero,
 // but the algorithms do not end up using the returned value.
@@ -10757,20 +11056,44 @@ really_inline bool mul_overflow(uint64_t value1, uint64_t value2,
 #endif
 }
 
-} // namespace westmere
-
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
 
 #endif // SIMDJSON_WESTMERE_BITMANIPULATION_H
 /* end file src/westmere/bitmanipulation.h */
-/* westmere/intrinsics.h already included: #include "westmere/intrinsics.h" */
+/* begin file src/westmere/bitmask.h */
+#ifndef SIMDJSON_WESTMERE_BITMASK_H
+#define SIMDJSON_WESTMERE_BITMASK_H
 
-
-
-TARGET_WESTMERE
 namespace simdjson {
-namespace westmere {
+namespace SIMDJSON_IMPLEMENTATION {
+
+//
+// Perform a "cumulative bitwise xor," flipping bits each time a 1 is encountered.
+//
+// For example, prefix_xor(00100100) == 00011100
+//
+really_inline uint64_t prefix_xor(const uint64_t bitmask) {
+  // There should be no such thing with a processing supporting avx2
+  // but not clmul.
+  __m128i all_ones = _mm_set1_epi8('\xFF');
+  __m128i result = _mm_clmulepi64_si128(_mm_set_epi64x(0ULL, bitmask), all_ones, 0);
+  return _mm_cvtsi128_si64(result);
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
+#endif // SIMDJSON_WESTMERE_BITMASK_H
+/* end file src/westmere/bitmask.h */
+/* begin file src/westmere/simd.h */
+#ifndef SIMDJSON_WESTMERE_SIMD_H
+#define SIMDJSON_WESTMERE_SIMD_H
+
+/* simdprune_tables.h already included: #include "simdprune_tables.h" */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace simd {
 
   template<typename Child>
@@ -11093,19 +11416,306 @@ namespace simd {
   }; // struct simd8x64<T>
 
 } // namespace simd
-
-} // namespace westmere
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
 
 #endif // SIMDJSON_WESTMERE_SIMD_INPUT_H
-/* end file src/westmere/bitmanipulation.h */
-/* westmere/bitmanipulation.h already included: #include "westmere/bitmanipulation.h" */
+/* end file src/westmere/simd.h */
+/* end file src/westmere/simd.h */
+/* begin file src/westmere/dom_parser_implementation.h */
+#ifndef SIMDJSON_WESTMERE_DOM_PARSER_IMPLEMENTATION_H
+#define SIMDJSON_WESTMERE_DOM_PARSER_IMPLEMENTATION_H
+
+/* begin file src/generic/dom_parser_implementation.h */
+/* isadetection.h already included: #include "isadetection.h" */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+// expectation: sizeof(scope_descriptor) = 64/8.
+struct scope_descriptor {
+  uint32_t tape_index; // where, on the tape, does the scope ([,{) begins
+  uint32_t count; // how many elements in the scope
+}; // struct scope_descriptor
+
+#ifdef SIMDJSON_USE_COMPUTED_GOTO
+typedef void* ret_address_t;
+#else
+typedef char ret_address_t;
+#endif
+
+class dom_parser_implementation final : public internal::dom_parser_implementation {
+public:
+  /** Tape location of each open { or [ */
+  std::unique_ptr<scope_descriptor[]> containing_scope{};
+  /** Return address of each open { or [ */
+  std::unique_ptr<ret_address_t[]> ret_address{};
+  /** Buffer passed to stage 1 */
+  const uint8_t *buf{};
+  /** Length passed to stage 1 */
+  size_t len{0};
+  /** Document passed to stage 2 */
+  dom::document *doc{};
+  /** Error code (TODO remove, this is not even used, we just set it so the g++ optimizer doesn't get confused) */
+  error_code error{UNINITIALIZED};
+
+  really_inline dom_parser_implementation();
+  dom_parser_implementation(const dom_parser_implementation &) = delete;
+  dom_parser_implementation & operator=(const dom_parser_implementation &) = delete;
+
+  WARN_UNUSED error_code parse(const uint8_t *buf, size_t len, dom::document &doc) noexcept final;
+  WARN_UNUSED error_code stage1(const uint8_t *buf, size_t len, bool partial) noexcept final;
+  WARN_UNUSED error_code check_for_unclosed_array() noexcept;
+  WARN_UNUSED error_code stage2(dom::document &doc) noexcept final;
+  WARN_UNUSED error_code stage2_next(dom::document &doc) noexcept final;
+  WARN_UNUSED error_code set_capacity(size_t capacity) noexcept final;
+  WARN_UNUSED error_code set_max_depth(size_t max_depth) noexcept final;
+};
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
+/* begin file src/generic/stage1/allocate.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+namespace allocate {
+
+//
+// Allocates stage 1 internal state and outputs in the parser
+//
+really_inline error_code set_capacity(internal::dom_parser_implementation &parser, size_t capacity) {
+  size_t max_structures = ROUNDUP_N(capacity, 64) + 2 + 7;
+  parser.structural_indexes.reset( new (std::nothrow) uint32_t[max_structures] );
+  if (!parser.structural_indexes) { return MEMALLOC; }
+  parser.structural_indexes[0] = 0;
+  parser.n_structural_indexes = 0;
+  return SUCCESS;
+}
+
+} // namespace allocate
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/allocate.h */
+/* begin file src/generic/stage2/allocate.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+namespace allocate {
+
+//
+// Allocates stage 2 internal state and outputs in the parser
+//
+really_inline error_code set_max_depth(dom_parser_implementation &parser, size_t max_depth) {
+  parser.containing_scope.reset(new (std::nothrow) scope_descriptor[max_depth]);
+  parser.ret_address.reset(new (std::nothrow) ret_address_t[max_depth]);
+
+  if (!parser.ret_address || !parser.containing_scope) {
+    return MEMALLOC;
+  }
+  return SUCCESS;
+}
+
+} // namespace allocate
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/allocate.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+really_inline dom_parser_implementation::dom_parser_implementation() {}
+
+// Leaving these here so they can be inlined if so desired
+WARN_UNUSED error_code dom_parser_implementation::set_capacity(size_t capacity) noexcept {
+  error_code err = stage1::allocate::set_capacity(*this, capacity);
+  if (err) { _capacity = 0; return err; }
+  _capacity = capacity;
+  return SUCCESS;
+}
+
+WARN_UNUSED error_code dom_parser_implementation::set_max_depth(size_t max_depth) noexcept {
+  error_code err = stage2::allocate::set_max_depth(*this, max_depth);
+  if (err) { _max_depth = 0; return err; }
+  _max_depth = max_depth;
+  return SUCCESS;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/allocate.h */
+
+#endif // SIMDJSON_WESTMERE_DOM_PARSER_IMPLEMENTATION_H
+/* end file src/generic/stage2/allocate.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+WARN_UNUSED error_code implementation::create_dom_parser_implementation(
+  size_t capacity,
+  size_t max_depth,
+  std::unique_ptr<internal::dom_parser_implementation>& dst
+) const noexcept {
+  dst.reset( new (std::nothrow) dom_parser_implementation() );
+  if (!dst) { return MEMALLOC; }
+  dst->set_capacity(capacity);
+  dst->set_max_depth(max_depth);
+  return SUCCESS;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
+/* begin file src/westmere/end_implementation.h */
+#undef SIMDJSON_IMPLEMENTATION
+SIMDJSON_UNTARGET_REGION
+/* end file src/westmere/end_implementation.h */
+/* end file src/westmere/end_implementation.h */
+/* begin file src/westmere/dom_parser_implementation.cpp */
+/* begin file src/westmere/begin_implementation.h */
+#define SIMDJSON_IMPLEMENTATION westmere
+#define SIMDJSON_TARGET_WESTMERE SIMDJSON_TARGET_REGION("sse4.2,pclmul")
+
+/* westmere/intrinsics.h already included: #include "westmere/intrinsics.h" // Generally need to be included outside SIMDJSON_TARGET_REGION */
 /* westmere/implementation.h already included: #include "westmere/implementation.h" */
 
-TARGET_WESTMERE
+SIMDJSON_TARGET_WESTMERE
+
+/* westmere/bitmanipulation.h already included: #include "westmere/bitmanipulation.h" */
+/* westmere/bitmask.h already included: #include "westmere/bitmask.h" */
+/* westmere/simd.h already included: #include "westmere/simd.h" */
+/* end file src/westmere/begin_implementation.h */
+/* westmere/dom_parser_implementation.h already included: #include "westmere/dom_parser_implementation.h" */
+/* begin file src/generic/stage2/jsoncharutils.h */
 namespace simdjson {
-namespace westmere {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+// return non-zero if not a structural or whitespace char
+// zero otherwise
+really_inline uint32_t is_not_structural_or_whitespace_or_null(uint8_t c) {
+  return structural_or_whitespace_or_null_negated[c];
+}
+
+// return non-zero if not a structural or whitespace char
+// zero otherwise
+really_inline uint32_t is_not_structural_or_whitespace(uint8_t c) {
+  return structural_or_whitespace_negated[c];
+}
+
+really_inline uint32_t is_structural_or_whitespace_or_null(uint8_t c) {
+  return structural_or_whitespace_or_null[c];
+}
+
+really_inline uint32_t is_structural_or_whitespace(uint8_t c) {
+  return structural_or_whitespace[c];
+}
+
+// returns a value with the high 16 bits set if not valid
+// otherwise returns the conversion of the 4 hex digits at src into the bottom
+// 16 bits of the 32-bit return register
+//
+// see
+// https://lemire.me/blog/2019/04/17/parsing-short-hexadecimal-strings-efficiently/
+static inline uint32_t hex_to_u32_nocheck(
+    const uint8_t *src) { // strictly speaking, static inline is a C-ism
+  uint32_t v1 = digit_to_val32[630 + src[0]];
+  uint32_t v2 = digit_to_val32[420 + src[1]];
+  uint32_t v3 = digit_to_val32[210 + src[2]];
+  uint32_t v4 = digit_to_val32[0 + src[3]];
+  return v1 | v2 | v3 | v4;
+}
+
+// given a code point cp, writes to c
+// the utf-8 code, outputting the length in
+// bytes, if the length is zero, the code point
+// is invalid
+//
+// This can possibly be made faster using pdep
+// and clz and table lookups, but JSON documents
+// have few escaped code points, and the following
+// function looks cheap.
+//
+// Note: we assume that surrogates are treated separately
+//
+really_inline size_t codepoint_to_utf8(uint32_t cp, uint8_t *c) {
+  if (cp <= 0x7F) {
+    c[0] = uint8_t(cp);
+    return 1; // ascii
+  }
+  if (cp <= 0x7FF) {
+    c[0] = uint8_t((cp >> 6) + 192);
+    c[1] = uint8_t((cp & 63) + 128);
+    return 2; // universal plane
+    //  Surrogates are treated elsewhere...
+    //} //else if (0xd800 <= cp && cp <= 0xdfff) {
+    //  return 0; // surrogates // could put assert here
+  } else if (cp <= 0xFFFF) {
+    c[0] = uint8_t((cp >> 12) + 224);
+    c[1] = uint8_t(((cp >> 6) & 63) + 128);
+    c[2] = uint8_t((cp & 63) + 128);
+    return 3;
+  } else if (cp <= 0x10FFFF) { // if you know you have a valid code point, this
+                               // is not needed
+    c[0] = uint8_t((cp >> 18) + 240);
+    c[1] = uint8_t(((cp >> 12) & 63) + 128);
+    c[2] = uint8_t(((cp >> 6) & 63) + 128);
+    c[3] = uint8_t((cp & 63) + 128);
+    return 4;
+  }
+  // will return 0 when the code point was too large.
+  return 0; // bad r
+}
+
+#ifdef SIMDJSON_IS_32BITS // _umul128 for x86, arm
+// this is a slow emulation routine for 32-bit
+//
+static really_inline uint64_t __emulu(uint32_t x, uint32_t y) {
+  return x * (uint64_t)y;
+}
+static really_inline uint64_t _umul128(uint64_t ab, uint64_t cd, uint64_t *hi) {
+  uint64_t ad = __emulu((uint32_t)(ab >> 32), (uint32_t)cd);
+  uint64_t bd = __emulu((uint32_t)ab, (uint32_t)cd);
+  uint64_t adbc = ad + __emulu((uint32_t)ab, (uint32_t)(cd >> 32));
+  uint64_t adbc_carry = !!(adbc < ad);
+  uint64_t lo = bd + (adbc << 32);
+  *hi = __emulu((uint32_t)(ab >> 32), (uint32_t)(cd >> 32)) + (adbc >> 32) +
+        (adbc_carry << 32) + !!(lo < bd);
+  return lo;
+}
+#endif
+
+really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
+  value128 answer;
+#if defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
+#ifdef _M_ARM64
+  // ARM64 has native support for 64-bit multiplications, no need to emultate
+  answer.high = __umulh(value1, value2);
+  answer.low = value1 * value2;
+#else
+  answer.low = _umul128(value1, value2, &answer.high); // _umul128 not available on ARM64
+#endif // _M_ARM64
+#else // defined(SIMDJSON_REGULAR_VISUAL_STUDIO) || defined(SIMDJSON_IS_32BITS)
+  __uint128_t r = ((__uint128_t)value1) * value2;
+  answer.low = uint64_t(r);
+  answer.high = uint64_t(r >> 64);
+#endif
+  return answer;
+}
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/jsoncharutils.h */
+
+//
+// Stage 1
+//
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 
 using namespace simd;
 
@@ -11167,520 +11777,12 @@ really_inline simd8<bool> must_be_2_3_continuation(const simd8<uint8_t> prev2, c
   return simd8<int8_t>(is_third_byte | is_fourth_byte) > int8_t(0);
 }
 
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 
-/* begin file src/generic/stage1/buf_block_reader.h */
-// Walks through a buffer in block-sized increments, loading the last part with spaces
-template<size_t STEP_SIZE>
-struct buf_block_reader {
-public:
-  really_inline buf_block_reader(const uint8_t *_buf, size_t _len);
-  really_inline size_t block_index();
-  really_inline bool has_full_block() const;
-  really_inline const uint8_t *full_block() const;
-  /**
-   * Get the last block, padded with spaces.
-   *
-   * There will always be a last block, with at least 1 byte, unless len == 0 (in which case this
-   * function fills the buffer with spaces and returns 0. In particular, if len == STEP_SIZE there
-   * will be 0 full_blocks and 1 remainder block with STEP_SIZE bytes and no spaces for padding.
-   *
-   * @return the number of effective characters in the last block.
-   */
-  really_inline size_t get_remainder(uint8_t *dst) const;
-  really_inline void advance();
-private:
-  const uint8_t *buf;
-  const size_t len;
-  const size_t lenminusstep;
-  size_t idx;
-};
-
-// Routines to print masks and text for debugging bitmask operations
-UNUSED static char * format_input_text_64(const uint8_t *text) {
-  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
-  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
-    buf[i] = int8_t(text[i]) < ' ' ? '_' : int8_t(text[i]);
-  }
-  buf[sizeof(simd8x64<uint8_t>)] = '\0';
-  return buf;
-}
-
-// Routines to print masks and text for debugging bitmask operations
-UNUSED static char * format_input_text(const simd8x64<uint8_t>& in) {
-  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
-  in.store((uint8_t*)buf);
-  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
-    if (buf[i] < ' ') { buf[i] = '_'; }
-  }
-  buf[sizeof(simd8x64<uint8_t>)] = '\0';
-  return buf;
-}
-
-UNUSED static char * format_mask(uint64_t mask) {
-  static char *buf = (char*)malloc(64 + 1);
-  for (size_t i=0; i<64; i++) {
-    buf[i] = (mask & (size_t(1) << i)) ? 'X' : ' ';
-  }
-  buf[64] = '\0';
-  return buf;
-}
-
-template<size_t STEP_SIZE>
-really_inline buf_block_reader<STEP_SIZE>::buf_block_reader(const uint8_t *_buf, size_t _len) : buf{_buf}, len{_len}, lenminusstep{len < STEP_SIZE ? 0 : len - STEP_SIZE}, idx{0} {}
-
-template<size_t STEP_SIZE>
-really_inline size_t buf_block_reader<STEP_SIZE>::block_index() { return idx; }
-
-template<size_t STEP_SIZE>
-really_inline bool buf_block_reader<STEP_SIZE>::has_full_block() const {
-  return idx < lenminusstep;
-}
-
-template<size_t STEP_SIZE>
-really_inline const uint8_t *buf_block_reader<STEP_SIZE>::full_block() const {
-  return &buf[idx];
-}
-
-template<size_t STEP_SIZE>
-really_inline size_t buf_block_reader<STEP_SIZE>::get_remainder(uint8_t *dst) const {
-  memset(dst, 0x20, STEP_SIZE); // memset STEP_SIZE because it's more efficient to write out 8 or 16 bytes at once.
-  memcpy(dst, buf + idx, len - idx);
-  return len - idx;
-}
-
-template<size_t STEP_SIZE>
-really_inline void buf_block_reader<STEP_SIZE>::advance() {
-  idx += STEP_SIZE;
-}
-/* end file src/generic/stage1/buf_block_reader.h */
-/* begin file src/generic/stage1/json_string_scanner.h */
-namespace stage1 {
-
-struct json_string_block {
-  // Escaped characters (characters following an escape() character)
-  really_inline uint64_t escaped() const { return _escaped; }
-  // Escape characters (backslashes that are not escaped--i.e. in \\, includes only the first \)
-  really_inline uint64_t escape() const { return _backslash & ~_escaped; }
-  // Real (non-backslashed) quotes
-  really_inline uint64_t quote() const { return _quote; }
-  // Start quotes of strings
-  really_inline uint64_t string_end() const { return _quote & _in_string; }
-  // End quotes of strings
-  really_inline uint64_t string_start() const { return _quote & ~_in_string; }
-  // Only characters inside the string (not including the quotes)
-  really_inline uint64_t string_content() const { return _in_string & ~_quote; }
-  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
-  really_inline uint64_t non_quote_inside_string(uint64_t mask) const { return mask & _in_string; }
-  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
-  really_inline uint64_t non_quote_outside_string(uint64_t mask) const { return mask & ~_in_string; }
-  // Tail of string (everything except the start quote)
-  really_inline uint64_t string_tail() const { return _in_string ^ _quote; }
-
-  // backslash characters
-  uint64_t _backslash;
-  // escaped characters (backslashed--does not include the hex characters after \u)
-  uint64_t _escaped;
-  // real quotes (non-backslashed ones)
-  uint64_t _quote;
-  // string characters (includes start quote but not end quote)
-  uint64_t _in_string;
-};
-
-// Scans blocks for string characters, storing the state necessary to do so
-class json_string_scanner {
-public:
-  really_inline json_string_block next(const simd::simd8x64<uint8_t>& in);
-  really_inline error_code finish(bool streaming);
-
-private:
-  // Intended to be defined by the implementation
-  really_inline uint64_t find_escaped(uint64_t escape);
-  really_inline uint64_t find_escaped_branchless(uint64_t escape);
-
-  // Whether the last iteration was still inside a string (all 1's = true, all 0's = false).
-  uint64_t prev_in_string = 0ULL;
-  // Whether the first character of the next iteration is escaped.
-  uint64_t prev_escaped = 0ULL;
-};
-
-//
-// Finds escaped characters (characters following \).
-//
-// Handles runs of backslashes like \\\" and \\\\" correctly (yielding 0101 and 01010, respectively).
-//
-// Does this by:
-// - Shift the escape mask to get potentially escaped characters (characters after backslashes).
-// - Mask escaped sequences that start on *even* bits with 1010101010 (odd bits are escaped, even bits are not)
-// - Mask escaped sequences that start on *odd* bits with 0101010101 (even bits are escaped, odd bits are not)
-//
-// To distinguish between escaped sequences starting on even/odd bits, it finds the start of all
-// escape sequences, filters out the ones that start on even bits, and adds that to the mask of
-// escape sequences. This causes the addition to clear out the sequences starting on odd bits (since
-// the start bit causes a carry), and leaves even-bit sequences alone.
-//
-// Example:
-//
-// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
-// escape         |  xxx |  xx xxx  xxx  xx xx  | Removed overflow backslash; will | it into follows_escape
-// odd_starts     |  x   |  x       x       x   | escape & ~even_bits & ~follows_escape
-// even_seq       |     c|    cxxx     c xx   c | c = carry bit -- will be masked out later
-// invert_mask    |      |     cxxx     c xx   c| even_seq << 1
-// follows_escape |   xx | x xx xxx  xxx  xx xx | Includes overflow bit
-// escaped        |   x  | x x  x x  x x  x  x  |
-// desired        |   x  | x x  x x  x x  x  x  |
-// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
-//
-really_inline uint64_t json_string_scanner::find_escaped_branchless(uint64_t backslash) {
-  // If there was overflow, pretend the first character isn't a backslash
-  backslash &= ~prev_escaped;
-  uint64_t follows_escape = backslash << 1 | prev_escaped;
-
-  // Get sequences starting on even bits by clearing out the odd series using +
-  const uint64_t even_bits = 0x5555555555555555ULL;
-  uint64_t odd_sequence_starts = backslash & ~even_bits & ~follows_escape;
-  uint64_t sequences_starting_on_even_bits;
-  prev_escaped = add_overflow(odd_sequence_starts, backslash, &sequences_starting_on_even_bits);
-  uint64_t invert_mask = sequences_starting_on_even_bits << 1; // The mask we want to return is the *escaped* bits, not escapes.
-
-  // Mask every other backslashed character as an escaped character
-  // Flip the mask for sequences that start on even bits, to correct them
-  return (even_bits ^ invert_mask) & follows_escape;
-}
-
-//
-// Return a mask of all string characters plus end quotes.
-//
-// prev_escaped is overflow saying whether the next character is escaped.
-// prev_in_string is overflow saying whether we're still in a string.
-//
-// Backslash sequences outside of quotes will be detected in stage 2.
-//
-really_inline json_string_block json_string_scanner::next(const simd::simd8x64<uint8_t>& in) {
-  const uint64_t backslash = in.eq('\\');
-  const uint64_t escaped = find_escaped(backslash);
-  const uint64_t quote = in.eq('"') & ~escaped;
-
-  //
-  // prefix_xor flips on bits inside the string (and flips off the end quote).
-  //
-  // Then we xor with prev_in_string: if we were in a string already, its effect is flipped
-  // (characters inside strings are outside, and characters outside strings are inside).
-  //
-  const uint64_t in_string = prefix_xor(quote) ^ prev_in_string;
-
-  //
-  // Check if we're still in a string at the end of the box so the next block will know
-  //
-  // right shift of a signed value expected to be well-defined and standard
-  // compliant as of C++20, John Regher from Utah U. says this is fine code
-  //
-  prev_in_string = uint64_t(static_cast<int64_t>(in_string) >> 63);
-
-  // Use ^ to turn the beginning quote off, and the end quote on.
-  return {
-    backslash,
-    escaped,
-    quote,
-    in_string
-  };
-}
-
-really_inline error_code json_string_scanner::finish(bool streaming) {
-  if (prev_in_string and (not streaming)) {
-    return UNCLOSED_STRING;
-  }
-  return SUCCESS;
-}
-
-} // namespace stage1
-/* end file src/generic/stage1/json_string_scanner.h */
-/* begin file src/generic/stage1/json_scanner.h */
-namespace stage1 {
-
-/**
- * A block of scanned json, with information on operators and scalars.
- */
-struct json_block {
-public:
-  /** The start of structurals */
-  really_inline uint64_t structural_start() { return potential_structural_start() & ~_string.string_tail(); }
-  /** All JSON whitespace (i.e. not in a string) */
-  really_inline uint64_t whitespace() { return non_quote_outside_string(_characters.whitespace()); }
-
-  // Helpers
-
-  /** Whether the given characters are inside a string (only works on non-quotes) */
-  really_inline uint64_t non_quote_inside_string(uint64_t mask) { return _string.non_quote_inside_string(mask); }
-  /** Whether the given characters are outside a string (only works on non-quotes) */
-  really_inline uint64_t non_quote_outside_string(uint64_t mask) { return _string.non_quote_outside_string(mask); }
-
-  // string and escape characters
-  json_string_block _string;
-  // whitespace, operators, scalars
-  json_character_block _characters;
-  // whether the previous character was a scalar
-  uint64_t _follows_potential_scalar;
-private:
-  // Potential structurals (i.e. disregarding strings)
-
-  /** operators plus scalar starts like 123, true and "abc" */
-  really_inline uint64_t potential_structural_start() { return _characters.op() | potential_scalar_start(); }
-  /** the start of non-operator runs, like 123, true and "abc" */
-  really_inline uint64_t potential_scalar_start() { return _characters.scalar() & ~follows_potential_scalar(); }
-  /** whether the given character is immediately after a non-operator like 123, true or " */
-  really_inline uint64_t follows_potential_scalar() { return _follows_potential_scalar; }
-};
-
-/**
- * Scans JSON for important bits: operators, strings, and scalars.
- *
- * The scanner starts by calculating two distinct things:
- * - string characters (taking \" into account)
- * - operators ([]{},:) and scalars (runs of non-operators like 123, true and "abc")
- *
- * To minimize data dependency (a key component of the scanner's speed), it finds these in parallel:
- * in particular, the operator/scalar bit will find plenty of things that are actually part of
- * strings. When we're done, json_block will fuse the two together by masking out tokens that are
- * part of a string.
- */
-class json_scanner {
-public:
-  json_scanner() {}
-  really_inline json_block next(const simd::simd8x64<uint8_t>& in);
-  really_inline error_code finish(bool streaming);
-
-private:
-  // Whether the last character of the previous iteration is part of a scalar token
-  // (anything except whitespace or an operator).
-  uint64_t prev_scalar = 0ULL;
-  json_string_scanner string_scanner{};
-};
-
-
-//
-// Check if the current character immediately follows a matching character.
-//
-// For example, this checks for quotes with backslashes in front of them:
-//
-//     const uint64_t backslashed_quote = in.eq('"') & immediately_follows(in.eq('\'), prev_backslash);
-//
-really_inline uint64_t follows(const uint64_t match, uint64_t &overflow) {
-  const uint64_t result = match << 1 | overflow;
-  overflow = match >> 63;
-  return result;
-}
-
-//
-// Check if the current character follows a matching character, with possible "filler" between.
-// For example, this checks for empty curly braces, e.g.
-//
-//     in.eq('}') & follows(in.eq('['), in.eq(' '), prev_empty_array) // { <whitespace>* }
-//
-really_inline uint64_t follows(const uint64_t match, const uint64_t filler, uint64_t &overflow) {
-  uint64_t follows_match = follows(match, overflow);
-  uint64_t result;
-  overflow |= uint64_t(add_overflow(follows_match, filler, &result));
-  return result;
-}
-
-really_inline json_block json_scanner::next(const simd::simd8x64<uint8_t>& in) {
-  json_string_block strings = string_scanner.next(in);
-  json_character_block characters = json_character_block::classify(in);
-  uint64_t follows_scalar = follows(characters.scalar(), prev_scalar);
-  return {
-    strings,
-    characters,
-    follows_scalar
-  };
-}
-
-really_inline error_code json_scanner::finish(bool streaming) {
-  return string_scanner.finish(streaming);
-}
-
-} // namespace stage1
-/* end file src/generic/stage1/json_scanner.h */
-
-namespace stage1 {
-really_inline uint64_t json_string_scanner::find_escaped(uint64_t backslash) {
-  if (!backslash) { uint64_t escaped = prev_escaped; prev_escaped = 0; return escaped; }
-  return find_escaped_branchless(backslash);
-}
-}
-
-/* begin file src/generic/stage1/json_minifier.h */
-// This file contains the common code every implementation uses in stage1
-// It is intended to be included multiple times and compiled multiple times
-// We assume the file in which it is included already includes
-// "simdjson/stage1.h" (this simplifies amalgation)
-
-namespace stage1 {
-
-class json_minifier {
-public:
-  template<size_t STEP_SIZE>
-  static error_code minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept;
-
-private:
-  really_inline json_minifier(uint8_t *_dst)
-  : dst{_dst}
-  {}
-  template<size_t STEP_SIZE>
-  really_inline void step(const uint8_t *block_buf, buf_block_reader<STEP_SIZE> &reader) noexcept;
-  really_inline void next(const simd::simd8x64<uint8_t>& in, json_block block);
-  really_inline error_code finish(uint8_t *dst_start, size_t &dst_len);
-  json_scanner scanner{};
-  uint8_t *dst;
-};
-
-really_inline void json_minifier::next(const simd::simd8x64<uint8_t>& in, json_block block) {
-  uint64_t mask = block.whitespace();
-  in.compress(mask, dst);
-  dst += 64 - count_ones(mask);
-}
-
-really_inline error_code json_minifier::finish(uint8_t *dst_start, size_t &dst_len) {
-  *dst = '\0';
-  error_code error = scanner.finish(false);
-  if (error) { dst_len = 0; return error; }
-  dst_len = dst - dst_start;
-  return SUCCESS;
-}
-
-template<>
-really_inline void json_minifier::step<128>(const uint8_t *block_buf, buf_block_reader<128> &reader) noexcept {
-  simd::simd8x64<uint8_t> in_1(block_buf);
-  simd::simd8x64<uint8_t> in_2(block_buf+64);
-  json_block block_1 = scanner.next(in_1);
-  json_block block_2 = scanner.next(in_2);
-  this->next(in_1, block_1);
-  this->next(in_2, block_2);
-  reader.advance();
-}
-
-template<>
-really_inline void json_minifier::step<64>(const uint8_t *block_buf, buf_block_reader<64> &reader) noexcept {
-  simd::simd8x64<uint8_t> in_1(block_buf);
-  json_block block_1 = scanner.next(in_1);
-  this->next(block_buf, block_1);
-  reader.advance();
-}
-
-template<size_t STEP_SIZE>
-error_code json_minifier::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept {
-  buf_block_reader<STEP_SIZE> reader(buf, len);
-  json_minifier minifier(dst);
-
-  // Index the first n-1 blocks
-  while (reader.has_full_block()) {
-    minifier.step<STEP_SIZE>(reader.full_block(), reader);
-  }
-
-  // Index the last (remainder) block, padded with spaces
-  uint8_t block[STEP_SIZE];
-  if (likely(reader.get_remainder(block)) > 0) {
-    minifier.step<STEP_SIZE>(block, reader);
-  }
-
-  return minifier.finish(dst, dst_len);
-}
-
-} // namespace stage1
-/* end file src/generic/stage1/json_minifier.h */
-WARN_UNUSED error_code implementation::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) const noexcept {
-  return westmere::stage1::json_minifier::minify<64>(buf, len, dst, dst_len);
-}
-
-/* begin file src/generic/stage1/find_next_document_index.h */
-/**
-  * This algorithm is used to quickly identify the last structural position that
-  * makes up a complete document.
-  *
-  * It does this by going backwards and finding the last *document boundary* (a
-  * place where one value follows another without a comma between them). If the
-  * last document (the characters after the boundary) has an equal number of
-  * start and end brackets, it is considered complete.
-  *
-  * Simply put, we iterate over the structural characters, starting from
-  * the end. We consider that we found the end of a JSON document when the
-  * first element of the pair is NOT one of these characters: '{' '[' ';' ','
-  * and when the second element is NOT one of these characters: '}' '}' ';' ','.
-  *
-  * This simple comparison works most of the time, but it does not cover cases
-  * where the batch's structural indexes contain a perfect amount of documents.
-  * In such a case, we do not have access to the structural index which follows
-  * the last document, therefore, we do not have access to the second element in
-  * the pair, and that means we cannot identify the last document. To fix this
-  * issue, we keep a count of the open and closed curly/square braces we found
-  * while searching for the pair. When we find a pair AND the count of open and
-  * closed curly/square braces is the same, we know that we just passed a
-  * complete document, therefore the last json buffer location is the end of the
-  * batch.
-  */
-really_inline uint32_t find_next_document_index(dom_parser_implementation &parser) {
-  // TODO don't count separately, just figure out depth
-  auto arr_cnt = 0;
-  auto obj_cnt = 0;
-  for (auto i = parser.n_structural_indexes - 1; i > 0; i--) {
-    auto idxb = parser.structural_indexes[i];
-    switch (parser.buf[idxb]) {
-    case ':':
-    case ',':
-      continue;
-    case '}':
-      obj_cnt--;
-      continue;
-    case ']':
-      arr_cnt--;
-      continue;
-    case '{':
-      obj_cnt++;
-      break;
-    case '[':
-      arr_cnt++;
-      break;
-    }
-    auto idxa = parser.structural_indexes[i - 1];
-    switch (parser.buf[idxa]) {
-    case '{':
-    case '[':
-    case ':':
-    case ',':
-      continue;
-    }
-    // Last document is complete, so the next document will appear after!
-    if (!arr_cnt && !obj_cnt) {
-      return parser.n_structural_indexes;
-    }
-    // Last document is incomplete; mark the document at i + 1 as the next one
-    return i;
-  }
-  return 0;
-}
-
-// Skip the last character if it is partial
-really_inline size_t trim_partial_utf8(const uint8_t *buf, size_t len) {
-  if (unlikely(len < 3)) {
-    switch (len) {
-      case 2:
-        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
-        if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 2 bytes left
-        return len;
-      case 1:
-        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
-        return len;
-      case 0:
-        return len;
-    }
-  }
-  if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
-  if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 1 byte left
-  if (buf[len-3] >= 0b11110000) { return len-3; } // 4-byte characters with only 3 bytes left
-  return len;
-}
-/* end file src/generic/stage1/find_next_document_index.h */
 /* begin file src/generic/stage1/utf8_lookup4_algorithm.h */
-using namespace simd;
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 
 namespace utf8_validation {
 
@@ -11855,9 +11957,12 @@ using namespace simd;
     }
 
   }; // struct utf8_checker
-}
+} // namespace utf8_validation
 
 using utf8_validation::utf8_checker;
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage1/utf8_lookup4_algorithm.h */
 /* begin file src/generic/stage1/json_structural_indexer.h */
 // This file contains the common code every implementation uses in stage1
@@ -11865,6 +11970,532 @@ using utf8_validation::utf8_checker;
 // We assume the file in which it is included already includes
 // "simdjson/stage1.h" (this simplifies amalgation)
 
+/* begin file src/generic/stage1/buf_block_reader.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+// Walks through a buffer in block-sized increments, loading the last part with spaces
+template<size_t STEP_SIZE>
+struct buf_block_reader {
+public:
+  really_inline buf_block_reader(const uint8_t *_buf, size_t _len);
+  really_inline size_t block_index();
+  really_inline bool has_full_block() const;
+  really_inline const uint8_t *full_block() const;
+  /**
+   * Get the last block, padded with spaces.
+   *
+   * There will always be a last block, with at least 1 byte, unless len == 0 (in which case this
+   * function fills the buffer with spaces and returns 0. In particular, if len == STEP_SIZE there
+   * will be 0 full_blocks and 1 remainder block with STEP_SIZE bytes and no spaces for padding.
+   *
+   * @return the number of effective characters in the last block.
+   */
+  really_inline size_t get_remainder(uint8_t *dst) const;
+  really_inline void advance();
+private:
+  const uint8_t *buf;
+  const size_t len;
+  const size_t lenminusstep;
+  size_t idx;
+};
+
+// Routines to print masks and text for debugging bitmask operations
+UNUSED static char * format_input_text_64(const uint8_t *text) {
+  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
+  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
+    buf[i] = int8_t(text[i]) < ' ' ? '_' : int8_t(text[i]);
+  }
+  buf[sizeof(simd8x64<uint8_t>)] = '\0';
+  return buf;
+}
+
+// Routines to print masks and text for debugging bitmask operations
+UNUSED static char * format_input_text(const simd8x64<uint8_t>& in) {
+  static char *buf = (char*)malloc(sizeof(simd8x64<uint8_t>) + 1);
+  in.store((uint8_t*)buf);
+  for (size_t i=0; i<sizeof(simd8x64<uint8_t>); i++) {
+    if (buf[i] < ' ') { buf[i] = '_'; }
+  }
+  buf[sizeof(simd8x64<uint8_t>)] = '\0';
+  return buf;
+}
+
+UNUSED static char * format_mask(uint64_t mask) {
+  static char *buf = (char*)malloc(64 + 1);
+  for (size_t i=0; i<64; i++) {
+    buf[i] = (mask & (size_t(1) << i)) ? 'X' : ' ';
+  }
+  buf[64] = '\0';
+  return buf;
+}
+
+template<size_t STEP_SIZE>
+really_inline buf_block_reader<STEP_SIZE>::buf_block_reader(const uint8_t *_buf, size_t _len) : buf{_buf}, len{_len}, lenminusstep{len < STEP_SIZE ? 0 : len - STEP_SIZE}, idx{0} {}
+
+template<size_t STEP_SIZE>
+really_inline size_t buf_block_reader<STEP_SIZE>::block_index() { return idx; }
+
+template<size_t STEP_SIZE>
+really_inline bool buf_block_reader<STEP_SIZE>::has_full_block() const {
+  return idx < lenminusstep;
+}
+
+template<size_t STEP_SIZE>
+really_inline const uint8_t *buf_block_reader<STEP_SIZE>::full_block() const {
+  return &buf[idx];
+}
+
+template<size_t STEP_SIZE>
+really_inline size_t buf_block_reader<STEP_SIZE>::get_remainder(uint8_t *dst) const {
+  memset(dst, 0x20, STEP_SIZE); // memset STEP_SIZE because it's more efficient to write out 8 or 16 bytes at once.
+  memcpy(dst, buf + idx, len - idx);
+  return len - idx;
+}
+
+template<size_t STEP_SIZE>
+really_inline void buf_block_reader<STEP_SIZE>::advance() {
+  idx += STEP_SIZE;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/buf_block_reader.h */
+/* begin file src/generic/stage1/json_string_scanner.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+
+struct json_string_block {
+  // Escaped characters (characters following an escape() character)
+  really_inline uint64_t escaped() const { return _escaped; }
+  // Escape characters (backslashes that are not escaped--i.e. in \\, includes only the first \)
+  really_inline uint64_t escape() const { return _backslash & ~_escaped; }
+  // Real (non-backslashed) quotes
+  really_inline uint64_t quote() const { return _quote; }
+  // Start quotes of strings
+  really_inline uint64_t string_end() const { return _quote & _in_string; }
+  // End quotes of strings
+  really_inline uint64_t string_start() const { return _quote & ~_in_string; }
+  // Only characters inside the string (not including the quotes)
+  really_inline uint64_t string_content() const { return _in_string & ~_quote; }
+  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
+  really_inline uint64_t non_quote_inside_string(uint64_t mask) const { return mask & _in_string; }
+  // Return a mask of whether the given characters are inside a string (only works on non-quotes)
+  really_inline uint64_t non_quote_outside_string(uint64_t mask) const { return mask & ~_in_string; }
+  // Tail of string (everything except the start quote)
+  really_inline uint64_t string_tail() const { return _in_string ^ _quote; }
+
+  // backslash characters
+  uint64_t _backslash;
+  // escaped characters (backslashed--does not include the hex characters after \u)
+  uint64_t _escaped;
+  // real quotes (non-backslashed ones)
+  uint64_t _quote;
+  // string characters (includes start quote but not end quote)
+  uint64_t _in_string;
+};
+
+// Scans blocks for string characters, storing the state necessary to do so
+class json_string_scanner {
+public:
+  really_inline json_string_block next(const simd::simd8x64<uint8_t>& in);
+  really_inline error_code finish(bool streaming);
+
+private:
+  // Intended to be defined by the implementation
+  really_inline uint64_t find_escaped(uint64_t escape);
+  really_inline uint64_t find_escaped_branchless(uint64_t escape);
+
+  // Whether the last iteration was still inside a string (all 1's = true, all 0's = false).
+  uint64_t prev_in_string = 0ULL;
+  // Whether the first character of the next iteration is escaped.
+  uint64_t prev_escaped = 0ULL;
+};
+
+//
+// Finds escaped characters (characters following \).
+//
+// Handles runs of backslashes like \\\" and \\\\" correctly (yielding 0101 and 01010, respectively).
+//
+// Does this by:
+// - Shift the escape mask to get potentially escaped characters (characters after backslashes).
+// - Mask escaped sequences that start on *even* bits with 1010101010 (odd bits are escaped, even bits are not)
+// - Mask escaped sequences that start on *odd* bits with 0101010101 (even bits are escaped, odd bits are not)
+//
+// To distinguish between escaped sequences starting on even/odd bits, it finds the start of all
+// escape sequences, filters out the ones that start on even bits, and adds that to the mask of
+// escape sequences. This causes the addition to clear out the sequences starting on odd bits (since
+// the start bit causes a carry), and leaves even-bit sequences alone.
+//
+// Example:
+//
+// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
+// escape         |  xxx |  xx xxx  xxx  xx xx  | Removed overflow backslash; will | it into follows_escape
+// odd_starts     |  x   |  x       x       x   | escape & ~even_bits & ~follows_escape
+// even_seq       |     c|    cxxx     c xx   c | c = carry bit -- will be masked out later
+// invert_mask    |      |     cxxx     c xx   c| even_seq << 1
+// follows_escape |   xx | x xx xxx  xxx  xx xx | Includes overflow bit
+// escaped        |   x  | x x  x x  x x  x  x  |
+// desired        |   x  | x x  x x  x x  x  x  |
+// text           |  \\\ | \\\"\\\" \\\" \\"\\" |
+//
+really_inline uint64_t json_string_scanner::find_escaped_branchless(uint64_t backslash) {
+  // If there was overflow, pretend the first character isn't a backslash
+  backslash &= ~prev_escaped;
+  uint64_t follows_escape = backslash << 1 | prev_escaped;
+
+  // Get sequences starting on even bits by clearing out the odd series using +
+  const uint64_t even_bits = 0x5555555555555555ULL;
+  uint64_t odd_sequence_starts = backslash & ~even_bits & ~follows_escape;
+  uint64_t sequences_starting_on_even_bits;
+  prev_escaped = add_overflow(odd_sequence_starts, backslash, &sequences_starting_on_even_bits);
+  uint64_t invert_mask = sequences_starting_on_even_bits << 1; // The mask we want to return is the *escaped* bits, not escapes.
+
+  // Mask every other backslashed character as an escaped character
+  // Flip the mask for sequences that start on even bits, to correct them
+  return (even_bits ^ invert_mask) & follows_escape;
+}
+
+//
+// Return a mask of all string characters plus end quotes.
+//
+// prev_escaped is overflow saying whether the next character is escaped.
+// prev_in_string is overflow saying whether we're still in a string.
+//
+// Backslash sequences outside of quotes will be detected in stage 2.
+//
+really_inline json_string_block json_string_scanner::next(const simd::simd8x64<uint8_t>& in) {
+  const uint64_t backslash = in.eq('\\');
+  const uint64_t escaped = find_escaped(backslash);
+  const uint64_t quote = in.eq('"') & ~escaped;
+
+  //
+  // prefix_xor flips on bits inside the string (and flips off the end quote).
+  //
+  // Then we xor with prev_in_string: if we were in a string already, its effect is flipped
+  // (characters inside strings are outside, and characters outside strings are inside).
+  //
+  const uint64_t in_string = prefix_xor(quote) ^ prev_in_string;
+
+  //
+  // Check if we're still in a string at the end of the box so the next block will know
+  //
+  // right shift of a signed value expected to be well-defined and standard
+  // compliant as of C++20, John Regher from Utah U. says this is fine code
+  //
+  prev_in_string = uint64_t(static_cast<int64_t>(in_string) >> 63);
+
+  // Use ^ to turn the beginning quote off, and the end quote on.
+  return {
+    backslash,
+    escaped,
+    quote,
+    in_string
+  };
+}
+
+really_inline error_code json_string_scanner::finish(bool streaming) {
+  if (prev_in_string and (not streaming)) {
+    return UNCLOSED_STRING;
+  }
+  return SUCCESS;
+}
+
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/json_string_scanner.h */
+/* begin file src/generic/stage1/json_scanner.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+
+/**
+ * A block of scanned json, with information on operators and scalars.
+ */
+struct json_block {
+public:
+  /** The start of structurals */
+  really_inline uint64_t structural_start() { return potential_structural_start() & ~_string.string_tail(); }
+  /** All JSON whitespace (i.e. not in a string) */
+  really_inline uint64_t whitespace() { return non_quote_outside_string(_characters.whitespace()); }
+
+  // Helpers
+
+  /** Whether the given characters are inside a string (only works on non-quotes) */
+  really_inline uint64_t non_quote_inside_string(uint64_t mask) { return _string.non_quote_inside_string(mask); }
+  /** Whether the given characters are outside a string (only works on non-quotes) */
+  really_inline uint64_t non_quote_outside_string(uint64_t mask) { return _string.non_quote_outside_string(mask); }
+
+  // string and escape characters
+  json_string_block _string;
+  // whitespace, operators, scalars
+  json_character_block _characters;
+  // whether the previous character was a scalar
+  uint64_t _follows_potential_scalar;
+private:
+  // Potential structurals (i.e. disregarding strings)
+
+  /** operators plus scalar starts like 123, true and "abc" */
+  really_inline uint64_t potential_structural_start() { return _characters.op() | potential_scalar_start(); }
+  /** the start of non-operator runs, like 123, true and "abc" */
+  really_inline uint64_t potential_scalar_start() { return _characters.scalar() & ~follows_potential_scalar(); }
+  /** whether the given character is immediately after a non-operator like 123, true or " */
+  really_inline uint64_t follows_potential_scalar() { return _follows_potential_scalar; }
+};
+
+/**
+ * Scans JSON for important bits: operators, strings, and scalars.
+ *
+ * The scanner starts by calculating two distinct things:
+ * - string characters (taking \" into account)
+ * - operators ([]{},:) and scalars (runs of non-operators like 123, true and "abc")
+ *
+ * To minimize data dependency (a key component of the scanner's speed), it finds these in parallel:
+ * in particular, the operator/scalar bit will find plenty of things that are actually part of
+ * strings. When we're done, json_block will fuse the two together by masking out tokens that are
+ * part of a string.
+ */
+class json_scanner {
+public:
+  json_scanner() {}
+  really_inline json_block next(const simd::simd8x64<uint8_t>& in);
+  really_inline error_code finish(bool streaming);
+
+private:
+  // Whether the last character of the previous iteration is part of a scalar token
+  // (anything except whitespace or an operator).
+  uint64_t prev_scalar = 0ULL;
+  json_string_scanner string_scanner{};
+};
+
+
+//
+// Check if the current character immediately follows a matching character.
+//
+// For example, this checks for quotes with backslashes in front of them:
+//
+//     const uint64_t backslashed_quote = in.eq('"') & immediately_follows(in.eq('\'), prev_backslash);
+//
+really_inline uint64_t follows(const uint64_t match, uint64_t &overflow) {
+  const uint64_t result = match << 1 | overflow;
+  overflow = match >> 63;
+  return result;
+}
+
+//
+// Check if the current character follows a matching character, with possible "filler" between.
+// For example, this checks for empty curly braces, e.g.
+//
+//     in.eq('}') & follows(in.eq('['), in.eq(' '), prev_empty_array) // { <whitespace>* }
+//
+really_inline uint64_t follows(const uint64_t match, const uint64_t filler, uint64_t &overflow) {
+  uint64_t follows_match = follows(match, overflow);
+  uint64_t result;
+  overflow |= uint64_t(add_overflow(follows_match, filler, &result));
+  return result;
+}
+
+really_inline json_block json_scanner::next(const simd::simd8x64<uint8_t>& in) {
+  json_string_block strings = string_scanner.next(in);
+  json_character_block characters = json_character_block::classify(in);
+  uint64_t follows_scalar = follows(characters.scalar(), prev_scalar);
+  return {
+    strings,
+    characters,
+    follows_scalar
+  };
+}
+
+really_inline error_code json_scanner::finish(bool streaming) {
+  return string_scanner.finish(streaming);
+}
+
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/json_scanner.h */
+/* begin file src/generic/stage1/json_minifier.h */
+// This file contains the common code every implementation uses in stage1
+// It is intended to be included multiple times and compiled multiple times
+// We assume the file in which it is included already includes
+// "simdjson/stage1.h" (this simplifies amalgation)
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage1 {
+
+class json_minifier {
+public:
+  template<size_t STEP_SIZE>
+  static error_code minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept;
+
+private:
+  really_inline json_minifier(uint8_t *_dst)
+  : dst{_dst}
+  {}
+  template<size_t STEP_SIZE>
+  really_inline void step(const uint8_t *block_buf, buf_block_reader<STEP_SIZE> &reader) noexcept;
+  really_inline void next(const simd::simd8x64<uint8_t>& in, json_block block);
+  really_inline error_code finish(uint8_t *dst_start, size_t &dst_len);
+  json_scanner scanner{};
+  uint8_t *dst;
+};
+
+really_inline void json_minifier::next(const simd::simd8x64<uint8_t>& in, json_block block) {
+  uint64_t mask = block.whitespace();
+  in.compress(mask, dst);
+  dst += 64 - count_ones(mask);
+}
+
+really_inline error_code json_minifier::finish(uint8_t *dst_start, size_t &dst_len) {
+  *dst = '\0';
+  error_code error = scanner.finish(false);
+  if (error) { dst_len = 0; return error; }
+  dst_len = dst - dst_start;
+  return SUCCESS;
+}
+
+template<>
+really_inline void json_minifier::step<128>(const uint8_t *block_buf, buf_block_reader<128> &reader) noexcept {
+  simd::simd8x64<uint8_t> in_1(block_buf);
+  simd::simd8x64<uint8_t> in_2(block_buf+64);
+  json_block block_1 = scanner.next(in_1);
+  json_block block_2 = scanner.next(in_2);
+  this->next(in_1, block_1);
+  this->next(in_2, block_2);
+  reader.advance();
+}
+
+template<>
+really_inline void json_minifier::step<64>(const uint8_t *block_buf, buf_block_reader<64> &reader) noexcept {
+  simd::simd8x64<uint8_t> in_1(block_buf);
+  json_block block_1 = scanner.next(in_1);
+  this->next(block_buf, block_1);
+  reader.advance();
+}
+
+template<size_t STEP_SIZE>
+error_code json_minifier::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) noexcept {
+  buf_block_reader<STEP_SIZE> reader(buf, len);
+  json_minifier minifier(dst);
+
+  // Index the first n-1 blocks
+  while (reader.has_full_block()) {
+    minifier.step<STEP_SIZE>(reader.full_block(), reader);
+  }
+
+  // Index the last (remainder) block, padded with spaces
+  uint8_t block[STEP_SIZE];
+  if (likely(reader.get_remainder(block)) > 0) {
+    minifier.step<STEP_SIZE>(block, reader);
+  }
+
+  return minifier.finish(dst, dst_len);
+}
+
+} // namespace stage1
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/json_minifier.h */
+/* begin file src/generic/stage1/find_next_document_index.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+/**
+  * This algorithm is used to quickly identify the last structural position that
+  * makes up a complete document.
+  *
+  * It does this by going backwards and finding the last *document boundary* (a
+  * place where one value follows another without a comma between them). If the
+  * last document (the characters after the boundary) has an equal number of
+  * start and end brackets, it is considered complete.
+  *
+  * Simply put, we iterate over the structural characters, starting from
+  * the end. We consider that we found the end of a JSON document when the
+  * first element of the pair is NOT one of these characters: '{' '[' ';' ','
+  * and when the second element is NOT one of these characters: '}' '}' ';' ','.
+  *
+  * This simple comparison works most of the time, but it does not cover cases
+  * where the batch's structural indexes contain a perfect amount of documents.
+  * In such a case, we do not have access to the structural index which follows
+  * the last document, therefore, we do not have access to the second element in
+  * the pair, and that means we cannot identify the last document. To fix this
+  * issue, we keep a count of the open and closed curly/square braces we found
+  * while searching for the pair. When we find a pair AND the count of open and
+  * closed curly/square braces is the same, we know that we just passed a
+  * complete document, therefore the last json buffer location is the end of the
+  * batch.
+  */
+really_inline uint32_t find_next_document_index(dom_parser_implementation &parser) {
+  // TODO don't count separately, just figure out depth
+  auto arr_cnt = 0;
+  auto obj_cnt = 0;
+  for (auto i = parser.n_structural_indexes - 1; i > 0; i--) {
+    auto idxb = parser.structural_indexes[i];
+    switch (parser.buf[idxb]) {
+    case ':':
+    case ',':
+      continue;
+    case '}':
+      obj_cnt--;
+      continue;
+    case ']':
+      arr_cnt--;
+      continue;
+    case '{':
+      obj_cnt++;
+      break;
+    case '[':
+      arr_cnt++;
+      break;
+    }
+    auto idxa = parser.structural_indexes[i - 1];
+    switch (parser.buf[idxa]) {
+    case '{':
+    case '[':
+    case ':':
+    case ',':
+      continue;
+    }
+    // Last document is complete, so the next document will appear after!
+    if (!arr_cnt && !obj_cnt) {
+      return parser.n_structural_indexes;
+    }
+    // Last document is incomplete; mark the document at i + 1 as the next one
+    return i;
+  }
+  return 0;
+}
+
+// Skip the last character if it is partial
+really_inline size_t trim_partial_utf8(const uint8_t *buf, size_t len) {
+  if (unlikely(len < 3)) {
+    switch (len) {
+      case 2:
+        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
+        if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 2 bytes left
+        return len;
+      case 1:
+        if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
+        return len;
+      case 0:
+        return len;
+    }
+  }
+  if (buf[len-1] >= 0b11000000) { return len-1; } // 2-, 3- and 4-byte characters with only 1 byte left
+  if (buf[len-2] >= 0b11100000) { return len-2; } // 3- and 4-byte characters with only 1 byte left
+  if (buf[len-3] >= 0b11110000) { return len-3; } // 4-byte characters with only 3 bytes left
+  return len;
+}
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/find_next_document_index.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage1 {
 
 class bit_indexer {
@@ -12058,14 +12689,14 @@ really_inline error_code json_structural_indexer::finish(dom_parser_implementati
 }
 
 } // namespace stage1
-/* end file src/generic/stage1/json_structural_indexer.h */
-WARN_UNUSED error_code dom_parser_implementation::stage1(const uint8_t *_buf, size_t _len, bool streaming) noexcept {
-  this->buf = _buf;
-  this->len = _len;
-  return westmere::stage1::json_structural_indexer::index<64>(_buf, _len, *this, streaming);
-}
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage1/find_next_document_index.h */
 /* begin file src/generic/stage1/utf8_validator.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage1 {
+
 /**
  * Validates that the string is actual UTF-8.
  */
@@ -12091,13 +12722,9 @@ bool generic_validate_utf8(const char * input, size_t length) {
 }
 
 } // namespace stage1
-/* end file src/generic/stage1/utf8_validator.h */
-WARN_UNUSED bool implementation::validate_utf8(const char *buf, size_t len) const noexcept {
-  return simdjson::westmere::stage1::generic_validate_utf8(buf,len);
-}
-} // namespace westmere
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
+/* end file src/generic/stage1/utf8_validator.h */
 
 //
 // Stage 2
@@ -12106,14 +12733,8 @@ UNTARGET_REGION
 #ifndef SIMDJSON_WESTMERE_STRINGPARSING_H
 #define SIMDJSON_WESTMERE_STRINGPARSING_H
 
-/* jsoncharutils.h already included: #include "jsoncharutils.h" */
-/* westmere/simd.h already included: #include "westmere/simd.h" */
-/* westmere/intrinsics.h already included: #include "westmere/intrinsics.h" */
-/* westmere/bitmanipulation.h already included: #include "westmere/bitmanipulation.h" */
-
-TARGET_WESTMERE
 namespace simdjson {
-namespace westmere {
+namespace SIMDJSON_IMPLEMENTATION {
 
 using namespace simd;
 
@@ -12147,12 +12768,15 @@ really_inline backslash_and_quote backslash_and_quote::copy_and_find(const uint8
   };
 }
 
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
 /* begin file src/generic/stage2/stringparsing.h */
 // This file contains the common code every implementation uses
 // It is intended to be included multiple times and compiled multiple times
-// We assume the file in which it is include already includes
-// "stringparsing.h" (this simplifies amalgation)
 
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage2 {
 namespace stringparsing {
 
@@ -12271,11 +12895,9 @@ WARN_UNUSED really_inline uint8_t *parse_string(const uint8_t *src, uint8_t *dst
 
 } // namespace stringparsing
 } // namespace stage2
-/* end file src/generic/stage2/stringparsing.h */
-
-} // namespace westmere
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
+/* end file src/generic/stage2/stringparsing.h */
 
 #endif // SIMDJSON_WESTMERE_STRINGPARSING_H
 /* end file src/generic/stage2/stringparsing.h */
@@ -12283,24 +12905,9 @@ UNTARGET_REGION
 #ifndef SIMDJSON_WESTMERE_NUMBERPARSING_H
 #define SIMDJSON_WESTMERE_NUMBERPARSING_H
 
-/* jsoncharutils.h already included: #include "jsoncharutils.h" */
-/* westmere/intrinsics.h already included: #include "westmere/intrinsics.h" */
-/* westmere/bitmanipulation.h already included: #include "westmere/bitmanipulation.h" */
-#include <cmath>
-#include <limits>
-
-
-#ifdef JSON_TEST_NUMBERS // for unit testing
-void found_invalid_number(const uint8_t *buf);
-void found_integer(int64_t result, const uint8_t *buf);
-void found_unsigned_integer(uint64_t result, const uint8_t *buf);
-void found_float(double result, const uint8_t *buf);
-#endif
-
-
-TARGET_WESTMERE
 namespace simdjson {
-namespace westmere {
+namespace SIMDJSON_IMPLEMENTATION {
+
 static really_inline uint32_t parse_eight_digits_unrolled(const uint8_t *chars) {
   // this actually computes *16* values so we are being wasteful.
   const __m128i ascii0 = _mm_set1_epi8('0');
@@ -12319,9 +12926,17 @@ static really_inline uint32_t parse_eight_digits_unrolled(const uint8_t *chars) 
       t4); // only captures the sum of the first 8 digits, drop the rest
 }
 
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+
 #define SWAR_NUMBER_PARSING
 
 /* begin file src/generic/stage2/numberparsing.h */
+#include <cmath>
+#include <limits>
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
 namespace stage2 {
 namespace numberparsing {
 
@@ -12796,208 +13411,23 @@ really_inline bool parse_number(const uint8_t *const src, W &writer) {
 
 } // namespace numberparsing
 } // namespace stage2
-/* end file src/generic/stage2/numberparsing.h */
-
-} // namespace westmere
-
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
+/* end file src/generic/stage2/numberparsing.h */
 
 #endif //  SIMDJSON_WESTMERE_NUMBERPARSING_H
 /* end file src/generic/stage2/numberparsing.h */
-
-TARGET_WESTMERE
-namespace simdjson {
-namespace westmere {
-
-/* begin file src/generic/stage2/logger.h */
-// This is for an internal-only stage 2 specific logger.
-// Set LOG_ENABLED = true to log what stage 2 is doing!
-namespace logger {
-  static constexpr const char * DASHES = "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
-
-  static constexpr const bool LOG_ENABLED = false;
-  static constexpr const int LOG_EVENT_LEN = 30;
-  static constexpr const int LOG_BUFFER_LEN = 20;
-  static constexpr const int LOG_DETAIL_LEN = 50;
-  static constexpr const int LOG_INDEX_LEN = 10;
-
-  static int log_depth; // Not threadsafe. Log only.
-
-  // Helper to turn unprintable or newline characters into spaces
-  static really_inline char printable_char(char c) {
-    if (c >= 0x20) {
-      return c;
-    } else {
-      return ' ';
-    }
-  }
-
-  // Print the header and set up log_start
-  static really_inline void log_start() {
-    if (LOG_ENABLED) {
-      log_depth = 0;
-      printf("\n");
-      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Tape#", LOG_DETAIL_LEN, "Detail", LOG_INDEX_LEN, "index");
-      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES, LOG_INDEX_LEN+2, DASHES);
-    }
-  }
-
-  static really_inline void log_string(const char *message) {
-    if (LOG_ENABLED) {
-      printf("%s\n", message);
-    }
-  }
-
-  // Logs a single line of 
-  template<typename S>
-  static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
-    if (LOG_ENABLED) {
-      printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
-      {
-        // Print the next N characters in the buffer.
-        printf("| ");
-        // Otherwise, print the characters starting from the buffer position.
-        // Print spaces for unprintable or newline characters.
-        for (int i=0;i<LOG_BUFFER_LEN;i++) {
-          printf("%c", printable_char(structurals.current()[i]));
-        }
-        printf(" ");
-      }
-      printf("|    %c ", printable_char(structurals.current_char()));
-      printf("|    %c ", printable_char(structurals.peek_next_char()));
-      printf("| %5u ", structurals.parser.structural_indexes[*(structurals.current_structural+1)]);
-      printf("| %5u ", structurals.next_tape_index());
-      printf("| %-*s ", LOG_DETAIL_LEN, detail);
-      printf("| %*u ", LOG_INDEX_LEN, *structurals.current_structural);
-      printf("|\n");
-    }
-  }
-} // namespace logger
-
-/* end file src/generic/stage2/logger.h */
-/* begin file src/generic/stage2/atomparsing.h */
-namespace stage2 {
-namespace atomparsing {
-
-namespace{
-// The string_to_uint32 is exclusively used to map literal strings to 32-bit values.
-// We use memcpy instead of a pointer cast to avoid undefined behaviors since we cannot
-// be certain that the character pointer will be properly aligned.
-// You might think that using memcpy makes this function expensive, but you'd be wrong.
-// All decent optimizing compilers (GCC, clang, Visual Studio) will compile string_to_uint32("false");
-// to the compile-time constant 1936482662.
-really_inline uint32_t string_to_uint32(const char* str) { uint32_t val; std::memcpy(&val, str, sizeof(uint32_t)); return val; }
-
-
-// Again in str4ncmp we use a memcpy to avoid undefined behavior. The memcpy may appear expensive.
-// Yet all decent optimizing compilers will compile memcpy to a single instruction, just about.
-WARN_UNUSED
-really_inline uint32_t str4ncmp(const uint8_t *src, const char* atom) {
-  uint32_t srcval; // we want to avoid unaligned 32-bit loads (undefined in C/C++)
-  static_assert(sizeof(uint32_t) <= SIMDJSON_PADDING, "SIMDJSON_PADDING must be larger than 4 bytes");
-  std::memcpy(&srcval, src, sizeof(uint32_t));
-  return srcval ^ string_to_uint32(atom);
-}
-} // anonymous namespace
-
-WARN_UNUSED
-really_inline bool is_valid_true_atom(const uint8_t *src) {
-  return (str4ncmp(src, "true") | is_not_structural_or_whitespace(src[4])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_true_atom(const uint8_t *src, size_t len) {
-  if (len > 4) { return is_valid_true_atom(src); }
-  else if (len == 4) { return !str4ncmp(src, "true"); }
-  else { return false; }
-}
-
-WARN_UNUSED
-really_inline bool is_valid_false_atom(const uint8_t *src) {
-  return (str4ncmp(src+1, "alse") | is_not_structural_or_whitespace(src[5])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_false_atom(const uint8_t *src, size_t len) {
-  if (len > 5) { return is_valid_false_atom(src); }
-  else if (len == 5) { return !str4ncmp(src+1, "alse"); }
-  else { return false; }
-}
-
-WARN_UNUSED
-really_inline bool is_valid_null_atom(const uint8_t *src) {
-  return (str4ncmp(src, "null") | is_not_structural_or_whitespace(src[4])) == 0;
-}
-
-WARN_UNUSED
-really_inline bool is_valid_null_atom(const uint8_t *src, size_t len) {
-  if (len > 4) { return is_valid_null_atom(src); }
-  else if (len == 4) { return !str4ncmp(src, "null"); }
-  else { return false; }
-}
-
-} // namespace atomparsing
-} // namespace stage2
-/* end file src/generic/stage2/atomparsing.h */
-/* begin file src/generic/stage2/structural_iterator.h */
-namespace stage2 {
-
-class structural_iterator {
-public:
-  const uint8_t* const buf;
-  uint32_t *current_structural;
-  dom_parser_implementation &parser;
-
-  // Start a structural 
-  really_inline structural_iterator(dom_parser_implementation &_parser, size_t start_structural_index)
-    : buf{_parser.buf},
-      current_structural{&_parser.structural_indexes[start_structural_index]},
-      parser{_parser} {
-  }
-  // Get the buffer position of the current structural character
-  really_inline const uint8_t* current() {
-    return &buf[*current_structural];
-  }
-  // Get the current structural character
-  really_inline char current_char() {
-    return buf[*current_structural];
-  }
-  // Get the next structural character without advancing
-  really_inline char peek_next_char() {
-    return buf[*(current_structural+1)];
-  }
-  really_inline char advance_char() {
-    current_structural++;
-    return buf[*current_structural];
-  }
-  really_inline size_t remaining_len() {
-    return parser.len - *current_structural;
-  }
-
-  really_inline bool past_end(uint32_t n_structural_indexes) {
-    return current_structural >= &parser.structural_indexes[n_structural_indexes];
-  }
-  really_inline bool at_end(uint32_t n_structural_indexes) {
-    return current_structural == &parser.structural_indexes[n_structural_indexes];
-  }
-  really_inline bool at_beginning() {
-    return current_structural == parser.structural_indexes.get();
-  }
-};
-
-} // namespace stage2
-/* end file src/generic/stage2/structural_iterator.h */
 /* begin file src/generic/stage2/structural_parser.h */
 // This file contains the common code every implementation uses for stage2
 // It is intended to be included multiple times and compiled multiple times
 // We assume the file in which it is include already includes
 // "simdjson/stage2.h" (this simplifies amalgation)
 
-namespace stage2 {
-namespace { // Make everything here private
-
 /* begin file src/generic/stage2/tape_writer.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
 struct tape_writer {
   /** The next place to write to tape */
   uint64_t *next_tape_loc;
@@ -13093,7 +13523,206 @@ really_inline void tape_writer::append2(uint64_t val, T val2, internal::tape_typ
 really_inline void tape_writer::write(uint64_t &tape_loc, uint64_t val, internal::tape_type t) noexcept {
   tape_loc = val | ((uint64_t(char(t))) << 56);
 }
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
 /* end file src/generic/stage2/tape_writer.h */
+/* begin file src/generic/stage2/logger.h */
+// This is for an internal-only stage 2 specific logger.
+// Set LOG_ENABLED = true to log what stage 2 is doing!
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace logger {
+  static constexpr const char * DASHES = "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+
+  static constexpr const bool LOG_ENABLED = false;
+  static constexpr const int LOG_EVENT_LEN = 30;
+  static constexpr const int LOG_BUFFER_LEN = 20;
+  static constexpr const int LOG_DETAIL_LEN = 50;
+  static constexpr const int LOG_INDEX_LEN = 10;
+
+  static int log_depth; // Not threadsafe. Log only.
+
+  // Helper to turn unprintable or newline characters into spaces
+  static really_inline char printable_char(char c) {
+    if (c >= 0x20) {
+      return c;
+    } else {
+      return ' ';
+    }
+  }
+
+  // Print the header and set up log_start
+  static really_inline void log_start() {
+    if (LOG_ENABLED) {
+      log_depth = 0;
+      printf("\n");
+      printf("| %-*s | %-*s | %*s | %*s | %*s | %-*s | %-*s | %-*s |\n", LOG_EVENT_LEN, "Event", LOG_BUFFER_LEN, "Buffer", 4, "Curr", 4, "Next", 5, "Next#", 5, "Tape#", LOG_DETAIL_LEN, "Detail", LOG_INDEX_LEN, "index");
+      printf("|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|%.*s|\n", LOG_EVENT_LEN+2, DASHES, LOG_BUFFER_LEN+2, DASHES, 4+2, DASHES, 4+2, DASHES, 5+2, DASHES, 5+2, DASHES, LOG_DETAIL_LEN+2, DASHES, LOG_INDEX_LEN+2, DASHES);
+    }
+  }
+
+  static really_inline void log_string(const char *message) {
+    if (LOG_ENABLED) {
+      printf("%s\n", message);
+    }
+  }
+
+  // Logs a single line of 
+  template<typename S>
+  static really_inline void log_line(S &structurals, const char *title_prefix, const char *title, const char *detail) {
+    if (LOG_ENABLED) {
+      printf("| %*s%s%-*s ", log_depth*2, "", title_prefix, LOG_EVENT_LEN - log_depth*2 - int(strlen(title_prefix)), title);
+      {
+        // Print the next N characters in the buffer.
+        printf("| ");
+        // Otherwise, print the characters starting from the buffer position.
+        // Print spaces for unprintable or newline characters.
+        for (int i=0;i<LOG_BUFFER_LEN;i++) {
+          printf("%c", printable_char(structurals.current()[i]));
+        }
+        printf(" ");
+      }
+      printf("|    %c ", printable_char(structurals.current_char()));
+      printf("|    %c ", printable_char(structurals.peek_next_char()));
+      printf("| %5u ", structurals.parser.structural_indexes[*(structurals.current_structural+1)]);
+      printf("| %5u ", structurals.next_tape_index());
+      printf("| %-*s ", LOG_DETAIL_LEN, detail);
+      printf("| %*u ", LOG_INDEX_LEN, *structurals.current_structural);
+      printf("|\n");
+    }
+  }
+} // namespace logger
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/logger.h */
+/* begin file src/generic/stage2/atomparsing.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+namespace atomparsing {
+
+namespace{
+// The string_to_uint32 is exclusively used to map literal strings to 32-bit values.
+// We use memcpy instead of a pointer cast to avoid undefined behaviors since we cannot
+// be certain that the character pointer will be properly aligned.
+// You might think that using memcpy makes this function expensive, but you'd be wrong.
+// All decent optimizing compilers (GCC, clang, Visual Studio) will compile string_to_uint32("false");
+// to the compile-time constant 1936482662.
+really_inline uint32_t string_to_uint32(const char* str) { uint32_t val; std::memcpy(&val, str, sizeof(uint32_t)); return val; }
+
+
+// Again in str4ncmp we use a memcpy to avoid undefined behavior. The memcpy may appear expensive.
+// Yet all decent optimizing compilers will compile memcpy to a single instruction, just about.
+WARN_UNUSED
+really_inline uint32_t str4ncmp(const uint8_t *src, const char* atom) {
+  uint32_t srcval; // we want to avoid unaligned 32-bit loads (undefined in C/C++)
+  static_assert(sizeof(uint32_t) <= SIMDJSON_PADDING, "SIMDJSON_PADDING must be larger than 4 bytes");
+  std::memcpy(&srcval, src, sizeof(uint32_t));
+  return srcval ^ string_to_uint32(atom);
+}
+} // anonymous namespace
+
+WARN_UNUSED
+really_inline bool is_valid_true_atom(const uint8_t *src) {
+  return (str4ncmp(src, "true") | is_not_structural_or_whitespace(src[4])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_true_atom(const uint8_t *src, size_t len) {
+  if (len > 4) { return is_valid_true_atom(src); }
+  else if (len == 4) { return !str4ncmp(src, "true"); }
+  else { return false; }
+}
+
+WARN_UNUSED
+really_inline bool is_valid_false_atom(const uint8_t *src) {
+  return (str4ncmp(src+1, "alse") | is_not_structural_or_whitespace(src[5])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_false_atom(const uint8_t *src, size_t len) {
+  if (len > 5) { return is_valid_false_atom(src); }
+  else if (len == 5) { return !str4ncmp(src+1, "alse"); }
+  else { return false; }
+}
+
+WARN_UNUSED
+really_inline bool is_valid_null_atom(const uint8_t *src) {
+  return (str4ncmp(src, "null") | is_not_structural_or_whitespace(src[4])) == 0;
+}
+
+WARN_UNUSED
+really_inline bool is_valid_null_atom(const uint8_t *src, size_t len) {
+  if (len > 4) { return is_valid_null_atom(src); }
+  else if (len == 4) { return !str4ncmp(src, "null"); }
+  else { return false; }
+}
+
+} // namespace atomparsing
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/atomparsing.h */
+/* begin file src/generic/stage2/structural_iterator.h */
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+class structural_iterator {
+public:
+  const uint8_t* const buf;
+  uint32_t *current_structural;
+  dom_parser_implementation &parser;
+
+  // Start a structural 
+  really_inline structural_iterator(dom_parser_implementation &_parser, size_t start_structural_index)
+    : buf{_parser.buf},
+      current_structural{&_parser.structural_indexes[start_structural_index]},
+      parser{_parser} {
+  }
+  // Get the buffer position of the current structural character
+  really_inline const uint8_t* current() {
+    return &buf[*current_structural];
+  }
+  // Get the current structural character
+  really_inline char current_char() {
+    return buf[*current_structural];
+  }
+  // Get the next structural character without advancing
+  really_inline char peek_next_char() {
+    return buf[*(current_structural+1)];
+  }
+  really_inline char advance_char() {
+    current_structural++;
+    return buf[*current_structural];
+  }
+  really_inline size_t remaining_len() {
+    return parser.len - *current_structural;
+  }
+
+  really_inline bool past_end(uint32_t n_structural_indexes) {
+    return current_structural >= &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_end(uint32_t n_structural_indexes) {
+    return current_structural == &parser.structural_indexes[n_structural_indexes];
+  }
+  really_inline bool at_beginning() {
+    return current_structural == parser.structural_indexes.get();
+  }
+};
+
+} // namespace stage2
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/structural_iterator.h */
+
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+namespace stage2 {
+
+namespace { // Make everything here private
 
 #ifdef SIMDJSON_USE_COMPUTED_GOTO
 #define INIT_ADDRESSES() { &&array_begin, &&array_continue, &&error, &&finish, &&object_begin, &&object_continue }
@@ -13576,7 +14205,39 @@ WARN_UNUSED error_code dom_parser_implementation::stage2(dom::document &_doc) no
 WARN_UNUSED error_code dom_parser_implementation::stage2_next(dom::document &_doc) noexcept {
   return stage2::parse_structurals<true>(*this, _doc);
 }
-/* end file src/generic/stage2/tape_writer.h */
+
+} // namespace SIMDJSON_IMPLEMENTATION
+} // namespace simdjson
+/* end file src/generic/stage2/structural_iterator.h */
+
+//
+// Implementation-specific overrides
+//
+namespace simdjson {
+namespace SIMDJSON_IMPLEMENTATION {
+
+namespace stage1 {
+
+really_inline uint64_t json_string_scanner::find_escaped(uint64_t backslash) {
+  if (!backslash) { uint64_t escaped = prev_escaped; prev_escaped = 0; return escaped; }
+  return find_escaped_branchless(backslash);
+}
+
+} // namespace stage1
+
+WARN_UNUSED error_code implementation::minify(const uint8_t *buf, size_t len, uint8_t *dst, size_t &dst_len) const noexcept {
+  return westmere::stage1::json_minifier::minify<64>(buf, len, dst, dst_len);
+}
+
+WARN_UNUSED error_code dom_parser_implementation::stage1(const uint8_t *_buf, size_t _len, bool streaming) noexcept {
+  this->buf = _buf;
+  this->len = _len;
+  return westmere::stage1::json_structural_indexer::index<64>(_buf, _len, *this, streaming);
+}
+
+WARN_UNUSED bool implementation::validate_utf8(const char *buf, size_t len) const noexcept {
+  return simdjson::westmere::stage1::generic_validate_utf8(buf,len);
+}
 
 WARN_UNUSED error_code dom_parser_implementation::parse(const uint8_t *_buf, size_t _len, dom::document &_doc) noexcept {
   error_code err = stage1(_buf, _len, false);
@@ -13584,11 +14245,15 @@ WARN_UNUSED error_code dom_parser_implementation::parse(const uint8_t *_buf, siz
   return stage2(_doc);
 }
 
-} // namespace westmere
+} // namespace SIMDJSON_IMPLEMENTATION
 } // namespace simdjson
-UNTARGET_REGION
-/* end file src/generic/stage2/tape_writer.h */
+
+/* begin file src/westmere/end_implementation.h */
+#undef SIMDJSON_IMPLEMENTATION
+SIMDJSON_UNTARGET_REGION
+/* end file src/westmere/end_implementation.h */
+/* end file src/westmere/end_implementation.h */
 #endif
 
 SIMDJSON_POP_DISABLE_WARNINGS
-/* end file src/generic/stage2/tape_writer.h */
+/* end file src/westmere/end_implementation.h */
